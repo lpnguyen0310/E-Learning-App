@@ -114,14 +114,111 @@
           </TouchableOpacity>
         );
 
+        const [currentPage, setCurrentPage] = useState('Search'); 
 
-   const [currentPage, setCurrentPage] = useState('Search'); 
-
-    const handleNavigation = (page) => {
-      setCurrentPage(page); // Cập nhật trang hiện tại
-      navigation.navigate(page); // Chuyển hướng
-    };
-
+        const handleNavigation = (page) => {
+          setCurrentPage(page); // Cập nhật trang hiện tại
+          navigation.navigate(page); // Chuyển hướng
+        };
+    
+        const resultDesign = [
+          {
+            id: '1',
+            title: 'Website Design',
+            teacher: 'Ramano Wultschiner',
+            price: '$59',
+            rating: '4.5 (1233)',
+            lessons: '9 Lessons',
+            image: require('../assets/images/webdesign.png'),
+            bestSeller: false, 
+            discount: true,
+          },
+          {
+            id: '2',
+            title: 'Ux Research For Beginners',
+            teacher: 'Olivia Wang',
+            price: '$29',
+            rating: '4.5 (1782)',
+            lessons: '12 Lessons',
+            image: require('../assets/images/uxresearch.png'),
+            bestSeller: true, 
+            discount: false,
+          },
+          {
+            id: '3',
+            title: 'UI/UX for Beginners',
+            teacher: 'Emily Johnson',
+            price: '$20',
+            rating: '4.3 (3652)',
+            lessons: '15 Lessons',
+            image: require('../assets/images/uix.png'),
+            bestSeller: false, 
+            discount: true,
+          },
+          {
+            id: '4',
+            title: 'Design Thinking 101',
+            teacher: 'Michael Brown',
+            price: '$36',
+            rating: '4.8 (3256)',
+            lessons: '25 Lessons',
+            image: require('../assets/images/designpattern.png'),
+            bestSeller: true,
+            discount: false,
+          },
+        ];
+    
+    
+        const [keyword, setKeyword] = useState(""); // Từ khóa tìm kiếm từ input
+        const [filterActive, setFilterActive] = useState(false);
+        const [filteredData, setFilteredData] = useState([]);
+    
+    
+        const handleFilter = () => {
+          const keywordLower = keyword.toLowerCase();
+          if (!keywordLower) {
+            setFilteredData(resultDesign);
+        } else {
+            // Nếu có keyword, thực hiện lọc dựa trên từ khóa và điều kiện giảm giá
+            const filteredResults = resultDesign.filter((item) => (
+                item.title.toLowerCase().includes(keywordLower) && item.discount
+            ));
+            setFilteredData(filteredResults);
+        }
+    
+        setFilterActive(true);
+      };
+    
+    
+        const renderItemSearch = ({ item }) => (
+          <TouchableOpacity style={styles.courseItemSearch}>
+              {item.bestSeller && (
+                  <View style={styles.bestSellerBadge}>
+                      <Text style={styles.bestSellerText}>Best Seller</Text>
+                  </View>
+              )}
+              {item.discount && (
+                  <View style={styles.discountBadge}>
+                      <Text style={styles.discountText}>20% OFF</Text>
+                  </View>
+              )}
+              <Image source={item.image} style={styles.courseImageSearch} />
+              <View style={styles.courseListSeach}>
+                  <View style ={styles.course_item_title_search}> 
+                      <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
+                      <FontAwesomeIcon icon={faBookmark} />
+                  </View>
+                  <Text style={styles.courseTeacher}>{item.teacher}</Text>
+                  <Text style={styles.coursePrice}>{item.price}</Text>
+                  <View style ={styles.course_rating}>
+                        <FontAwesomeIcon icon={faStar} />
+                        <Text style={styles.courseRating}> {item.rating}</Text>
+                        <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+                        <Text style={styles.courseLessons}>{item.lessons}</Text>
+                   </View>
+              </View>
+          </TouchableOpacity>
+      );
    
     return (
       <View style={{ flex: 1 }}>
@@ -137,13 +234,28 @@
                                     />
                 </View>
               <View style = {styles.filtercontainer}>
-                  <TouchableOpacity style ={styles.filterButton}>
+                  <TouchableOpacity style ={styles.filterButton} onPress={handleFilter}>
                           <FontAwesomeIcon icon={faFilter} />
                           <Text style ={{marginLeft:5}}>Filter</Text>
                   </TouchableOpacity>
               </View>
           </View>
+          {filterActive ? (
+            <View style ={styles.container_search}>
+                <View style ={styles.result_search}>
+                <FlatList
+                data={filteredData}
+                renderItem={renderItemSearch}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.resultsContainer}
+                numColumns={1}
+              />
+                </View>
 
+            </View>
+            
+               
+          ) : (
                
         
         <View style = {styles.containerBody}>
@@ -191,7 +303,7 @@
           />
         </View>
       </View>
-
+        )}
       </View>
       </ScrollView> 
         <View style={styles.footer}>
@@ -455,6 +567,52 @@
     fontWeight: 'bold',
     fontSize: 14,
   },
+  // Kết quả tìm kiếm
+  resultsContainer: {
+    flex: 1,
+    width: "100%",
+},
+resultsCount: {
+    fontSize: 16,
+    marginBottom: 8,
+},
+noResultsText: {
+    fontSize: 16,
+    color: "gray",
+    marginTop: 20,
+},
+
+// item search
+courseItemSearch: {
+  flexDirection: "row",
+  backgroundColor: "white",
+  borderRadius: 10,
+  padding: 10,
+  marginBottom: 10,
+  width: "100%",
+  flex:1,
+},
+
+courseImageSearch: {
+  width: 120,
+  height: 120,
+  borderRadius: 10,
+},
+
+courseListSeach: {
+  flexDirection: "column",
+  justifyContent: "space-around",
+  paddingLeft: 10,
+  width: "100%",
+  flex:1,
+},
+course_item_title_search:{
+  flexDirection: "row",
+  justifyContent: "space-between",
+  width: "100%",
+  alignItems: "center",
+},
+
 
   });
 
