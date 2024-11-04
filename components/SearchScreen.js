@@ -21,6 +21,7 @@
           { id: '5',icon: <FontAwesomeIcon icon={faEarthAmericas} style={{color: "#f4aa0b",}} />, title: 'Language' },
         ];
 
+        // Render một chủ đề trong hot topics
         const renderCategoryItem  = ({ item }) => (
           <View style={styles.item}>
             <TouchableOpacity style={styles.categoryItem}>
@@ -81,6 +82,8 @@
           },
         ];
 
+
+        // Render một khóa học trong danh sách khóa học được recommend
         const CourseRecommentItem = ({ item }) => (
     
           <TouchableOpacity style={styles.courseItem}>
@@ -114,7 +117,9 @@
           </TouchableOpacity>
         );
 
+        // State lưu trữ trang hiện tại của ứng dụng
         const [currentPage, setCurrentPage] = useState('Search'); 
+        
 
         const handleNavigation = (page) => {
           setCurrentPage(page); // Cập nhật trang hiện tại
@@ -168,12 +173,14 @@
           },
         ];
     
-    
-        const [keyword, setKeyword] = useState(""); // Từ khóa tìm kiếm từ input
+        // State lưu trữ từ khóa tìm kiếm và kết quả lọc
+        const [keyword, setKeyword] = useState("");
+        // State lưu trữ kết quả lọc dựa trên từ khóa
         const [filterActive, setFilterActive] = useState(false);
+        // State lưu trữ kết quả lọc dựa trên từ khóa và điều kiện giảm giá
         const [filteredData, setFilteredData] = useState([]);
     
-    
+        // Xử lý khi nhấn nút Filter để lọc kết quả
         const handleFilter = () => {
           const keywordLower = keyword.toLowerCase();
           if (!keywordLower) {
@@ -188,8 +195,10 @@
     
         setFilterActive(true);
       };
-    
-    
+      
+
+      
+        // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
           <TouchableOpacity style={styles.courseItemSearch}>
               {item.bestSeller && (
@@ -219,6 +228,12 @@
               </View>
           </TouchableOpacity>
       );
+
+      // Xử lý khi click vào một chủ đề hot topic
+      const handleTopicPress = (topic) => {
+        setKeyword(topic);       
+        setFilterActive(true);    
+      };
    
     return (
       <View style={{ flex: 1 }}>
@@ -231,7 +246,10 @@
                           placeholder="Search"
                           clearButtonMode='always'
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
-                                    />
+                          value={keyword}
+                          onChangeText={text => setKeyword(text)}
+                           
+                           />
                 </View>
               <View style = {styles.filtercontainer}>
                   <TouchableOpacity style ={styles.filterButton} onPress={handleFilter}>
@@ -264,7 +282,7 @@
           </View>
           <View style = {styles.hottopic}>
               {hotTopics.map((topic) => (
-                  <TouchableOpacity key={topic} style={styles.topicButton}>
+                  <TouchableOpacity key={topic} style={styles.topicButton} onPress={() => handleTopicPress(topic)}>
                   <Text style={styles.topicButtonText}>{topic}</Text>
                   </TouchableOpacity>
                   ))}   
