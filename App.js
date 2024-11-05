@@ -18,6 +18,11 @@ const AppStack = () => {
   return (
     <Stack.Navigator>
        <Stack.Screen
+        name="TeacherProfile"
+        component={TeacherProfileScreen}
+        options={{ title: "Teacher Profile" }}
+      />
+       <Stack.Screen
         name="UserProfile"
         component={ProfileScreen}
         options={{ title: "User's Profile" }}
@@ -32,11 +37,7 @@ const AppStack = () => {
         component={LearningLesson}
         options={{ headerShown: false }} // Ẩn header cho màn hình LearningLesson
       />
-        <Stack.Screen
-        name="TeacherProfile"
-        component={TeacherProfileScreen}
-        options={{ title: "User's Profile" }}
-      />
+       
     </Stack.Navigator>
   );
 };
