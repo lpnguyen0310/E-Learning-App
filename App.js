@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ProfileScreen from './components/ProfileUser';
 import TeacherProfileScreen from './components/TeacherProfileScreen';
 import MyCoursesScreen from './components/MyCourses_Chua_Xong';
-import LearningLesson from './components/Learning_Lesson';
+import LearningLesson from './components/Learning_Lesson_Project_Q&A';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
