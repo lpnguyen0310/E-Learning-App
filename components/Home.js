@@ -20,7 +20,7 @@ function LandingPage({ navigation }) {
             <Image source={item.image} style={{width: 40, height: 40, borderRadius: 8, objectFit: "cover"}}/>
             <Text style={styles.categoryText}>{item.title}</Text>
        </TouchableOpacity>
-    </View>
+    </View> 
   );
 
   const popularCourses = [
@@ -215,7 +215,7 @@ function LandingPage({ navigation }) {
 
 
   const CourseInspireItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItemInpire}>
+    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { CourseInspire  })}>
       <Image source={item.image} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 

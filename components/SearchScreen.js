@@ -21,7 +21,6 @@
           { id: '5',icon: <FontAwesomeIcon icon={faEarthAmericas} style={{color: "#f4aa0b",}} />, title: 'Language' },
         ];
 
-        // Render một chủ đề trong hot topics
         const renderCategoryItem  = ({ item }) => (
           <View style={styles.item}>
             <TouchableOpacity style={styles.categoryItem}>
@@ -38,14 +37,40 @@
         const CourseRecomment = [
           {
             id: '1',
+            imageteacher: require('../assets/images/teacher1.png'),
             title: 'Website Design',
             teacher: 'Ramano Wultschiner',
+            work: 'UI/UX Designer at Google',
+            discription: 'We are a team of professional UX/UI designers, committed to creating products that are intuitive, easy to use and bring value to users. From user research to interface design, we will accompany you throughout the product development process..',
             price: '$59',
             rating: '4.5 (1233)',
             lessons: '9 Lessons',
             image: require('../assets/images/webdesign.png'),
             bestSeller: false, 
             discount: true,
+            reviews: [
+              {
+                id: '1',
+                name: 'Jinny Oslin',
+                date: '1 day ago',
+                comment: 'Nostrud excepteur magna id est quis in aliqua.',
+                rating: 5,
+              },
+              {
+                id: '2',
+                name: 'Jane Barry',
+                date: '1 day ago',
+                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+                rating: 4,
+              },
+              {
+                id: '3',
+                name: 'Claire Mignard',
+                date: '5 days ago',
+                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+                rating: 3,
+              },
+            ],
           },
           {
             id: '2',
@@ -57,6 +82,29 @@
             image: require('../assets/images/uxresearch.png'),
             bestSeller: true, 
             discount: false,
+            reviews: [
+              {
+                id: '1',
+                name: 'Jinny Oslin',
+                date: '1 day ago',
+                comment: 'Nostrud excepteur magna id est quis in aliqua.',
+                rating: 5,
+              },
+              {
+                id: '2',
+                name: 'Jane Barry',
+                date: '1 day ago',
+                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+                rating: 4,
+              },
+              {
+                id: '3',
+                name: 'Claire Mignard',
+                date: '5 days ago',
+                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+                rating: 3,
+              },
+            ],
           },
           {
             id: '3',
@@ -68,6 +116,29 @@
             image: require('../assets/images/uix.png'),
             bestSeller: false, 
             discount: true,
+            reviews: [
+              {
+                id: '1',
+                name: 'Jinny Oslin',
+                date: '1 day ago',
+                comment: 'Nostrud excepteur magna id est quis in aliqua.',
+                rating: 5,
+              },
+              {
+                id: '2',
+                name: 'Jane Barry',
+                date: '1 day ago',
+                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+                rating: 4,
+              },
+              {
+                id: '3',
+                name: 'Claire Mignard',
+                date: '5 days ago',
+                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+                rating: 3,
+              },
+            ],
           },
           {
             id: '4',
@@ -79,6 +150,29 @@
             image: require('../assets/images/designpattern.png'),
             bestSeller: true,
             discount: false,
+            reviews: [
+              {
+                id: '1',
+                name: 'Jinny Oslin',
+                date: '1 day ago',
+                comment: 'Nostrud excepteur magna id est quis in aliqua.',
+                rating: 5,
+              },
+              {
+                id: '2',
+                name: 'Jane Barry',
+                date: '1 day ago',
+                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+                rating: 4,
+              },
+              {
+                id: '3',
+                name: 'Claire Mignard',
+                date: '5 days ago',
+                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+                rating: 3,
+              },
+            ],
           },
         ];
 
@@ -86,7 +180,7 @@
         // Render một khóa học trong danh sách khóa học được recommend
         const CourseRecommentItem = ({ item }) => (
     
-          <TouchableOpacity style={styles.courseItem}>
+          <TouchableOpacity style={styles.courseItem}  onPress={() => navigation.navigate('CourseDetail', { course: item })}>
             {item.bestSeller && (
                   <View style={styles.bestSellerBadge}>
                       <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -188,11 +282,11 @@
         } else {
             // Nếu có keyword, thực hiện lọc dựa trên từ khóa và điều kiện giảm giá
             const filteredResults = resultDesign.filter((item) => (
-                item.title.toLowerCase().includes(keywordLower) && item.discount
+                item.title.toLowerCase().includes(keywordLower) && item.discount 
             ));
             setFilteredData(filteredResults);
         }
-    
+
         setFilterActive(true);
       };
       
@@ -324,7 +418,7 @@
         )}
       </View>
       </ScrollView> 
-        <View style={styles.footer}>
+      <View style={styles.footer}>
         <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => navigation.navigate('Home')}/>
         <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => setCurrentPage('Search')} />
         <FooterItem icon={faBook} label="My Courses" currentPage={currentPage} onPress={() => setCurrentPage('MyCourses')} />
