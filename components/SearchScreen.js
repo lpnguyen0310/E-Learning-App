@@ -477,7 +477,7 @@
 
   // Footer
   footer: {
-    height: 70,
+    height: 50,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
