@@ -23,7 +23,7 @@ function LandingPage({ navigation }) {
     </View> 
   );
 
-  const popularCourses = [
+  const dataCourse = [
     {
       id: '1',
       title: 'PHP in One Click',
@@ -33,6 +33,8 @@ function LandingPage({ navigation }) {
       lessons: '18 Lessons',
       image: require('../assets/images/phponeclick.png'),
       bestSeller: false, 
+      type : 'Popular',
+      categories : 'Code'
     },
     {
       id: '2',
@@ -43,6 +45,8 @@ function LandingPage({ navigation }) {
       lessons: '12 Lessons',
       image: require('../assets/images/introductionpython.png'),
       bestSeller: true, 
+      type : 'Popular',
+      categories : 'Code'
     },
     {
       id: '3',
@@ -53,6 +57,8 @@ function LandingPage({ navigation }) {
       lessons: '10 Lessons',
       image: require('../assets/images/javaprogram.png'),
       bestSeller: false, 
+      type : 'Popular',
+      categories : 'Code'
     },
     {
       id: '4',
@@ -62,12 +68,109 @@ function LandingPage({ navigation }) {
       rating: '4.8 (1865)',
       lessons: '25 Lessons',
       image: require('../assets/images/introductionjava.png'),
-      bestSeller: true
+      bestSeller: true,
+      type : 'Popular',
+      categories : 'Code'
+    },
+    {
+      id: '5',
+      title: 'Website Design',
+      teacher: 'Ramano Wultschiner',
+      price: '$59',
+      rating: '4.5 (1233)',
+      lessons: '9 Lessons',
+      image: require('../assets/images/webdesign.png'),
+      bestSeller: false, 
+      discount: true,
+      type : 'Recommend',
+      categories : 'Design'
+    },
+    {
+      id: '6',
+      title: 'Ux Research For Beginners',
+      teacher: 'Olivia Wang',
+      price: '$29',
+      rating: '4.5 (1782)',
+      lessons: '12 Lessons',
+      image: require('../assets/images/uxresearch.png'),
+      bestSeller: true, 
+      discount: false,
+      type : 'Recommend',
+      categories : 'Design'
+    },
+    {
+      id: '7',
+      title: 'UI/UX for Beginners',
+      teacher: 'Emily Johnson',
+      price: '$20',
+      rating: '4.3 (3652)',
+      lessons: '15 Lessons',
+      image: require('../assets/images/uix.png'),
+      bestSeller: false, 
+      discount: true,
+      type : 'Recommend',
+      categories : 'Design'
+    },
+    {
+      id: '8',
+      title: 'Design Thinking 101',
+      teacher: 'Michael Brown',
+      price: '$36',
+      rating: '4.8 (3256)',
+      lessons: '25 Lessons',
+      image: require('../assets/images/designpattern.png'),
+      bestSeller: true,
+      discount: false,
+      type : 'Recommend',
+      categories : 'Design'
+    },
+    {
+      id: '9',
+      title: 'Digital Portrait',
+      teacher: 'Ramano Wultschiner',
+      price: '$67',
+      rating: '4.5 (657)',
+      lessons: '12 Lessons',
+      image: require('../assets/images/digitalportrait.png'),
+      bestSeller: false, 
+      discount: true,
+      type : 'Inspire',
+      categories : 'Design'
+    },
+    {
+      id: '10',
+      title: 'Workspace Decor',
+      teacher: 'Ruth Dominguez',
+      price: '$19',
+      rating: '4.5 (33)',
+      lessons: '17 Lessons',
+      image: require('../assets/images/workspacedecor.png'),
+      bestSeller: true, 
+      discount: false,
+      type : 'Inspire',
+      categories : 'Design'
+
+    },
+    {
+      id: '11',
+      title: 'Packing Design',
+      teacher: 'Hui Anderson',
+      price: '$89',
+      rating: '4.5 (1233)',
+      lessons: '14 Lessons',
+      image: require('../assets/images/packagingdesign.png'),
+      bestSeller: false, 
+      discount: true,
+      type : 'Inspire',
+      categories : 'Design'
+
     },
   ];
-
+  const popularCourse = dataCourse.filter(course => course.type === 'Popular');
+  const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
+  const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
   const renderCourseItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItem}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
       <View style={styles.imageContainer}>
       <Image source={item.image} style={styles.courseImage} />
       {item.bestSeller && (
@@ -77,7 +180,7 @@ function LandingPage({ navigation }) {
       )}
     </View>
       <View style={styles.courseInfo}>
-        <View style ={styles.course_title_container}> 
+        <View style ={styles.course_title_container} > 
           <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
           <FontAwesomeIcon icon={faBookmark} />
         </View>
@@ -95,56 +198,9 @@ function LandingPage({ navigation }) {
   );
 
 
-  const CourseRecomment = [
-    {
-      id: '1',
-      title: 'Website Design',
-      teacher: 'Ramano Wultschiner',
-      price: '$59',
-      rating: '4.5 (1233)',
-      lessons: '9 Lessons',
-      image: require('../assets/images/webdesign.png'),
-      bestSeller: false, 
-      discount: true,
-    },
-    {
-      id: '2',
-      title: 'Ux Research For Beginners',
-      teacher: 'Olivia Wang',
-      price: '$29',
-      rating: '4.5 (1782)',
-      lessons: '12 Lessons',
-      image: require('../assets/images/uxresearch.png'),
-      bestSeller: true, 
-      discount: false,
-    },
-    {
-      id: '3',
-      title: 'UI/UX for Beginners',
-      teacher: 'Emily Johnson',
-      price: '$20',
-      rating: '4.3 (3652)',
-      lessons: '15 Lessons',
-      image: require('../assets/images/uix.png'),
-      bestSeller: false, 
-      discount: true,
-    },
-    {
-      id: '4',
-      title: 'Design Thinking 101',
-      teacher: 'Michael Brown',
-      price: '$36',
-      rating: '4.8 (3256)',
-      lessons: '25 Lessons',
-      image: require('../assets/images/designpattern.png'),
-      bestSeller: true,
-      discount: false,
-    },
-  ];
-
   const CourseRecommentItem = ({ item }) => (
    
-    <TouchableOpacity style={styles.courseItem}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -175,47 +231,8 @@ function LandingPage({ navigation }) {
     </TouchableOpacity>
   );
 
-  const CourseInspire = [
-    {
-      id: '1',
-      title: 'Digital Portrait',
-      teacher: 'Ramano Wultschiner',
-      price: '$67',
-      rating: '4.5 (657)',
-      lessons: '12 Lessons',
-      image: require('../assets/images/digitalportrait.png'),
-      bestSeller: false, 
-      discount: true,
-    },
-    {
-      id: '2',
-      title: 'Workspace Decor',
-      teacher: 'Ruth Dominguez',
-      price: '$19',
-      rating: '4.5 (33)',
-      lessons: '17 Lessons',
-      image: require('../assets/images/workspacedecor.png'),
-      bestSeller: true, 
-      discount: false,
-    },
-    {
-      id: '3',
-      title: 'Packing Design',
-      teacher: 'Hui Anderson',
-      price: '$89',
-      rating: '4.5 (1233)',
-      lessons: '14 Lessons',
-      image: require('../assets/images/packagingdesign.png'),
-      bestSeller: false, 
-      discount: true,
-    },
-  ];
-
-
-
-
   const CourseInspireItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { CourseInspire  })}>
+    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
       <Image source={item.image} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 
@@ -349,7 +366,7 @@ function LandingPage({ navigation }) {
 
       <View style={styles.flat_list_courses}>
         <FlatList
-          data={popularCourses}
+          data={popularCourse}
           renderItem={renderCourseItem}
           keyExtractor={(item) => item.id}
           horizontal
@@ -365,7 +382,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style={styles.flat_list_courses}>
         <FlatList
-          data={CourseRecomment}
+          data={recommendCourse}
           renderItem={CourseRecommentItem}
           keyExtractor={(item) => item.id}
           horizontal
@@ -382,7 +399,7 @@ function LandingPage({ navigation }) {
 
       <View style={styles.flat_list_coursesInspire}>
         <FlatList
-          data={CourseInspire}
+          data={inspireCourse}
           renderItem={CourseInspireItem}
           keyExtractor={(item) => item.id}
           showsHorizontalScrollIndicator={false}
@@ -431,6 +448,12 @@ function LandingPage({ navigation }) {
      </ScrollView>
   );
 }
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+    <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+      <FontAwesomeIcon icon={icon} />
+      <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+    </TouchableOpacity>
+  );
 
 const styles = StyleSheet.create({
   container: {
@@ -583,7 +606,7 @@ const styles = StyleSheet.create({
   discountBadge: {
     position: 'absolute',
     top: 10,
-    right: 50,
+    right: 10,
     backgroundColor: 'red',
     paddingHorizontal: 8,
     paddingVertical: 2,

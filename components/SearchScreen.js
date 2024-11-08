@@ -294,7 +294,7 @@
       
         // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
-          <TouchableOpacity style={styles.courseItemSearch}>
+          <TouchableOpacity style={styles.courseItemSearch} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
               {item.bestSeller && (
                   <View style={styles.bestSellerBadge}>
                       <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -429,7 +429,7 @@
   };
   const FooterItem = ({ icon, label, currentPage, onPress }) => (
     <TouchableOpacity style={styles.footerItem} onPress={onPress}>
-      <FontAwesomeIcon icon={icon} size={20} />
+      <FontAwesomeIcon icon={icon} />
       <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -450,20 +450,23 @@
   },
   inputSearch:{
       flexDirection: "row",
-      width: "75%",
       alignItems: "center",
       border: "1px solid black",
       backgroundColor:  "#eff0f2",
       borderRadius: 8,
       height: 40,
+      marginRight:0,
+      flex:1,
+   
       
   },
   filtercontainer:{
       flexDirection: "column",
-      width: "10%",
       alignItems: "center",
       justifyContent: "center",
-      flex: 1,
+      marginLeft: 10,
+      height: 40,
+  
   },
   filterButton:{
       flexDirection: "row",
