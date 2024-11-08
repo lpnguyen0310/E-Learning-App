@@ -11,7 +11,10 @@
 
 
 
-  function SearchScreen ({navigation}) {
+  function SearchScreen ({route,navigation}) {
+    // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
+    const { dataCourse } = route.params;
+
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
       const categories = [
           { id: '1',icon: <FontAwesomeIcon icon={faChartLine} style={{color: "#74C0FC",}} /> ,title: 'Business' },
@@ -23,7 +26,7 @@
 
         const renderCategoryItem  = ({ item }) => (
           <View style={styles.item}>
-            <TouchableOpacity style={styles.categoryItem}>
+            <TouchableOpacity style={styles.categoryItem} >
                   <View style ={styles.inner_categorytitle}>
                     {item.icon}
                   <Text style={styles.categoryText}>{item.title}</Text>
@@ -33,154 +36,16 @@
             </TouchableOpacity>
           </View>
         );
+       // Lọc ra các khóa học được recommend
+        const recommendCourses = dataCourse.filter(course => course.type === 'Recommend');
 
-        const CourseRecomment = [
-          {
-            id: '1',
-            imageteacher: require('../assets/images/teacher1.png'),
-            title: 'Website Design',
-            teacher: 'Ramano Wultschiner',
-            work: 'UI/UX Designer at Google',
-            discription: 'We are a team of professional UX/UI designers, committed to creating products that are intuitive, easy to use and bring value to users. From user research to interface design, we will accompany you throughout the product development process..',
-            price: '$59',
-            rating: '4.5 (1233)',
-            lessons: '9 Lessons',
-            image: require('../assets/images/webdesign.png'),
-            bestSeller: false, 
-            discount: true,
-            reviews: [
-              {
-                id: '1',
-                name: 'Jinny Oslin',
-                date: '1 day ago',
-                comment: 'Nostrud excepteur magna id est quis in aliqua.',
-                rating: 5,
-              },
-              {
-                id: '2',
-                name: 'Jane Barry',
-                date: '1 day ago',
-                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-                rating: 4,
-              },
-              {
-                id: '3',
-                name: 'Claire Mignard',
-                date: '5 days ago',
-                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-                rating: 3,
-              },
-            ],
-          },
-          {
-            id: '2',
-            title: 'Ux Research For Beginners',
-            teacher: 'Olivia Wang',
-            price: '$29',
-            rating: '4.5 (1782)',
-            lessons: '12 Lessons',
-            image: require('../assets/images/uxresearch.png'),
-            bestSeller: true, 
-            discount: false,
-            reviews: [
-              {
-                id: '1',
-                name: 'Jinny Oslin',
-                date: '1 day ago',
-                comment: 'Nostrud excepteur magna id est quis in aliqua.',
-                rating: 5,
-              },
-              {
-                id: '2',
-                name: 'Jane Barry',
-                date: '1 day ago',
-                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-                rating: 4,
-              },
-              {
-                id: '3',
-                name: 'Claire Mignard',
-                date: '5 days ago',
-                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-                rating: 3,
-              },
-            ],
-          },
-          {
-            id: '3',
-            title: 'UI/UX for Beginners',
-            teacher: 'Emily Johnson',
-            price: '$20',
-            rating: '4.3 (3652)',
-            lessons: '15 Lessons',
-            image: require('../assets/images/uix.png'),
-            bestSeller: false, 
-            discount: true,
-            reviews: [
-              {
-                id: '1',
-                name: 'Jinny Oslin',
-                date: '1 day ago',
-                comment: 'Nostrud excepteur magna id est quis in aliqua.',
-                rating: 5,
-              },
-              {
-                id: '2',
-                name: 'Jane Barry',
-                date: '1 day ago',
-                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-                rating: 4,
-              },
-              {
-                id: '3',
-                name: 'Claire Mignard',
-                date: '5 days ago',
-                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-                rating: 3,
-              },
-            ],
-          },
-          {
-            id: '4',
-            title: 'Design Thinking 101',
-            teacher: 'Michael Brown',
-            price: '$36',
-            rating: '4.8 (3256)',
-            lessons: '25 Lessons',
-            image: require('../assets/images/designpattern.png'),
-            bestSeller: true,
-            discount: false,
-            reviews: [
-              {
-                id: '1',
-                name: 'Jinny Oslin',
-                date: '1 day ago',
-                comment: 'Nostrud excepteur magna id est quis in aliqua.',
-                rating: 5,
-              },
-              {
-                id: '2',
-                name: 'Jane Barry',
-                date: '1 day ago',
-                comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-                rating: 4,
-              },
-              {
-                id: '3',
-                name: 'Claire Mignard',
-                date: '5 days ago',
-                comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-                rating: 3,
-              },
-            ],
-          },
-        ];
-
+     
 
         // Render một khóa học trong danh sách khóa học được recommend
-        const CourseRecommentItem = ({ item }) => (
+        const CourseRecommentItem = ({ item  }) => (
     
-          <TouchableOpacity style={styles.courseItem}  onPress={() => navigation.navigate('CourseDetail', { course: item })}>
+          <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })}
+>
             {item.bestSeller && (
                   <View style={styles.bestSellerBadge}>
                       <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -220,52 +85,52 @@
           navigation.navigate(page); // Chuyển hướng
         };
     
-        const resultDesign = [
-          {
-            id: '1',
-            title: 'Website Design',
-            teacher: 'Ramano Wultschiner',
-            price: '$59',
-            rating: '4.5 (1233)',
-            lessons: '9 Lessons',
-            image: require('../assets/images/webdesign.png'),
-            bestSeller: false, 
-            discount: true,
-          },
-          {
-            id: '2',
-            title: 'Ux Research For Beginners',
-            teacher: 'Olivia Wang',
-            price: '$29',
-            rating: '4.5 (1782)',
-            lessons: '12 Lessons',
-            image: require('../assets/images/uxresearch.png'),
-            bestSeller: true, 
-            discount: false,
-          },
-          {
-            id: '3',
-            title: 'UI/UX for Beginners',
-            teacher: 'Emily Johnson',
-            price: '$20',
-            rating: '4.3 (3652)',
-            lessons: '15 Lessons',
-            image: require('../assets/images/uix.png'),
-            bestSeller: false, 
-            discount: true,
-          },
-          {
-            id: '4',
-            title: 'Design Thinking 101',
-            teacher: 'Michael Brown',
-            price: '$36',
-            rating: '4.8 (3256)',
-            lessons: '25 Lessons',
-            image: require('../assets/images/designpattern.png'),
-            bestSeller: true,
-            discount: false,
-          },
-        ];
+        // const resultDesign = [
+        //   {
+        //     id: '1',
+        //     title: 'Website Design',
+        //     teacher: 'Ramano Wultschiner',
+        //     price: '$59',
+        //     rating: '4.5 (1233)',
+        //     lessons: '9 Lessons',
+        //     image: require('../assets/images/webdesign.png'),
+        //     bestSeller: false, 
+        //     discount: true,
+        //   },
+        //   {
+        //     id: '2',
+        //     title: 'Ux Research For Beginners',
+        //     teacher: 'Olivia Wang',
+        //     price: '$29',
+        //     rating: '4.5 (1782)',
+        //     lessons: '12 Lessons',
+        //     image: require('../assets/images/uxresearch.png'),
+        //     bestSeller: true, 
+        //     discount: false,
+        //   },
+        //   {
+        //     id: '3',
+        //     title: 'UI/UX for Beginners',
+        //     teacher: 'Emily Johnson',
+        //     price: '$20',
+        //     rating: '4.3 (3652)',
+        //     lessons: '15 Lessons',
+        //     image: require('../assets/images/uix.png'),
+        //     bestSeller: false, 
+        //     discount: true,
+        //   },
+        //   {
+        //     id: '4',
+        //     title: 'Design Thinking 101',
+        //     teacher: 'Michael Brown',
+        //     price: '$36',
+        //     rating: '4.8 (3256)',
+        //     lessons: '25 Lessons',
+        //     image: require('../assets/images/designpattern.png'),
+        //     bestSeller: true,
+        //     discount: false,
+        //   },
+        // ];
     
         // State lưu trữ từ khóa tìm kiếm và kết quả lọc
         const [keyword, setKeyword] = useState("");
@@ -278,10 +143,10 @@
         const handleFilter = () => {
           const keywordLower = keyword.toLowerCase();
           if (!keywordLower) {
-            setFilteredData(resultDesign);
+            setFilteredData(dataCourse);
         } else {
             // Nếu có keyword, thực hiện lọc dựa trên từ khóa và điều kiện giảm giá
-            const filteredResults = resultDesign.filter((item) => (
+            const filteredResults = dataCourse.filter((item) => (
                 item.title.toLowerCase().includes(keywordLower) && item.discount 
             ));
             setFilteredData(filteredResults);
@@ -294,7 +159,7 @@
       
         // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
-          <TouchableOpacity style={styles.courseItemSearch} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
+          <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item })}>
               {item.bestSeller && (
                   <View style={styles.bestSellerBadge}>
                       <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -406,7 +271,7 @@
 
           <View style={styles.flat_list_courses}>
           <FlatList
-            data={CourseRecomment}
+            data={recommendCourses}
             renderItem={CourseRecommentItem}
             keyExtractor={(item) => item.id}
             horizontal

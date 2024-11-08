@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   return (
     <NavigationContainer independent={true}> 
-      <Stack.Navigator initialRouteName="Search">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={LandingPage} />
         <Stack.Screen name="Search" component={SearchScreen} />
         <Stack.Screen name="CourseDetail" component={CourseDetail} />

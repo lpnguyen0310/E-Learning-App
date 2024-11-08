@@ -73,9 +73,12 @@ function LandingPage({ navigation }) {
       categories : 'Code'
     },
     {
-      id: '5',
+    id: '1',
+      imageteacher: require('../assets/images/teacher1.png'),
       title: 'Website Design',
       teacher: 'Ramano Wultschiner',
+      work: 'UI/UX Designer at Google',
+      discription: 'We are a team of professional UX/UI designers, committed to creating products that are intuitive, easy to use and bring value to users. From user research to interface design, we will accompany you throughout the product development process..',
       price: '$59',
       rating: '4.5 (1233)',
       lessons: '9 Lessons',
@@ -83,7 +86,30 @@ function LandingPage({ navigation }) {
       bestSeller: false, 
       discount: true,
       type : 'Recommend',
-      categories : 'Design'
+      categories : 'Design',
+        reviews: [
+          {
+            id: '1',
+            name: 'Jinny Oslin',
+            date: '1 day ago',
+            comment: 'Nostrud excepteur magna id est quis in aliqua.',
+            rating: 5,
+          },
+          {
+            id: '2',
+            name: 'Jane Barry',
+            date: '1 day ago',
+            comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+            rating: 4,
+          },
+          {
+             id: '3',
+            name: 'Claire Mignard',
+            date: '5 days ago',
+            comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+            rating: 3,
+          },
+      ],   
     },
     {
       id: '6',
@@ -96,7 +122,31 @@ function LandingPage({ navigation }) {
       bestSeller: true, 
       discount: false,
       type : 'Recommend',
-      categories : 'Design'
+      categories : 'Design',
+      reviews: [
+        {
+          id: '1',
+          name: 'Jinny Oslin',
+          date: '1 day ago',
+          comment: 'Nostrud excepteur magna id est quis in aliqua.',
+          rating: 5,
+        },
+        {
+          id: '2',
+          name: 'Jane Barry',
+          date: '1 day ago',
+          comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+          rating: 4,
+        },
+        {
+          id: '3',
+          name: 'Claire Mignard',
+          date: '5 days ago',
+          comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+          rating: 3,
+        },
+      ],
+      
     },
     {
       id: '7',
@@ -108,22 +158,71 @@ function LandingPage({ navigation }) {
       image: require('../assets/images/uix.png'),
       bestSeller: false, 
       discount: true,
-      type : 'Recommend',
-      categories : 'Design'
+       type : 'Recommend',
+      categories : 'Design',
+      reviews: [
+        {
+          id: '1',
+          name: 'Jinny Oslin',
+          date: '1 day ago',
+          comment: 'Nostrud excepteur magna id est quis in aliqua.',
+          rating: 5,
+        },
+        {
+          id: '2',
+          name: 'Jane Barry',
+          date: '1 day ago',
+          comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+          rating: 4,
+        },
+        {
+          id: '3',
+          name: 'Claire Mignard',
+          date: '5 days ago',
+          comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+          rating: 3,
+        },
+      ],
+     
     },
     {
-      id: '8',
-      title: 'Design Thinking 101',
-      teacher: 'Michael Brown',
-      price: '$36',
-      rating: '4.8 (3256)',
-      lessons: '25 Lessons',
-      image: require('../assets/images/designpattern.png'),
-      bestSeller: true,
-      discount: false,
-      type : 'Recommend',
-      categories : 'Design'
-    },
+        id: '8',
+        title: 'Design Thinking 101',
+        teacher: 'Michael Brown',
+        price: '$36',
+        rating: '4.8 (3256)',
+        lessons: '25 Lessons',
+        image: require('../assets/images/designpattern.png'),
+        bestSeller: true,
+        discount: false,
+        type : 'Recommend',
+        categories : 'Design',
+        reviews: [
+          {
+            id: '1',
+            name: 'Jinny Oslin',
+            date: '1 day ago',
+            comment: 'Nostrud excepteur magna id est quis in aliqua.',
+            rating: 5,
+          },
+          {
+            id: '2',
+            name: 'Jane Barry',
+            date: '1 day ago',
+            comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
+            rating: 4,
+          },
+          {
+            id: '3',
+            name: 'Claire Mignard',
+            date: '5 days ago',
+            comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+            rating: 3,
+          },
+        ],
+      },
+      
+   
     {
       id: '9',
       title: 'Digital Portrait',
@@ -170,7 +269,7 @@ function LandingPage({ navigation }) {
   const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
   const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
   const renderCourseItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })} >
       <View style={styles.imageContainer}>
       <Image source={item.image} style={styles.courseImage} />
       {item.bestSeller && (
@@ -427,11 +526,11 @@ function LandingPage({ navigation }) {
 
 
           <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home')} >
           <FontAwesomeIcon icon={faHome} size={20} />
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search')}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse })}>
           <FontAwesomeIcon icon={faSearch} size={20} />
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
