@@ -269,7 +269,7 @@ function LandingPage({ navigation }) {
   const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
   const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
   const renderCourseItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })} >
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })} >
       <View style={styles.imageContainer}>
       <Image source={item.image} style={styles.courseImage} />
       {item.bestSeller && (
@@ -299,7 +299,7 @@ function LandingPage({ navigation }) {
 
   const CourseRecommentItem = ({ item }) => (
    
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -331,7 +331,7 @@ function LandingPage({ navigation }) {
   );
 
   const CourseInspireItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item })}>
+    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
       <Image source={item.image} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 

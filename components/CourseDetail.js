@@ -7,55 +7,25 @@ import React, { useState, useEffect } from 'react';
 
 
 
-function CourseDetail ({route }) {
+function CourseDetail ({route,selectedCourse,navigation  }) {
     // Lấy dữ liệu từ route 
-    const { course } = route.params;
+    const { course,dataCourse  } = route.params;
+    // Dữ liệu khóa học
+    
     // Xử lý Tab
     const [selectedTab, setSelectedTab] = useState('Overview');
     // Xử lý mở rộng mô tả
     const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
 
-    const CourseSimilar = [
-        {
-          id: '1',
-          title: 'Digital Portrait',
-          teacher: 'Ramano Wultschiner',
-          price: '$67',
-          rating: '4.5 (657)',
-          lessons: '12 Lessons',
-          image: require('../assets/images/digitalportrait.png'),
-          bestSeller: false, 
-          discount: true,
-        },
-        {
-          id: '2',
-          title: 'Workspace Decor',
-          teacher: 'Ruth Dominguez',
-          price: '$19',
-          rating: '4.5 (33)',
-          lessons: '17 Lessons',
-          image: require('../assets/images/workspacedecor.png'),
-          bestSeller: true, 
-          discount: false,
-        },
-        {
-          id: '3',
-          title: 'Packing Design',
-          teacher: 'Hui Anderson',
-          price: '$89',
-          rating: '4.5 (1233)',
-          lessons: '14 Lessons',
-          image: require('../assets/images/packagingdesign.png'),
-          bestSeller: false, 
-          discount: true,
-        },
-      ];
-    
+
+      // Lọc các khóa học cùng category với khóa học đang xem
+      const similarCourses = dataCourse.filter((item) => item.categories === course.categories && item.id !== course.id).slice(0, 3);
+
     
     
     
       const renderSimilarCourse = ({ item }) => (
-        <TouchableOpacity style={styles.CourseSimilar} onPress={() => navigation.navigate('CourseDetail', { course:item  })}>
+        <TouchableOpacity style={styles.CourseSimilar} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
           <Image source={item.image} style={styles.courseInpireImage} />
           <View style={styles.courseInspireInfo}>
             <View style ={styles.courseinspire_title_container}> 
@@ -140,14 +110,14 @@ function CourseDetail ({route }) {
                                 </View>
                             </View>
                             <Text style ={{fontSize:15,marginTop:15,fontWeight:700}}>Similar courses</Text>
-                            <View style ={styles.flat_list_courses}>
-                                <FlatList
-                                    data={CourseSimilar}  // Sử dụng similarCourses từ route.params
-                                    renderItem={renderSimilarCourse}
-                                    keyExtractor={(item) => item.id.toString()}
-                                    showsHorizontalScrollIndicator={false}
-                                />
-                            </View>
+                                <View style ={styles.flat_list_courses}>
+                                    <FlatList
+                                        data={similarCourses}  
+                                        renderItem={renderSimilarCourse}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        showsHorizontalScrollIndicator={false}
+                                    />
+                                </View>
                          </View>
 
                     </ScrollView>

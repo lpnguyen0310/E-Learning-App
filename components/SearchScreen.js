@@ -44,7 +44,7 @@
         // Render một khóa học trong danh sách khóa học được recommend
         const CourseRecommentItem = ({ item  }) => (
     
-          <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item })}
+          <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}
 >
             {item.bestSeller && (
                   <View style={styles.bestSellerBadge}>
@@ -85,52 +85,7 @@
           navigation.navigate(page); // Chuyển hướng
         };
     
-        // const resultDesign = [
-        //   {
-        //     id: '1',
-        //     title: 'Website Design',
-        //     teacher: 'Ramano Wultschiner',
-        //     price: '$59',
-        //     rating: '4.5 (1233)',
-        //     lessons: '9 Lessons',
-        //     image: require('../assets/images/webdesign.png'),
-        //     bestSeller: false, 
-        //     discount: true,
-        //   },
-        //   {
-        //     id: '2',
-        //     title: 'Ux Research For Beginners',
-        //     teacher: 'Olivia Wang',
-        //     price: '$29',
-        //     rating: '4.5 (1782)',
-        //     lessons: '12 Lessons',
-        //     image: require('../assets/images/uxresearch.png'),
-        //     bestSeller: true, 
-        //     discount: false,
-        //   },
-        //   {
-        //     id: '3',
-        //     title: 'UI/UX for Beginners',
-        //     teacher: 'Emily Johnson',
-        //     price: '$20',
-        //     rating: '4.3 (3652)',
-        //     lessons: '15 Lessons',
-        //     image: require('../assets/images/uix.png'),
-        //     bestSeller: false, 
-        //     discount: true,
-        //   },
-        //   {
-        //     id: '4',
-        //     title: 'Design Thinking 101',
-        //     teacher: 'Michael Brown',
-        //     price: '$36',
-        //     rating: '4.8 (3256)',
-        //     lessons: '25 Lessons',
-        //     image: require('../assets/images/designpattern.png'),
-        //     bestSeller: true,
-        //     discount: false,
-        //   },
-        // ];
+        
     
         // State lưu trữ từ khóa tìm kiếm và kết quả lọc
         const [keyword, setKeyword] = useState("");
