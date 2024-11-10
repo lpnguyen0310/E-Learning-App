@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   FlatList,
 } from 'react-native';
 import * as Progress from 'react-native-progress';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 // Dữ liệu mẫu cho danh sách khóa học
 const coursesData = [
   {
@@ -205,6 +206,14 @@ const MyCoursesScreen = ({ navigation }) => {
   const handleCoursePress = (course) => {
     navigation.navigate('LearningLesson', { course });
   };
+ 
+  const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
+
+
+  const handleNavigation = (page) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page); // Chuyển hướng
+  };
 
   return (
     <View style={styles.container}>
@@ -243,12 +252,23 @@ const MyCoursesScreen = ({ navigation }) => {
             onPress={handleCoursePress} // Truyền hàm handleCoursePress vào đây
           />
         )}
-        contentContainerStyle={styles.courseList}
+        contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
       />
+     <View style={styles.footer}>
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
+      </View>
     </View>
   );
 };
-
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+  <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+    <FontAwesomeIcon icon={icon} />
+    <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+  </TouchableOpacity>
+);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -334,6 +354,40 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 5,
   },
+
+  
+  //footer
+  footer: {
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 60,
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
+  },
+  footerItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 5, // Giảm padding để tiết kiệm không gian
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
+  },
+  activeFooterText: {
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+  },
+
+
 });
 
 export default MyCoursesScreen;

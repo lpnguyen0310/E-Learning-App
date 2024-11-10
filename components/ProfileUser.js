@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,14 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+
 
 const userProfile = {
   name: 'Martha Rosie',
@@ -53,7 +59,7 @@ const userProfile = {
   ],
 };
 
-const ProfileScreen = () => {
+function ProfileScreen ({route,navigation}) {
   const renderCourse = ({ item }) => (
     <View style={styles.courseContainer}>
       <Image source={item.image} style={styles.courseImage} />
@@ -69,6 +75,15 @@ const ProfileScreen = () => {
     </View>
   );
 
+  
+  // State lưu trữ trang hiện tại của ứng dụng
+  const [currentPage, setCurrentPage] = useState('Profile'); 
+        
+
+  const handleNavigation = (page) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page); // Chuyển hướng
+  };
   return (
     <View style={styles.container}>
       <View style={styles.profileHeader}>
@@ -91,15 +106,33 @@ const ProfileScreen = () => {
         </View>
       </View>
       <Text style={styles.sectionTitle}>Saved courses</Text>
+      <ScrollView  style={{margin:10,padding:10}}>
       <FlatList
         data={userProfile.courses}
         renderItem={renderCourse}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.courseList}
+        contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
       />
+      </ScrollView>
+     
+
+      <View style={styles.footer}>
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
+      </View>
+
     </View>
   );
 };
+
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+  <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+    <FontAwesomeIcon icon={icon} />
+    <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -174,6 +207,37 @@ const styles = StyleSheet.create({
   courseDetails: {
     color: 'gray',
   },
-});
 
+  //footer
+  footer: {
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 60,
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
+  },
+  footerItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 5, // Giảm padding để tiết kiệm không gian
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
+  },
+  activeFooterText: {
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+  },
+
+});
 export default ProfileScreen;
