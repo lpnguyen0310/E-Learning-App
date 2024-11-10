@@ -373,7 +373,7 @@ function LandingPage({ navigation }) {
       id: '3',
       title: 'Nancy Sweeneys',
       university: "University of California",
-      rating: '4.5 (1233)',
+      rating: '3.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher3.png'),
     },
