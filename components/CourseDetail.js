@@ -54,6 +54,7 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     const filteredReviews = selectedRating === 'All' 
     ? course.reviews 
     : course.reviews.filter(review => review.rating === selectedRating);
+    
 
 
     // Tính số ngày trước đó    
@@ -513,7 +514,7 @@ const styles = StyleSheet.create({
   review_list_container:{
     width:'100%',
     padding:10,
-    height:300,
+
     },
   reviewContainer:{
     backgroundColor:'white',

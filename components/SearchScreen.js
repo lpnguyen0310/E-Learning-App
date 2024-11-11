@@ -114,7 +114,7 @@
       
         // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
-          <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item })}>
+          <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
               {item.bestSeller && (
                   <View style={styles.bestSellerBadge}>
                       <Text style={styles.bestSellerText}>Best Seller</Text>
