@@ -44,8 +44,65 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
           </View>
         </TouchableOpacity>
       );
+
+    // Tính tổng số review 
+    const totalReviews = course.reviews ? course.reviews.length : 0;
+    // Xử lý rating
+    const [selectedRating, setSelectedRating] = useState('All');4
+
+    // Xử lý lọc review theo rating
+    const filteredReviews = selectedRating === 'All' 
+    ? course.reviews 
+    : course.reviews.filter(review => review.rating === selectedRating);
+
+
+    // Tính số ngày trước đó    
+    const calculateTimeAgo = (reviewDate) => {
+        const now = new Date();
+        const diffTime = now - reviewDate; // Hiệu số mili giây giữa hai thời điểm
     
-  
+        // Tính toán thời gian
+        const diffMinutes = Math.floor(diffTime / (1000 * 60));
+        const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+        if (diffMinutes < 60) {
+            return `${diffMinutes} phút trước`;
+        } else if (diffHours < 24) {
+            return `${diffHours} giờ trước`;
+        } else {
+            return `${diffDays} ngày trước`;
+        }
+    };
+
+    //  Xuất số sao dựa trên rating
+    const renderStars = (rating) => {
+        return [...Array(5)].map((_, index) => (
+            <FontAwesomeIcon
+                key={index}
+                icon={faStar}
+                style={{ marginHorizontal: 2 }}
+                color={index < rating ? "#FFD43B" : "#C0C0C0"} // Màu vàng cho sao sáng, xám cho sao tối
+            />
+        ));
+    };
+    
+    
+  const renderReview = ({ item }) => (
+    <View style={styles.reviewContainer}>
+      <View style={styles.reviewHeader}>
+        <Image source={item.image} style={{ width: 40, height: 40, borderRadius: 25 }} />
+        <View style={styles.reviewInfo}>
+          <Text style={styles.reviewerName}>{item.name}</Text>
+          <Text style={styles.reviewDate}>{calculateTimeAgo(new Date(item.date))}</Text>
+        </View>
+        <View style={styles.starsContainer}>
+                {renderStars(item.rating)}
+        </View>
+      </View>
+      <Text style={styles.reviewText}>{item.comment}</Text>
+    </View>
+  );
 
     // Render Tab Content
 
@@ -132,8 +189,45 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
             case 'Review':
                 return (
                     <View>
-                        <Text>Review Content</Text>
-                    
+                        <View style = {styles.review_rating}>
+                           <View style = {styles.inner_review_rating_left} >
+                                <FontAwesomeIcon icon={faStar} style={{color: "#FFD43B",}} />
+                                <Text style={styles.courseRating}> {course.rating}/5</Text>
+                                <Text style ={{color:'#808690'}}> ({totalReviews}+ reviews)</Text>
+                           </View>
+                           <TouchableOpacity>
+                               <Text style ={{color:'#32CADE'}}>View all</Text> 
+                           </TouchableOpacity>
+                        </View>       
+                        <View style={styles.rating_list}>
+                            {['All', 5, 4, 3, 2, 1].map((rating) => (
+                            <TouchableOpacity
+                                key={rating}
+                                style={[
+                                    styles.button_rating,
+                                    selectedRating === rating && {
+                                        backgroundColor: 'aqua',
+                                    },
+                                ]}
+                                onPress={() => setSelectedRating(rating)}
+                            >
+                                <FontAwesomeIcon icon={faStar} style={{ color: selectedRating === rating ? 'white' : '#37CBDE' }} />
+                                <Text style={{ color: selectedRating === rating ? 'white' : 'black' }}>{rating}</Text>
+                            </TouchableOpacity>
+                             ))}
+                        </View> 
+                        <View style = {styles.review_list_container}>
+                           <ScrollView>
+                           <FlatList
+                                data={filteredReviews}
+                                renderItem={renderReview}
+                                keyExtractor={(item) => item.id.toString()}
+
+                            />
+                           </ScrollView>
+                        </View>
+
+                       
                     </View>
                 );
             default:
@@ -141,7 +235,7 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
         }
     };
     return (
-        <View style={{flex:1}}>
+        <View style={{flex:1}}> 
             <View style ={styles.container}>
                 <View style ={styles.header}>
                     <View style ={styles.header_title}>
@@ -207,9 +301,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         width:'100%',
-        flexDirection:'column',
-        padding:10,
-    },
+        flexDirection:'column',    },
 
     // Header
     header:{
@@ -349,7 +441,7 @@ const styles = StyleSheet.create({
         
         },
   
-        CourseSimilar: {
+    CourseSimilar: {
     flex: 1,
     backgroundColor: "white",
     borderRadius: 10,
@@ -388,6 +480,71 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  // Xử lý rating
+
+  review_rating:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    padding:10,
+  },
+  inner_review_rating_left:{
+    flexDirection:'row',
+    alignItems:'center',
+    gap: '0 5px',
+  },
+  rating_list:{
+    flexDirection:'row',
+    justifyContent:'space-around',
+    width:'100%', 
+
+  },
+  button_rating:{
+    flexDirection:'row',
+    border: '1px solid aqua',
+    gap: '0 8px',
+    padding:8,
+    borderRadius:15,
+    justifyContent:'space-around',
+    alignItems:'center',
+  },
+  // End Xử lý rating
+
+  // Xử lý review
+  review_list_container:{
+    width:'100%',
+    padding:10,
+    height:300,
+    },
+  reviewContainer:{
+    backgroundColor:'white',
+    padding:10,
+    borderRadius:10,
+    marginBottom:10,
+  },
+  reviewHeader:{
+    flexDirection:'row',
+  },
+  reviewInfo:{
+    marginLeft:10,
+    flexDirection:'column',
+    justifyContent:'space-around',
+    height:40,
+  },
+  starsContainer:{
+    flexDirection:'row',
+    marginLeft:'auto',
+    },
+    reviewerName:{
+        fontWeight:'700',
+    },
+    reviewDate:{
+        color:'grey',
+        fontSize:12,
+    },
+    reviewText:{
+        marginTop:10,
+        color:'grey',
+    },
 
 
     // Footer
