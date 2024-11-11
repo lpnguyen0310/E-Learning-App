@@ -9,6 +9,9 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const LessonItem = ({ lesson }) => (
   <View style={[styles.lessonItem, lesson.active ? styles.activeLesson : null]}>
@@ -23,7 +26,10 @@ const LessonItem = ({ lesson }) => (
 );
 
 const LearningLesson = ({ route }) => {
-  const { course } = route.params;
+  const navigation = useNavigation();
+  const { course,dataCourse } = route.params;
+
+
   const [lessonsData, setLessonsData] = useState(course.lessons);
 
   const toggleSection = (sectionId) => {
@@ -37,7 +43,16 @@ const LearningLesson = ({ route }) => {
   };
   const [activeTab, setActiveTab] = useState('LESSONS');
 
+  const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
+
+  const handleNavigation = (page, params = {}) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
+  };
+
   return (
+
+    
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -204,12 +219,28 @@ const LearningLesson = ({ route }) => {
               <Text style={styles.qnaInputText}>Write a Q&A...</Text>
             </View>
           </View>
+
+          
         </View>
+
+        
       )}
+
+      <View style={styles.footer}>
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+      </View>
     </View>
   );
 };
-
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+  <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+    <FontAwesomeIcon icon={icon} color={currentPage === label ? 'blue' : 'black'}/>
+    <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+  </TouchableOpacity>
+);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -441,6 +472,39 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 14,
   },
+
+  
+  //footer
+  footer: {
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 60,
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
+  },
+  footerItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 5, // Giảm padding để tiết kiệm không gian
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
+  },
+  activeFooterText: {
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+  },
+
 });
 
 export default LearningLesson;

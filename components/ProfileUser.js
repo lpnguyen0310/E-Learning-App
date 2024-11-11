@@ -60,6 +60,11 @@ const userProfile = {
 };
 
 function ProfileScreen ({route,navigation}) {
+
+  // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
+  //
+  const { dataCourse } = route.params;
+  
   const renderCourse = ({ item }) => (
     <View style={styles.courseContainer}>
       <Image source={item.image} style={styles.courseImage} />
@@ -80,10 +85,15 @@ function ProfileScreen ({route,navigation}) {
   const [currentPage, setCurrentPage] = useState('Profile'); 
         
 
-  const handleNavigation = (page) => {
+  // const handleNavigation = (page) => {
+  //   setCurrentPage(page); // Cập nhật trang hiện tại
+  //   navigation.navigate(page); // Chuyển hướng
+  // };
+  const handleNavigation = (page, params = {}) => {
     setCurrentPage(page); // Cập nhật trang hiện tại
-    navigation.navigate(page); // Chuyển hướng
+    navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
   };
+  
   return (
     <View style={styles.container}>
       <View style={styles.profileHeader}>
@@ -118,9 +128,9 @@ function ProfileScreen ({route,navigation}) {
 
       <View style={styles.footer}>
         <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
       </View>
 
     </View>
@@ -129,7 +139,7 @@ function ProfileScreen ({route,navigation}) {
 
 const FooterItem = ({ icon, label, currentPage, onPress }) => (
   <TouchableOpacity style={styles.footerItem} onPress={onPress}>
-    <FontAwesomeIcon icon={icon} />
+    <FontAwesomeIcon icon={icon} color={currentPage === label ? 'blue' : 'black'}/>
     <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
   </TouchableOpacity>
 );

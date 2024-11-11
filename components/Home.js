@@ -534,11 +534,11 @@ function LandingPage({ navigation }) {
           <FontAwesomeIcon icon={faSearch} size={20} />
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse')}>
+        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse })}>
           <FontAwesomeIcon icon={faBook} size={20} />
           <Text style={[styles.footerText, currentPage === 'MyCourses' && styles.activeFooterText]}>My Courses</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse })}>
           <FontAwesomeIcon icon={faUser} size={20} />
           <Text style={[styles.footerText,currentPage === 'Profile' && styles.activeFooterText]}>Profile</Text>
         </TouchableOpacity>

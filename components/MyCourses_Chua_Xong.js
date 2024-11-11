@@ -202,19 +202,27 @@ const CourseItem = ({ title, time, progress, image, item, onPress }) => (
   </TouchableOpacity>
 );
 
-const MyCoursesScreen = ({ navigation }) => {
+const MyCoursesScreen = ({ navigation,route }) => {
+
+  const { dataCourse } = route.params;
+
   const handleCoursePress = (course) => {
-    navigation.navigate('LearningLesson', { course });
+    navigation.navigate('LearningLesson', { course ,dataCourse});
   };
+ 
  
   const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
 
 
-  const handleNavigation = (page) => {
+  // const handleNavigation = (page) => {
+  //   setCurrentPage(page); // Cập nhật trang hiện tại
+  //   navigation.navigate(page); // Chuyển hướng
+  // };
+  const handleNavigation = (page, params = {}) => {
     setCurrentPage(page); // Cập nhật trang hiện tại
-    navigation.navigate(page); // Chuyển hướng
+    navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
   };
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.banner}>
@@ -256,16 +264,16 @@ const MyCoursesScreen = ({ navigation }) => {
       />
      <View style={styles.footer}>
         <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
       </View>
     </View>
   );
 };
 const FooterItem = ({ icon, label, currentPage, onPress }) => (
   <TouchableOpacity style={styles.footerItem} onPress={onPress}>
-    <FontAwesomeIcon icon={icon} />
+    <FontAwesomeIcon icon={icon} color={currentPage === label ? 'blue' : 'black'}/>
     <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
   </TouchableOpacity>
 );
