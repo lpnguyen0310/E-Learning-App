@@ -41,6 +41,9 @@ const LearningLesson = ({ route }) => {
       )
     );
   };
+
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
   const [activeTab, setActiveTab] = useState('LESSONS');
 
   const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
@@ -56,10 +59,13 @@ const LearningLesson = ({ route }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Icon name="chevron-back" size={24} color="#000" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="chevron-back" size={24} color="#000" />
+        </TouchableOpacity>
         <Text style={styles.courseTitle}>{course.title}</Text>
         <Icon name="bookmark-outline" size={24} color="#000" />
       </View>
+
 
       {/* Course Image */}
       <Image source={course.image} style={styles.courseImage} />
@@ -138,8 +144,13 @@ const LearningLesson = ({ route }) => {
             <Text>Upload your project here</Text>
           </TouchableOpacity>
 
-          {/* Student Projects */}
-          <Text style={styles.sectionTitle}>12 Student Projects</Text>
+          {/* Student Projects with "View more" */}
+          <View style={styles.studentProjectsHeader}>
+            <Text style={styles.sectionTitle}>12 Student Projects</Text>
+            <TouchableOpacity onPress={() => console.log("View more pressed")}>
+              <Text style={styles.viewMoreText}>View more</Text>
+            </TouchableOpacity>
+          </View>
           <FlatList
             data={course.projects.studentProjects}
             horizontal
@@ -154,13 +165,18 @@ const LearningLesson = ({ route }) => {
             contentContainerStyle={styles.projectsListContainer}
           />
 
-          {/* Project Description */}
-          <Text style={styles.projectDescriptionTitle}>
-            Project Description
-          </Text>
+          {/* Project Description with "See more" */}
+          <Text style={styles.projectDescriptionTitle}>Project Description</Text>
           <Text style={styles.projectDescriptionText}>
-            {course.projects.description}
+            {isDescriptionExpanded
+              ? course.projects.description // Hiển thị toàn bộ mô tả nếu được mở rộng
+              : `${course.projects.description.slice(0, 100)}...`} {/* Giới hạn hiển thị 100 ký tự nếu không mở rộng */}
           </Text>
+          {!isDescriptionExpanded && (
+            <TouchableOpacity onPress={() => setIsDescriptionExpanded(true)}>
+              <Text style={styles.seeMoreText}>See more</Text>
+            </TouchableOpacity>
+          )}
 
           {/* Resources */}
           <Text style={styles.sectionTitle}>Resources</Text>
@@ -184,44 +200,47 @@ const LearningLesson = ({ route }) => {
       )}
 
       {activeTab === 'Q&A' && (
-        <View style={styles.qnaSection}>
-          {/* Danh sách các câu hỏi và trả lời */}
-          <FlatList
-            data={course.qna} // Đảm bảo rằng dữ liệu qna có sẵn trong course
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.qnaItem}>
-                <Image source={item.avatar} style={styles.avatar} />
-                <View style={styles.qnaContent}>
-                  <Text style={styles.userName}>{item.user}</Text>
-                  <Text style={styles.time}>{item.time}</Text>
-                  <Text style={styles.questionText}>{item.content}</Text>
-                  <View style={styles.qnaActions}>
-                    <Text style={styles.qnaAction}>
-                      <Icon name="heart-outline" size={16} /> {item.likes}
-                    </Text>
-                    <Text style={styles.qnaAction}>
-                      <Icon name="chatbubble-outline" size={16} />{' '}
-                      {item.comments} Comment
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            )}
-            contentContainerStyle={styles.qnaListContainer}
-          />
-
-          {/* Phần nhập câu hỏi mới */}
+         <View style={styles.qnaSection}>
+         {/* Danh sách các câu hỏi và trả lời */}
+         <FlatList
+           data={course.qna}
+           keyExtractor={(item) => item.id}
+           renderItem={({ item }) => (
+             <View style={styles.qnaItem}>
+               <Image source={item.avatar} style={styles.avatar} />
+               <View style={styles.qnaContent}>
+                 <Text style={styles.userName}>{item.user}</Text>
+                 <Text style={styles.time}>{item.time}</Text>
+                 <Text style={styles.questionText}>{item.content}</Text>
+                 <View style={styles.qnaActions}>
+                   <TouchableOpacity style={styles.qnaAction}>
+                     <Icon name="heart-outline" size={16} color="#888" />
+                     <Text style={styles.qnaActionText}>{item.likes}</Text>
+                   </TouchableOpacity>
+                   <TouchableOpacity style={styles.qnaAction}>
+                     <Icon name="chatbubble-outline" size={16} color="#888" />
+                     <Text style={styles.qnaActionText}>{item.comments} Comment</Text>
+                   </TouchableOpacity>
+                 </View>
+               </View>
+             </View>
+           )}
+           contentContainerStyle={styles.qnaListContainer}
+         />
+   
+         {/* Phần nhập câu hỏi mới */}
           <View style={styles.qnaInputSection}>
             <Text style={styles.qnaEmoji}>✨ 😍 💖 👏 😂 🔥</Text>
             <View style={styles.qnaInputContainer}>
-              <Icon name="person-circle" size={24} style={styles.qnaUserIcon} />
+              {/* Thay Icon bằng hình ảnh nhỏ */}
+              <Image
+                source={require('../assets/images/User1.png')} // Đường dẫn đến ảnh của bạn
+                style={styles.qnaUserImage} // Thêm style cho ảnh
+              />
               <Text style={styles.qnaInputText}>Write a Q&A...</Text>
             </View>
           </View>
-
-          
-        </View>
+       </View>
 
         
       )}
@@ -249,14 +268,18 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   courseTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
   },
+  
+  
   courseImage: {
     width: '100%',
     height: 200,
@@ -356,10 +379,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 10,
   },
+  studentProjectsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginVertical: 10,
+  },
+  viewMoreText: {
+    color: '#00BFFF',
+    fontSize: 14,
+  },
+  projectDescriptionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  projectDescriptionText: {
+    fontSize: 14,
+    color: 'gray',
+    lineHeight: 20,
+  },
+  seeMoreText: {
+    color: '#00BFFF',
+    fontSize: 14,
+    marginTop: 5,
   },
   projectItem: {
     marginRight: 10,
@@ -378,14 +425,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
   },
-  projectDescriptionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  projectDescriptionText: {
-    fontSize: 14,
-    color: 'gray',
+  projectsListContainer: {
+    paddingBottom: 20,
   },
   resourceItem: {
     flexDirection: 'row',
@@ -399,7 +440,9 @@ const styles = StyleSheet.create({
   //Q&A styles
   qnaSection: {
     flex: 1,
-    padding: 10,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 60,
   },
   qnaItem: {
     flexDirection: 'row',
@@ -435,13 +478,17 @@ const styles = StyleSheet.create({
   },
   qnaActions: {
     flexDirection: 'row',
+    marginTop: 5,
   },
   qnaAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    fontSize: 12,
-    color: 'gray',
     marginRight: 20,
+  },
+  qnaActionText: {
+    fontSize: 12,
+    color: '#888',
+    marginLeft: 4,
   },
   qnaListContainer: {
     paddingBottom: 60,
@@ -453,7 +500,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   qnaEmoji: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 8,
     color: '#FF4500',
   },
@@ -464,9 +511,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
   },
-  qnaUserIcon: {
-    marginRight: 10,
-    color: 'gray',
+  qnaUserImage: {
+    width: 24, // Kích thước của hình ảnh
+    height: 24,
+    borderRadius: 12, // Để hình ảnh tròn
+    marginRight: 10, // Khoảng cách giữa ảnh và text
   },
   qnaInputText: {
     color: 'gray',

@@ -19,11 +19,17 @@ const App = () => {
         <Stack.Screen name="Home" component={LandingPage} />
         <Stack.Screen name="Search" component={SearchScreen} />
         {/* <Stack.Screen name="CourseDetail" component={CourseDetail} /> */}
-        <Stack.Screen name="Profile" component={ProfileUser} />
-        <Stack.Screen name="MyCourse" component={MyCourse} />
+        <Stack.Screen name="Profile" component={ProfileUser} 
+        options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
+        />
+        <Stack.Screen name="MyCourse" component={MyCourse} 
+          options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
+        />
         <Stack.Screen name="Lession" component={lession} />
         <Stack.Screen name="TeacherProfile" component={TeacherProfile} />
-        <Stack.Screen name="LearningLesson" component={LearningLesson} />
+        <Stack.Screen name="LearningLesson" component={LearningLesson} 
+          options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

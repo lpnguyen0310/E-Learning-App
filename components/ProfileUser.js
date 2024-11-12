@@ -19,6 +19,7 @@ const userProfile = {
   name: 'Martha Rosie',
   role: 'UX/UI Designer',
   stats: { saved: 25, ongoing: 24, completed: 98 },
+  image: require('../assets/images/User1.png'),
   courses: [
     {
       id: '1',
@@ -27,7 +28,7 @@ const userProfile = {
       price: '$190',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/productDesign.png'),
     },
     {
       id: '2',
@@ -36,7 +37,7 @@ const userProfile = {
       price: '$59',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/webdesign.png'),
     },
     {
       id: '3',
@@ -45,7 +46,7 @@ const userProfile = {
       price: '$320',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/mobieUiDesign.png'),
     },
     {
       id: '4',
@@ -54,7 +55,7 @@ const userProfile = {
       price: '$67',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/digitalportrait.png'),
     },
   ],
 };
@@ -96,9 +97,17 @@ function ProfileScreen ({route,navigation}) {
   
   return (
     <View style={styles.container}>
+
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>User's profile</Text>
+        <Icon name="ellipsis-vertical" size={24} color="#000" /> {/* Đổi thành ellipsis-vertical */}
+      </View>
+
+
       <View style={styles.profileHeader}>
         <Image
-          source={require('../assets/snack-icon.png')}
+          source={(userProfile.image)}
           style={styles.profileImage}
         />
         <Text style={styles.profileName}>{userProfile.name}</Text>
@@ -149,6 +158,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1, // Cho phép tiêu đề chiếm không gian giữa
+  },
+
   profileHeader: {
     alignItems: 'center',
     padding: 20,

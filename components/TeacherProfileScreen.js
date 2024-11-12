@@ -18,6 +18,7 @@ const teacherProfile = {
   role: 'UI/UX Designer',
   location: 'New York',
   time: '09:30 AM',
+  image: require('../assets/images/teacher1.png'),
   overview: [
     {
       id: '1',
@@ -42,7 +43,7 @@ const teacherProfile = {
           price: '$51',
           rating: 5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/uix.png'),
         },
         {
           id: '2',
@@ -50,7 +51,7 @@ const teacherProfile = {
           price: '$59',
           rating: 4.5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/mobieUiDesign.png'),
         },
       ],
     },
@@ -63,7 +64,7 @@ const teacherProfile = {
           price: '$59',
           rating: 4.5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/digitalPoster.png'),
         },
         {
           id: '4',
@@ -71,7 +72,7 @@ const teacherProfile = {
           price: '$59',
           rating: 4.5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/patternDesign.png'),
         },
       ],
     },
@@ -180,7 +181,7 @@ const TeacherProfileScreen = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.profileHeader}>
           <Image
-            source={require('../assets/snack-icon.png')}
+            source={teacherProfile.image}
             style={styles.profileImage}
           />
           <Text style={styles.profileName}>{teacherProfile.name}</Text>
