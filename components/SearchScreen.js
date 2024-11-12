@@ -203,8 +203,8 @@
           </View>
           <View style ={styles.titlesection}>
               <Text style ={{fontWeight: 600}}>Categories</Text>
-              <TouchableOpacity>
-              <Text style ={{color:"aqua"}}>View All</Text>
+              <TouchableOpacity  onPress={() => navigation.navigate('Category')}>
+                <Text style ={{color:"aqua"}}>View All</Text>
               </TouchableOpacity>
           </View>
           <View style = {styles.flat_list_category}>

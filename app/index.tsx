@@ -8,6 +8,7 @@ import ProfileUser from '../components/ProfileUser';
 import MyCourse from '../components/MyCourses_Chua_Xong';
 import lession from '../components/Learning_Lesson_Project_Q&A';
 import TeacherProfile from '../components/TeacherProfileScreen';
+import Category from '../components/Category';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ const App = () => {
         <Stack.Screen name="MyCourse" component={MyCourse} />
         <Stack.Screen name="Lession" component={lession} />
         <Stack.Screen name="TeacherProfile" component={TeacherProfile} />
+        <Stack.Screen name="Category" component={Category} />
 
       </Stack.Navigator>
     </NavigationContainer>

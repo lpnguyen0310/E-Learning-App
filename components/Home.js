@@ -454,7 +454,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Categories</Text>
-        <TouchableOpacity>
+        <TouchableOpacity  onPress={() => navigation.navigate('Category')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
