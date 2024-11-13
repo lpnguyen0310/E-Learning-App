@@ -16,7 +16,9 @@
     const {category ,dataCourse,isFromCategory } = route.params;
     // 
     const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
-   
+    const navigateToCategory = (category) => {
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
+    };
 
 
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
@@ -31,7 +33,7 @@
 
         const renderCategoryItem  = ({ item }) => (
           <View style={styles.item}>
-            <TouchableOpacity style={styles.categoryItem} >
+            <TouchableOpacity style={styles.categoryItem} onPress={() => navigateToCategory(item.title)} >
                   <View style ={styles.inner_categorytitle}>
                     {item.icon}
                   <Text style={styles.categoryText}>{item.title}</Text>
@@ -131,6 +133,10 @@
         }
       }, [category, isFromCategory,dataCourse]);
 
+      const handleViewAllPress = () => {
+        navigation.navigate('Category', { dataCourse: dataCourse });
+      };
+
       
         // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
@@ -220,7 +226,7 @@
           </View>
           <View style ={styles.titlesection}>
               <Text style ={{fontWeight: 600}}>Categories</Text>
-              <TouchableOpacity  onPress={() => navigation.navigate('Category')}>
+              <TouchableOpacity  onPress={handleViewAllPress}>
                 <Text style ={{color:"aqua"}}>View All</Text>
               </TouchableOpacity>
           </View>
