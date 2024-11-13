@@ -13,7 +13,11 @@
 
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
-    const { dataCourse } = route.params;
+    const {category ,dataCourse,isFromCategory } = route.params;
+    // 
+    const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
+   
+
 
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
       const categories = [
@@ -23,6 +27,7 @@
           { id: '4',icon:<FontAwesomeIcon icon={faVideo} style={{color: "#B197FC",}} />, title: 'Movie' },
           { id: '5',icon: <FontAwesomeIcon icon={faEarthAmericas} style={{color: "#f4aa0b",}} />, title: 'Language' },
         ];
+
 
         const renderCategoryItem  = ({ item }) => (
           <View style={styles.item}>
@@ -98,11 +103,16 @@
         const handleFilter = () => {
           const keywordLower = keyword.toLowerCase();
           if (!keywordLower) {
-            setFilteredData(dataCourse);
+            if (category) {
+              setFilteredData(dataCourse.filter(course => course.categories === category));
+            } else {
+                setFilteredData(dataCourse); // Không có danh mục, hiển thị toàn bộ
+            }
         } else {
             // Nếu có keyword, thực hiện lọc dựa trên từ khóa và điều kiện giảm giá
             const filteredResults = dataCourse.filter((item) => (
-                item.title.toLowerCase().includes(keywordLower) && item.discount 
+                item.title.toLowerCase().includes(keywordLower)  &&
+                (!category || item.categories === category)
             ));
             setFilteredData(filteredResults);
         }
@@ -110,6 +120,16 @@
         setFilterActive(true);
       };
       
+      useEffect(() => {
+        if (category && isFromCategory) {
+          const filteredCourses = dataCourse.filter(course => course.categories === category);
+          setFilteredData(filteredCourses);
+          setFilterActive(true);
+        } else {
+          setFilteredData(dataCourse);
+          setFilterActive(false);
+        }
+      }, [category, isFromCategory]);
 
       
         // Render kết quả tìm kiếm 
@@ -157,12 +177,11 @@
               <View style ={styles.inputSearch}>
                   <FontAwesomeIcon icon={faMagnifyingGlass} style={{padding:8}} />
                       <TextInput
-                          placeholder="Search"
-                          clearButtonMode='always'
+                          placeholder={placeholderText}
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
                           value={keyword}
                           onChangeText={text => setKeyword(text)}
-                           
+
                            />
                 </View>
               <View style = {styles.filtercontainer}>
@@ -188,8 +207,6 @@
             
                
           ) : (
-               
-        
         <View style = {styles.containerBody}>
           <View style ={styles.titlehot}>
               <Text style = {{fontWeight:600}}>Hot Topics</Text>

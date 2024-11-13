@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 
 
 
-function Category({navigation}) {
+function Category({navigation,route}) {
     
     const categories = [
         { id: '1', image :require('../assets/images/category/business.png') , title: 'Business' },
@@ -20,9 +20,11 @@ function Category({navigation}) {
         { id: '8',image :require('../assets/images/category/office.png'), title: 'Office' },
     ];    
 
+
+
     const renderCategoryList = ({ item }) => {
         return(
-          <TouchableOpacity style = {styles.categoryContainer}>
+          <TouchableOpacity style = {styles.categoryContainer} onPress={() => navigation.navigate('Search', { category: item.title })}>
             <View style={styles.Category}>
                 <Image source={item.image} style={{width: 40, height: 40}} />
                 <Text style={styles.title}>{item.title}</Text>

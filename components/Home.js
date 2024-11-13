@@ -14,9 +14,14 @@ function LandingPage({ navigation }) {
     { id: '5',image :require('../assets/images/writing.png'), title: 'Writing' },
     { id: '6',image :require('../assets/images/language.png'), title: 'Language' },
   ];
+
+  const navigateToCategory = (category) => {
+    navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
+  };
+
   const renderCategoryItem  = ({ item }) => (
     <View style={styles.item}>
-      <TouchableOpacity style={styles.categoryItem}>
+      <TouchableOpacity style={styles.categoryItem}   onPress={() => navigateToCategory(item.title)} >
             <Image source={item.image} style={{width: 40, height: 40, borderRadius: 8, objectFit: "cover"}}/>
             <Text style={styles.categoryText}>{item.title}</Text>
        </TouchableOpacity>
@@ -276,6 +281,8 @@ function LandingPage({ navigation }) {
 
     },
   ];
+
+
   const popularCourse = dataCourse.filter(course => course.type === 'Popular');
   const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
   const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
@@ -541,7 +548,7 @@ function LandingPage({ navigation }) {
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse })}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false})}>
           <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
