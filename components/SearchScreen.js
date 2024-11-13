@@ -137,6 +137,7 @@
         navigation.navigate('Category', { dataCourse: dataCourse });
       };
 
+   
       
         // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
@@ -171,8 +172,28 @@
 
       // Xử lý khi click vào một chủ đề hot topic
       const handleTopicPress = (topic) => {
-        setKeyword(topic);       
-        setFilterActive(true);    
+        setKeyword(topic);
+        setFilterActive(true);
+        const filteredResults = dataCourse.filter((item) => (
+            item.title.toLowerCase().includes(topic.toLowerCase()) &&
+            (!category || item.categories === category)
+        ));
+        setFilteredData(filteredResults);
+      };
+
+      const handleKeywordChange = (text) => {
+        setKeyword(text);
+        if (text) {
+          const filteredResults = dataCourse.filter((item) => (
+            item.title.toLowerCase().includes(text.toLowerCase()) &&
+            (!category || item.categories === category)
+          ));
+          setFilteredData(filteredResults);
+          setFilterActive(true);
+        } else {
+          setFilterActive(false); // Tắt chế độ lọc nếu không có từ khóa
+          setFilteredData(dataCourse); // Hoặc hiển thị toàn bộ dữ liệu
+        }
       };
    
     return (
@@ -186,8 +207,8 @@
                           placeholder={placeholderText}
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
                           value={keyword}
-                          onChangeText={text => setKeyword(text)}
-
+                          onChangeText={handleKeywordChange}
+                          onEndEditing={handleFilter}
                            />
                 </View>
               <View style = {styles.filtercontainer}>
@@ -206,6 +227,7 @@
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.resultsContainer}
                 numColumns={1}
+
               />
                 </View>
 
@@ -258,7 +280,7 @@
           />
         </View>
       </View>
-        )}
+        )} 
       </View>
       </ScrollView> 
       <View style={styles.footer}>
