@@ -19,6 +19,10 @@ function LandingPage({ navigation }) {
     navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
   };
 
+  const handleViewAllPress = () => {
+    navigation.navigate('Category', { dataCourse: dataCourse });
+  };
+
   const renderCategoryItem  = ({ item }) => (
     <View style={styles.item}>
       <TouchableOpacity style={styles.categoryItem}   onPress={() => navigateToCategory(item.title)} >
@@ -461,7 +465,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Categories</Text>
-        <TouchableOpacity  onPress={() => navigation.navigate('Category')}>
+        <TouchableOpacity onPress={handleViewAllPress}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>

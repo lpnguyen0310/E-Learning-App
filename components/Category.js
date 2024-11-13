@@ -8,6 +8,8 @@ import React, { useState, useEffect } from 'react';
 
 
 function Category({navigation,route}) {
+
+    const { dataCourse } = route.params;
     
     const categories = [
         { id: '1', image :require('../assets/images/category/business.png') , title: 'Business' },
@@ -20,11 +22,19 @@ function Category({navigation,route}) {
         { id: '8',image :require('../assets/images/category/office.png'), title: 'Office' },
     ];    
 
+    const handleCategoryPress = (category) => {
+        navigation.navigate('Search', {
+            category: category.title,  // Truyền category vào SearchScreen
+            isFromCategory: true,
+            dataCourse: dataCourse  // Truyền dataCourse vào SearchScreen
+        });
+    };
+
 
 
     const renderCategoryList = ({ item }) => {
         return(
-          <TouchableOpacity style = {styles.categoryContainer} onPress={() => navigation.navigate('Search', { category: item.title })}>
+          <TouchableOpacity style = {styles.categoryContainer} onPress={() => handleCategoryPress(item)}>
             <View style={styles.Category}>
                 <Image source={item.image} style={{width: 40, height: 40}} />
                 <Text style={styles.title}>{item.title}</Text>

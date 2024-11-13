@@ -129,7 +129,7 @@
           setFilteredData(dataCourse);
           setFilterActive(false);
         }
-      }, [category, isFromCategory]);
+      }, [category, isFromCategory,dataCourse]);
 
       
         // Render kết quả tìm kiếm 
