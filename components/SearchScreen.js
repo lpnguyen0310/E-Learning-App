@@ -14,11 +14,14 @@
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
     const {category ,dataCourse,isFromCategory } = route.params;
+    const { selectedCategories, selectedRatings, priceRange } = route.params 
     // 
     const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
     const navigateToCategory = (category) => {
       navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
     };
+    
+   
 
 
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
@@ -121,7 +124,9 @@
 
         setFilterActive(true);
       };
-      
+
+
+      // Xử lý khi chọn một chủ đề trong mục Hot Topics
       useEffect(() => {
         if (category && isFromCategory) {
           const filteredCourses = dataCourse.filter(course => course.categories === category);
@@ -133,8 +138,14 @@
         }
       }, [category, isFromCategory,dataCourse]);
 
+      // Xử lý khi nhấn vào nút View All
       const handleViewAllPress = () => {
         navigation.navigate('Category', { dataCourse: dataCourse });
+      };
+
+      // Xử lý khi nhấn vào nút Filter 
+      const handleFilterPress = () => {
+        navigation.navigate('Filter', { dataCourse }); // Thay 'FilterScreen' bằng tên màn hình filter của bạn
       };
 
    
@@ -208,11 +219,11 @@
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
                           value={keyword}
                           onChangeText={handleKeywordChange}
-                          onEndEditing={handleFilter}
+                          onSubmitEditing={handleFilter} 
                            />
                 </View>
               <View style = {styles.filtercontainer}>
-                  <TouchableOpacity style ={styles.filterButton} onPress={handleFilter}>
+                  <TouchableOpacity style ={styles.filterButton} onPress={handleFilterPress}>
                           <FontAwesomeIcon icon={faFilter} />
                           <Text style ={{marginLeft:5}}>Filter</Text>
                   </TouchableOpacity>
