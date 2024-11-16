@@ -508,7 +508,7 @@ function LandingPage({ navigation }) {
 
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Top Teacher</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate("Mentors")}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>

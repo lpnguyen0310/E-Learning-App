@@ -11,6 +11,7 @@ import TeacherProfile from '../components/TeacherProfileScreen';
 import LearningLesson from '../components/Learning_Lesson_Project_Q&A'
 import LoginScreen from '../components/Login'; // Import LoginScreen
 import RegisterScreen from '../components/Register'; // Import RegisterScreen
+import MentorsScreen from '../components/MentorsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,7 @@ const App = () => {
         <Stack.Screen name="LearningLesson" component={LearningLesson} 
           options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
         />
+         <Stack.Screen name="Mentors" component={MentorsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
