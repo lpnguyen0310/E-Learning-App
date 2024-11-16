@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
-    <NavigationContainer independent={true}> 
+    <NavigationContainer> 
       <Stack.Navigator initialRouteName="Login">
 
       <Stack.Screen 
@@ -47,7 +47,7 @@ const App = () => {
         <Stack.Screen name="LearningLesson" component={LearningLesson} 
           options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
         />
-         <Stack.Screen name="Mentors" component={MentorsScreen} />
+        <Stack.Screen name="Mentors" component={MentorsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

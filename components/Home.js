@@ -360,6 +360,7 @@ function LandingPage({ navigation }) {
       rating: '4.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher1.png'),
+      course: '3D Modeling',
     },
     {
       id: '2',
@@ -368,6 +369,7 @@ function LandingPage({ navigation }) {
       rating: '4.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher2.png'),
+      course: '3D Animation',
     },
     {
       id: '3',
@@ -376,6 +378,7 @@ function LandingPage({ navigation }) {
       rating: '3.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher3.png'),
+      course: '3D Printing',
     },
     {
       id: '4',
@@ -384,6 +387,52 @@ function LandingPage({ navigation }) {
       rating: '4.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher4.png'),
+      course: '3D Rendering',
+    },
+    {
+      id: '5',
+      title: 'Chiristian Hayes',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher1.png'),
+      course: '3D Modeling',
+    },
+    {
+      id: '6',
+      title: 'Deniss Sweeneys',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher2.png'),
+      course: '3D Animation',
+    },
+    {
+      id: '7',
+      title: 'Nancy Sweeneys',
+      university: "University of California",
+      rating: '3.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher3.png'),
+      course: '3D Printing',
+    },
+    {
+      id: '8',
+      title: 'Linda Sweeneys',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher4.png'),
+      course: '3D Rendering',
+    },
+    {
+      id: '9',
+      title: 'Linda Sweeneys',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher4.png'),
+      course: '3D Visualization',
     },
   ];
 
@@ -506,12 +555,13 @@ function LandingPage({ navigation }) {
         />
       </View>
 
-      <View style ={styles.titlesection}>
-        <Text style ={{fontWeight: 600}}>Top Teacher</Text>
-        <TouchableOpacity onPress={()=>navigation.navigate("Mentors")}>
-          <Text style ={{color:"aqua"}}>View All</Text>
+      <View style={styles.titlesection}>
+        <Text style={{ fontWeight: '600' }}>Top Teacher</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Mentors', { topTeachers ,dataCourse})}>
+          <Text style={{ color: "aqua" }}>View All</Text>
         </TouchableOpacity>
       </View>
+
 
           <View style={styles.flat_list_courses}>
             <FlatList

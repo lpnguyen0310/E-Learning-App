@@ -5,12 +5,6 @@
   import { faStar,faBookmark } from '@fortawesome/free-regular-svg-icons';
   import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 
-
-
-
-
-
-
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
     //

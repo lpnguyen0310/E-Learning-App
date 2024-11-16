@@ -9,103 +9,48 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 
-const mentors = [
-  {
-    id: '1',
-    name: 'Branden S. Baker',
-    course: '3D Modeling',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '2',
-    name: 'Gregory M. Padgett',
-    course: '3D Animation',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '3',
-    name: 'Marie F. Munoz',
-    course: '3D Printing',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '4',
-    name: 'Sandra C. Florence',
-    course: '3D Rendering',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '5',
-    name: 'Justin W. Foxwell',
-    course: '3D Visualization',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '6',
-    name: 'Branden S. Baker',
-    course: '3D Modeling',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '7',
-    name: 'Gregory M. Padgett',
-    course: '3D Animation',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '8',
-    name: 'Marie F. Munoz',
-    course: '3D Printing',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '9',
-    name: 'Sandra C. Florence',
-    course: '3D Rendering',
-    image: require('../assets/snack-icon.png'),
-  },
-  {
-    id: '10',
-    name: 'Justin W. Foxwell',
-    course: '3D Visualization',
-    image: require('../assets/snack-icon.png'),
-  },
-  
-];
 
-export default function MentorsScreen() {
+export default function MentorsScreen({route,navigation}) {
+  const { topTeachers,dataCourse } = route.params;
   const [search, setSearch] = useState('');
   const [searchMode, setSearchMode] = useState('course'); // Chế độ tìm kiếm: 'course' hoặc 'name'
 
   // Lọc mentor dựa vào chế độ tìm kiếm
-  const filteredMentors = mentors.filter((mentor) => {
+  const filteredMentors = topTeachers.filter((mentor) => {
     if (searchMode === 'course') {
       return mentor.course.toLowerCase().includes(search.toLowerCase());
     }
-    return mentor.name.toLowerCase().includes(search.toLowerCase());
+    return mentor.title.toLowerCase().includes(search.toLowerCase());
   });
 
   const renderMentor = ({ item }) => (
     <View style={styles.mentorCard}>
       <Image source={item.image} style={styles.profileImage} />
       <View>
-        <Text style={styles.mentorName}>{item.name}</Text>
+        <Text style={styles.mentorName}>{item.title}</Text>
         <Text style={styles.mentorField}>{item.field}</Text>
         <Text style={styles.mentorCourse}>{item.course}</Text>
       </View>
     </View>
   );
+  const [currentPage, setCurrentPage] = useState('Home'); 
+        
 
+  // const handleNavigation = (page) => {
+  //   setCurrentPage(page); // Cập nhật trang hiện tại
+  //   navigation.navigate(page); // Chuyển hướng
+  // };
+  const handleNavigation = (page, params = {}) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
+  };
   return (
+
+    
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Icon name="arrow-back" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Mentors</Text>
-      </View>
 
       {/* Thanh tìm kiếm và nút chuyển đổi chế độ tìm kiếm */}
       <View style={styles.searchContainer}>
@@ -149,10 +94,24 @@ export default function MentorsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
       />
+
+      
+      <View style={styles.footer}>
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+      </View>
     </View>
   );
 }
 
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+  <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+    <FontAwesomeIcon icon={icon} color={currentPage === label ? 'blue' : 'black'}/>
+    <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+  </TouchableOpacity>
+);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -213,6 +172,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 16,
+    marginBottom:20,
   },
   mentorCard: {
     flexDirection: 'row',
@@ -241,4 +201,37 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontStyle: 'italic',
   },
+  
+  
+  //footer
+  footer: {
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 60,
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
+  },
+  footerItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 5, // Giảm padding để tiết kiệm không gian
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
+  },
+  activeFooterText: {
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+  },
+
 });
