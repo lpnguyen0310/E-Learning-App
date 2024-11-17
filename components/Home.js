@@ -23,6 +23,8 @@ function LandingPage({ navigation }) {
     navigation.navigate('Category', { dataCourse: dataCourse });
   };
 
+  
+
   const renderCategoryItem  = ({ item }) => (
     <View style={styles.item}>
       <TouchableOpacity style={styles.categoryItem}   onPress={() => navigateToCategory(item.title)} >
@@ -290,6 +292,32 @@ function LandingPage({ navigation }) {
   const popularCourse = dataCourse.filter(course => course.type === 'Popular');
   const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
   const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
+
+  const navigateToCourses = (categoryType) => {
+    let courses = [];
+  
+    if (categoryType === 'Popular') {
+      courses = popularCourse;
+      categoryType = 'Popular Courses';
+    } else if (categoryType === 'Recommend') {
+      courses = recommendCourse;
+      categoryType = 'Recommended Courses';
+
+    } else if (categoryType === 'Inspire') {
+      courses = inspireCourse;
+      categoryType = 'Inspiring Courses';
+
+    }
+    
+    // Điều hướng tới màn hình CourseList với danh sách khóa học
+    navigation.navigate('CourseList', { courses,categoryType  });
+  };
+
+
+
+
+
+
   const renderCourseItem = ({ item }) => (
     <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })} >
       <View style={styles.imageContainer}>
@@ -480,7 +508,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Popular courses</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToCourses('Popular')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -497,7 +525,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Recommended for you</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToCourses('Recommend')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -513,7 +541,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Course that inspires</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToCourses('Inspire')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>

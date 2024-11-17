@@ -14,14 +14,21 @@
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
     const {category ,dataCourse,isFromCategory } = route.params;
-    const { selectedCategories, selectedRatings, priceRange } = route.params 
+     // State lưu trữ từ khóa tìm kiếm và kết quả lọc
+    const [keyword, setKeyword] = useState("");
+    // State lưu trữ kết quả lọc dựa trên từ khóa
+     const [filterActive, setFilterActive] = useState(false);
+     // State lưu trữ kết quả lọc dựa trên từ khóa 
+     const [filteredData, setFilteredData] = useState([]);
+       
+
+    
     // 
     const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
     const navigateToCategory = (category) => {
       navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
     };
-    
-   
+
 
 
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
@@ -97,12 +104,7 @@
     
         
     
-        // State lưu trữ từ khóa tìm kiếm và kết quả lọc
-        const [keyword, setKeyword] = useState("");
-        // State lưu trữ kết quả lọc dựa trên từ khóa
-        const [filterActive, setFilterActive] = useState(false);
-        // State lưu trữ kết quả lọc dựa trên từ khóa và điều kiện giảm giá
-        const [filteredData, setFilteredData] = useState([]);
+   
     
         // Xử lý khi nhấn nút Filter để lọc kết quả
         const handleFilter = () => {
@@ -125,6 +127,9 @@
         setFilterActive(true);
       };
 
+  
+     
+
 
       // Xử lý khi chọn một chủ đề trong mục Hot Topics
       useEffect(() => {
@@ -143,13 +148,6 @@
         navigation.navigate('Category', { dataCourse: dataCourse });
       };
 
-      // Xử lý khi nhấn vào nút Filter 
-      const handleFilterPress = () => {
-        navigation.navigate('Filter', { dataCourse }); // Thay 'FilterScreen' bằng tên màn hình filter của bạn
-      };
-
-   
-      
         // Render kết quả tìm kiếm 
         const renderItemSearch = ({ item }) => (
           <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
@@ -223,7 +221,7 @@
                            />
                 </View>
               <View style = {styles.filtercontainer}>
-                  <TouchableOpacity style ={styles.filterButton} onPress={handleFilterPress}>
+                  <TouchableOpacity style ={styles.filterButton}  onPress={() => navigation.navigate('Filter', { dataCourse  })}>
                           <FontAwesomeIcon icon={faFilter} />
                           <Text style ={{marginLeft:5}}>Filter</Text>
                   </TouchableOpacity>

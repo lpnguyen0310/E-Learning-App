@@ -1,62 +1,106 @@
 import { StyleSheet, Text, View,CheckBox ,TouchableOpacity,FlatList,Image,ScrollView } from "react-native";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell,faCartShopping } from '@fortawesome/free-solid-svg-icons';
-import { faBookmark,faStar } from '@fortawesome/free-regular-svg-icons';
-import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 
+
+
+
 const FilterScreen = ({ navigation, route }) => {
-    const [selectedCategories, setSelectedSubCategories] = useState({
-      movie: false,
-      business: false,
-      code: false,
-      design: false,
-      writing: false,
-      language: false,
-      finance: false,
-      office: false,
-    });
-  
-    const [selectedRatings, setSelectedRatings] = useState({
-      '3.0 & up': false,
-      '3.5 & up': false,
-      '4.0 & up': false,
-      '4.5 & up': false,
-    });
-  
-    const [priceRange, setPriceRange] = useState([0, 300]);
-  
-    // Hàm xử lý thay đổi trạng thái checkbox cho SubCategory
-    const toggleSubCategory = (category) => {
-      setSelectedSubCategories(prevState => ({
-        ...prevState,
-        [category]: !prevState[category],
-      }));
-    };
-  
-    // Hàm xử lý thay đổi trạng thái checkbox cho Rating
-    const toggleRating = (rating) => {
-      setSelectedRatings(prevState => ({
-        ...prevState,
-        [rating]: !prevState[rating],
-      }));
-    };
-  
-    const handleApplyFilters = () => {
-        // Lọc và gửi dữ liệu đã chọn về màn hình SearchScreen
-        navigation.navigate('Search', {
-          selectedCategories,
-          selectedRatings,
-          priceRange,
+  const { filteredData ,dataCourse ,selectedCategories: initialSelectedCategories, selectedRatings: initialSelectedRatings } = route.params;
+  const [selectedCategories, setSelectedCategories] = useState(initialSelectedCategories ||{
+    Code: false,
+    Design: false,
+    Writing: false,
+    Movie: false,
+    Business: false,
+    Language: false,
+    Finance: false,
+    Office: false,
+  });
+
+  // State cho rating như một đối tượng
+  const [selectedRatings, setSelectedRatings] = useState( initialSelectedRatings ||{
+    '3.0': false,
+    '3.5': false,
+    '4.0': false,
+    '4.5': false,
+  });
+
+
+     // Xử lý khi người dùng chọn/deselect category
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prevState) => ({
+      ...prevState,
+      [category]: !prevState[category],
+    }));
+  };
+
+  // Xử lý khi người dùng chọn/deselect rating
+  const handleRatingChange = (rating) => {
+    setSelectedRatings((prevState) => ({
+      ...prevState,
+      [rating]: !prevState[rating],
+    }));
+  };
+
+   // Lưu và áp dụng bộ lọc
+   const applyFilters = () => {
+    const selectedCategoryKeys = Object.keys(selectedCategories).filter(
+      (key) => selectedCategories[key]
+    );
+    const selectedRatingKeys = Object.keys(selectedRatings).filter(
+      (key) => selectedRatings[key]
+    );
+
+    // Lọc dữ liệu đã tìm kiếm trước đó theo bộ lọc
+    const finalFilteredData = filteredData.filter(course => {
+      const categoryMatch =
+        selectedCategoryKeys.length === 0 || selectedCategoryKeys.includes(course.category);
+
+      const ratingMatch =
+        selectedRatingKeys.length === 0 || selectedRatingKeys.some(rating => {
+          return parseFloat(course.rating) >= parseFloat(rating);
         });
-      };
-  
+
+      return categoryMatch && ratingMatch;
+    });
+
+    // Chuyển kết quả đã lọc sang SearchScreen
+    navigation.navigate('Search', {
+      filteredData: finalFilteredData,
+      selectedCategories: selectedCategoryKeys,
+      selectedRatings: selectedRatingKeys,
+    });
+  };
+
+  // Reset bộ lọc
+  const resetFilters = () => {
+    setSelectedCategories({
+      Code: false,
+      Design: false,
+      Writing: false,
+      Movie: false,
+      Business: false,
+      Language: false,
+      Finance: false,
+      Office: false,
+    });
+    setSelectedRatings({
+      '3.0': false,
+      '3.5': false,
+      '4.0': false,
+      '4.5': false,
+    });
+  }
+      
+
+ 
+
     return (
         
       <View style={styles.container}>
-        <ScrollView>
+        <ScrollView style ={{flexGrow:1}}>
         {/* Bộ lọc subCategory với checkbox */}
         <Text style={styles.label}>SubCategory</Text>
         <View style={styles.checkboxContainer}>
@@ -64,7 +108,7 @@ const FilterScreen = ({ navigation, route }) => {
             <View key={category} style={styles.checkboxItem}>
               <CheckBox
                 value={selectedCategories[category]}
-                onValueChange={() => toggleSubCategory(category)}
+                onValueChange={() => handleCategoryChange(category)}
               />
               <Text>{category.charAt(0).toUpperCase() + category.slice(1)}</Text>
             </View>
@@ -72,11 +116,11 @@ const FilterScreen = ({ navigation, route }) => {
         </View>
   
         {/* Bộ lọc Price */}
-        <Text>Price Range: {priceRange[0]} - {priceRange[1]}</Text>
+        {/* <Text>Price Range: {priceRange[0]} - {priceRange[1]}</Text>
         <Slider
             style={{ width: '100%', height: 40 }}
             minimumValue={0}
-            maximumValue={1000}
+            maximumValue={300}
             step={10}
             value={priceRange[0]}
             onValueChange={(value) => setPriceRange([value, priceRange[1]])}
@@ -84,12 +128,12 @@ const FilterScreen = ({ navigation, route }) => {
         <Slider
             style={{ width: '100%', height: 40 }}
             minimumValue={0}
-            maximumValue={1000}
+            maximumValue={300}
             step={10}
             value={priceRange[1]}
             onValueChange={(value) => setPriceRange([priceRange[0], value])}
         />
-  
+   */}
         {/* Bộ lọc Rating với checkbox */}
         <Text style={styles.label}>Rating</Text>
         <View style={styles.checkboxContainer}>
@@ -97,16 +141,19 @@ const FilterScreen = ({ navigation, route }) => {
             <View key={rating} style={styles.checkboxItem}>
               <CheckBox
                 value={selectedRatings[rating]}
-                onValueChange={() => toggleRating(rating)}
+                onValueChange={() => handleRatingChange(rating)}
               />
-              <Text>{rating}</Text>
+              <Text>{rating} & above</Text>
             </View>
           ))}
         </View>
         </ScrollView>
-        <TouchableOpacity style={styles.applyButton}  onPress={handleApplyFilters}>
+        <TouchableOpacity style={styles.applyButton}  onPress={applyFilters}>
           <Text style={styles.buttonText}>Apply Filters</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={resetFilters} style={{ backgroundColor: 'gray', padding: 10, marginTop: 10 }}>
+        <Text style={{ color: 'white' }}>Reset Filters</Text>
+      </TouchableOpacity>
         {/* Nút Apply */}
       </View>
      
