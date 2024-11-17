@@ -30,13 +30,13 @@ export default function CourseList({route, navigation}) {
 
 
      // Kiểm tra nếu không có khóa học nào sau khi lọc
-    if (filteredCourses.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text>No courses found matching "{searchQuery}"</Text>
-      </View>
-    );
-    }
+    // if (filteredCourses.length === 0) {
+    // return (
+    //   <View style={styles.container}>
+    //     <Text>No courses found matching "{searchQuery}"</Text>
+    //   </View>
+    // );
+    // }
 
 
       const renderItemSearch = ({ item }) => (
@@ -79,7 +79,7 @@ export default function CourseList({route, navigation}) {
                 value={searchQuery}
                 onChangeText={setSearchQuery} // Cập nhật từ khóa tìm kiếm khi người dùng thay đổi
             />
-            <TouchableOpacity style={styles.filterButton} onPress={() => navigation.navigate('Filter', {   })}>
+            <TouchableOpacity style={styles.filterButton} onPress={() => navigation.navigate('Filter', { courses  })}>
               <Icon name="sliders" size={20} color="#fff" />
             </TouchableOpacity>
           </View>

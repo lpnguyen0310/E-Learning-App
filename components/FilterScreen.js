@@ -1,77 +1,54 @@
-import { StyleSheet, Text, View,CheckBox ,TouchableOpacity,FlatList,Image,ScrollView } from "react-native";
+import { StyleSheet, Text, View,CheckBox ,TouchableOpacity,FlatList,Image,ScrollView,Button } from "react-native";
 import React, { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 
 
-
+const subcategories = ['Code', 'Movie', 'Design', 'Language'];
+const ratings = [3.0, 3.5, 4.0, 4.5];
 
 const FilterScreen = ({ navigation, route }) => {
-  const { filteredData ,dataCourse ,selectedCategories: initialSelectedCategories, selectedRatings: initialSelectedRatings } = route.params;
-  const [selectedCategories, setSelectedCategories] = useState(initialSelectedCategories ||{
-    Code: false,
-    Design: false,
-    Writing: false,
-    Movie: false,
-    Business: false,
-    Language: false,
-    Finance: false,
-    Office: false,
-  });
+  const { courses } = route.params;
+ 
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
+  const [selectedRatings, setSelectedRatings] = useState([]);
 
-  // State cho rating như một đối tượng
-  const [selectedRatings, setSelectedRatings] = useState( initialSelectedRatings ||{
-    '3.0': false,
-    '3.5': false,
-    '4.0': false,
-    '4.5': false,
-  });
-
-
-     // Xử lý khi người dùng chọn/deselect category
-  const handleCategoryChange = (category) => {
-    setSelectedCategories((prevState) => ({
-      ...prevState,
-      [category]: !prevState[category],
-    }));
+  // Cập nhật checkbox
+  const toggleSubcategory = (subcategory) => {
+    setSelectedSubcategories((prev) =>
+      prev.includes(subcategory)
+        ? prev.filter((item) => item !== subcategory)
+        : [...prev, subcategory]
+    );
   };
 
-  // Xử lý khi người dùng chọn/deselect rating
-  const handleRatingChange = (rating) => {
-    setSelectedRatings((prevState) => ({
-      ...prevState,
-      [rating]: !prevState[rating],
-    }));
+  const toggleRating = (rating) => {
+    setSelectedRatings((prev) =>
+      prev.includes(rating)
+        ? prev.filter((item) => item !== rating)
+        : [...prev, rating]
+    );
   };
 
-   // Lưu và áp dụng bộ lọc
-   const applyFilters = () => {
-    const selectedCategoryKeys = Object.keys(selectedCategories).filter(
-      (key) => selectedCategories[key]
-    );
-    const selectedRatingKeys = Object.keys(selectedRatings).filter(
-      (key) => selectedRatings[key]
-    );
+    // Lọc khóa học theo subcategory và rating
+  const applyFilters = () => {
+    let filteredCourses = courses;
 
-    // Lọc dữ liệu đã tìm kiếm trước đó theo bộ lọc
-    const finalFilteredData = filteredData.filter(course => {
-      const categoryMatch =
-        selectedCategoryKeys.length === 0 || selectedCategoryKeys.includes(course.category);
+    if (selectedSubcategories.length > 0) {
+      filteredCourses = filteredCourses.filter((course) =>
+        selectedSubcategories.includes(course.categories)
+      );
+    }
 
-      const ratingMatch =
-        selectedRatingKeys.length === 0 || selectedRatingKeys.some(rating => {
-          return parseFloat(course.rating) >= parseFloat(rating);
-        });
+    if (selectedRatings.length > 0) {
+      filteredCourses = filteredCourses.filter((course) => {
+        // Kiểm tra điều kiện rating >= value
+        return selectedRatings.some((rating) => parseFloat(course.rating) >= rating);
+      });
+    }
 
-      return categoryMatch && ratingMatch;
-    });
-
-    // Chuyển kết quả đã lọc sang SearchScreen
-    navigation.navigate('Search', {
-      filteredData: finalFilteredData,
-      selectedCategories: selectedCategoryKeys,
-      selectedRatings: selectedRatingKeys,
-    });
+    // Chuyển kết quả lọc về màn hình CourseList
+    navigation.navigate('CourseList', { courses: filteredCourses });
   };
 
   // Reset bộ lọc
@@ -98,105 +75,70 @@ const FilterScreen = ({ navigation, route }) => {
  
 
     return (
-        
       <View style={styles.container}>
-        <ScrollView style ={{flexGrow:1}}>
-        {/* Bộ lọc subCategory với checkbox */}
-        <Text style={styles.label}>SubCategory</Text>
-        <View style={styles.checkboxContainer}>
-          {Object.keys(selectedCategories).map(category => (
-            <View key={category} style={styles.checkboxItem}>
-              <CheckBox
-                value={selectedCategories[category]}
-                onValueChange={() => handleCategoryChange(category)}
-              />
-              <Text>{category.charAt(0).toUpperCase() + category.slice(1)}</Text>
-            </View>
-          ))}
+      <Text style={styles.header}>Filter Courses</Text>
+
+      <Text style={styles.filterTitle}>Subcategory</Text>
+      {subcategories.map((subcategory) => (
+        <View key={subcategory} style={styles.checkboxContainer}>
+          <CheckBox
+            value={selectedSubcategories.includes(subcategory)}
+            onValueChange={() => toggleSubcategory(subcategory)}
+          />
+          <Text>{subcategory}</Text>
         </View>
-  
-        {/* Bộ lọc Price */}
-        {/* <Text>Price Range: {priceRange[0]} - {priceRange[1]}</Text>
-        <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={0}
-            maximumValue={300}
-            step={10}
-            value={priceRange[0]}
-            onValueChange={(value) => setPriceRange([value, priceRange[1]])}
-        />
-        <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={0}
-            maximumValue={300}
-            step={10}
-            value={priceRange[1]}
-            onValueChange={(value) => setPriceRange([priceRange[0], value])}
-        />
-   */}
-        {/* Bộ lọc Rating với checkbox */}
-        <Text style={styles.label}>Rating</Text>
-        <View style={styles.checkboxContainer}>
-          {Object.keys(selectedRatings).map(rating => (
-            <View key={rating} style={styles.checkboxItem}>
-              <CheckBox
-                value={selectedRatings[rating]}
-                onValueChange={() => handleRatingChange(rating)}
-              />
-              <Text>{rating} & above</Text>
-            </View>
-          ))}
+      ))}
+
+      <Text style={styles.filterTitle}>Rating</Text>
+      {ratings.map((rating) => (
+        <View key={rating} style={styles.checkboxContainer}>
+          <CheckBox
+            value={selectedRatings.includes(rating)}
+            onValueChange={() => toggleRating(rating)}
+          />
+          <Text>{rating}</Text>
         </View>
-        </ScrollView>
-        <TouchableOpacity style={styles.applyButton}  onPress={applyFilters}>
-          <Text style={styles.buttonText}>Apply Filters</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={resetFilters} style={{ backgroundColor: 'gray', padding: 10, marginTop: 10 }}>
-        <Text style={{ color: 'white' }}>Reset Filters</Text>
-      </TouchableOpacity>
-        {/* Nút Apply */}
-      </View>
-     
+      ))}
+
+      <Button title="Apply Filters" onPress={applyFilters} />
+    </View>
         
     );
   };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-      },
-      label: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginVertical: 10,
-      },
-      checkboxContainer: {
-        marginVertical: 10,
-        paddingLeft: 20,
-      },
-      checkboxItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-        gap: '0 10px',
-      },
-      slider: {
-        width: '100%',
-        height: 40,
-        marginVertical: 10,
-      },
-      applyButton: {
-        marginTop: 30,
-        backgroundColor: '#007AFF',
-        padding: 15,
-        alignItems: 'center',
-        borderRadius: 8,
-      },
-      buttonText: {
-        color: '#FFF',
-        fontSize: 18,
-      },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  filterTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    padding: 5,
+    gap:'0 10px',
+  },
+  filterButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  filterText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
 
