@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useState, useEffect }  from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,7 +8,7 @@ import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons
 
 
 export default function CourseList({route, navigation}) {
-    const { courses,categoryType  } = route.params; 
+    const { courses,categoryType,dataCourse } = route.params; 
 
     if (!courses || courses.length === 0) {
         return (
@@ -16,7 +16,29 @@ export default function CourseList({route, navigation}) {
             <Text>No courses found.</Text>
           </View>
         );
-      }
+    }
+
+    // search course
+    // State để lưu trữ từ khóa tìm kiếm
+     const [searchQuery, setSearchQuery] = useState('');
+
+    // Hàm lọc khóa học theo từ khóa tìm kiếm
+    const filteredCourses = courses.filter((course) => {
+    // Chuyển tiêu đề khóa học về chữ thường và so sánh với từ khóa tìm kiếm (cũng chuyển về chữ thường)
+    return course.title.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
+
+     // Kiểm tra nếu không có khóa học nào sau khi lọc
+    if (filteredCourses.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text>No courses found matching "{searchQuery}"</Text>
+      </View>
+    );
+    }
+
+
       const renderItemSearch = ({ item }) => (
         <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
             {item.bestSeller && (
@@ -51,18 +73,27 @@ export default function CourseList({route, navigation}) {
         <View style={styles.container}>
            <Text style={styles.header}>{categoryType}</Text> 
           <View style={styles.searchBar}>
-            <TextInput placeholder="Search Courses" style={styles.input} />
-            <TouchableOpacity style={styles.filterButton}>
+          <TextInput
+                placeholder="Search Courses"
+                style={styles.input}
+                value={searchQuery}
+                onChangeText={setSearchQuery} // Cập nhật từ khóa tìm kiếm khi người dùng thay đổi
+            />
+            <TouchableOpacity style={styles.filterButton} onPress={() => navigation.navigate('Filter', {   })}>
               <Icon name="sliders" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.resultsText}>Results for "{courses.length}" courses</Text>
-          <FlatList
-            data={courses}
-            renderItem={renderItemSearch}
-            keyExtractor={(item) => item.id}
-            style={styles.list}
-          />
+          <Text style={styles.resultsText}>
+                Results for "{categoryType}" - {filteredCourses.length} FOUND
+            </Text>
+
+            {/* Hiển thị danh sách khóa học đã lọc */}
+            <FlatList
+                data={filteredCourses}
+                renderItem={renderItemSearch}
+                keyExtractor={(item) => item.id}
+                style={styles.list}
+            />
         </View>
       );
 }

@@ -310,7 +310,7 @@ function LandingPage({ navigation }) {
     }
     
     // Điều hướng tới màn hình CourseList với danh sách khóa học
-    navigation.navigate('CourseList', { courses,categoryType  });
+    navigation.navigate('CourseList', { courses,categoryType ,dataCourse: dataCourse });
   };
 
 
