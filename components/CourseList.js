@@ -8,8 +8,10 @@ import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons
 
 
 export default function CourseList({route, navigation}) {
-    const { courses,categoryType,dataCourse } = route.params; 
-
+    const { courses,categoryType,dataCourse, selectedSubcategories = [], selectedRatings = []} = route.params; 
+    const [filteredCourses, setFilteredCourses] = useState(courses);
+    // State để lưu trữ từ khóa tìm kiếm
+    const [searchQuery, setSearchQuery] = useState('');
     if (!courses || courses.length === 0) {
         return (
           <View style={styles.container}>
@@ -19,14 +21,39 @@ export default function CourseList({route, navigation}) {
     }
 
     // search course
-    // State để lưu trữ từ khóa tìm kiếm
-     const [searchQuery, setSearchQuery] = useState('');
-
-    // Hàm lọc khóa học theo từ khóa tìm kiếm
-    const filteredCourses = courses.filter((course) => {
-    // Chuyển tiêu đề khóa học về chữ thường và so sánh với từ khóa tìm kiếm (cũng chuyển về chữ thường)
-    return course.title.toLowerCase().includes(searchQuery.toLowerCase());
-    });
+    useEffect(() => {
+        let result = courses;
+      
+        // Kiểm tra và lọc theo từ khóa tìm kiếm
+        if (searchQuery.trim() !== '') {
+          result = result.filter((course) =>
+            course.title.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
+      
+        // Lọc theo subcategories
+        if (selectedSubcategories.length > 0) {
+          result = result.filter((course) =>
+            selectedSubcategories.includes(course.categories)
+          );
+        }
+      
+        // Lọc theo ratings
+        if (selectedRatings.length > 0) {
+          result = result.filter((course) =>
+            selectedRatings.some((rating) => parseFloat(course.rating) >= rating)
+          );
+        }
+      
+        // Nếu không có bộ lọc nào được chọn, hiển thị tất cả các khóa học
+        if (selectedSubcategories.length === 0 && selectedRatings.length === 0 && searchQuery.trim() === '') {
+          result = courses; // Hiển thị tất cả các khóa học
+        }
+      
+        // Cập nhật filteredCourses
+        setFilteredCourses(result);
+      
+      }, [searchQuery, selectedSubcategories, selectedRatings, courses]);
 
 
      // Kiểm tra nếu không có khóa học nào sau khi lọc
@@ -79,21 +106,33 @@ export default function CourseList({route, navigation}) {
                 value={searchQuery}
                 onChangeText={setSearchQuery} // Cập nhật từ khóa tìm kiếm khi người dùng thay đổi
             />
-            <TouchableOpacity style={styles.filterButton} onPress={() => navigation.navigate('Filter', { courses  })}>
+            <TouchableOpacity style={styles.filterButton} onPress={() => navigation.navigate('Filter', {  courses,
+                            selectedSubcategories,
+                            selectedRatings,
+                            dataCourse: dataCourse,
+                            onApplyFilters: (newFilters) => {
+                                setFilteredCourses(newFilters);
+                            },})}>
               <Icon name="sliders" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
           <Text style={styles.resultsText}>
-                Results for "{categoryType}" - {filteredCourses.length} FOUND
-            </Text>
+        Results for "{searchQuery || categoryType}" - {filteredCourses.length} FOUND
+      </Text>
 
             {/* Hiển thị danh sách khóa học đã lọc */}
-            <FlatList
-                data={filteredCourses}
-                renderItem={renderItemSearch}
-                keyExtractor={(item) => item.id}
-                style={styles.list}
-            />
+            {filteredCourses.length > 0 ? (
+                <FlatList
+                    data={filteredCourses}
+                    renderItem={renderItemSearch}
+                    keyExtractor={(item) => item.id}
+                    style={styles.list}
+                />
+            ) : (
+                <Text style={styles.noResultsText}>
+                    No courses found matching your criteria.
+                </Text>
+            )}
         </View>
       );
 }
@@ -250,4 +289,12 @@ bestSellerBadge: {
     alignSelf: 'flex-start',
     zIndex: 1,
 },
+
+// No results text
+noResultsText: {
+    fontSize: 16,
+    color: 'grey',
+    textAlign: 'center',
+    marginTop: 20,
+},  
 });

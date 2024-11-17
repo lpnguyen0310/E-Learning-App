@@ -2,16 +2,21 @@ import { StyleSheet, Text, View,CheckBox ,TouchableOpacity,FlatList,Image,Scroll
 import React, { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 
-const subcategories = ['Code', 'Movie', 'Design', 'Language'];
-const ratings = [3.0, 3.5, 4.0, 4.5];
+
 
 const FilterScreen = ({ navigation, route }) => {
-  const { courses } = route.params;
- 
-  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
-  const [selectedRatings, setSelectedRatings] = useState([]);
+  const { courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] } = route.params || {};
+  
+  const subcategories = ['Code', 'Movie', 'Design', 'Language','Business','Finance','Office','Writing'];
+  const ratings = [3.0 , 3.5, 4.0, 4.5];
+
+  // State Management
+  const [selectedSubcategories, setSelectedSubcategories] = useState(prevSelectedSubcategories);
+  const [selectedRatings, setSelectedRatings] = useState(prevSelectedRatings);
 
   // Cập nhật checkbox
   const toggleSubcategory = (subcategory) => {
@@ -30,47 +35,29 @@ const FilterScreen = ({ navigation, route }) => {
     );
   };
 
-    // Lọc khóa học theo subcategory và rating
+  // Lọc khóa học theo subcategory và rating
   const applyFilters = () => {
-    let filteredCourses = courses;
-
-    if (selectedSubcategories.length > 0) {
-      filteredCourses = filteredCourses.filter((course) =>
-        selectedSubcategories.includes(course.categories)
-      );
-    }
-
-    if (selectedRatings.length > 0) {
-      filteredCourses = filteredCourses.filter((course) => {
-        // Kiểm tra điều kiện rating >= value
-        return selectedRatings.some((rating) => parseFloat(course.rating) >= rating);
-      });
-    }
-
-    // Chuyển kết quả lọc về màn hình CourseList
-    navigation.navigate('CourseList', { courses: filteredCourses });
+    // Truyền các bộ lọc về CourseList và cập nhật filteredCourses
+    navigation.navigate('CourseList', {
+      courses, // Truyền lại tất cả khóa học để lọc trên đó
+      selectedSubcategories,
+      selectedRatings,
+      categoryType,  // Truyền loại khóa học nếu cần thiết
+    });
   };
 
   // Reset bộ lọc
   const resetFilters = () => {
-    setSelectedCategories({
-      Code: false,
-      Design: false,
-      Writing: false,
-      Movie: false,
-      Business: false,
-      Language: false,
-      Finance: false,
-      Office: false,
+    setSelectedSubcategories([]);
+    setSelectedRatings([]);
+    // Reset bộ lọc và trả về CourseList với tất cả khóa học
+    navigation.navigate('CourseList', {
+      courses, // Truyền lại tất cả khóa học
+      selectedSubcategories: [],
+      selectedRatings: [],
+      categoryType,  // Truyền lại loại khóa học nếu cần thiết
     });
-    setSelectedRatings({
-      '3.0': false,
-      '3.5': false,
-      '4.0': false,
-      '4.5': false,
-    });
-  }
-      
+  };
 
  
 
@@ -100,7 +87,23 @@ const FilterScreen = ({ navigation, route }) => {
         </View>
       ))}
 
-      <Button title="Apply Filters" onPress={applyFilters} />
+      <View style={styles.buttonRow}>
+        {/* Apply Filters button */}
+        <TouchableOpacity style={[styles.button, styles.applyButton]} onPress={applyFilters}>
+          <Text style={styles.buttonText}>Apply</Text>
+          <View style={styles.circleIconContainer}>
+            <FontAwesomeIcon icon={faArrowRight} style={styles.icon} />
+          </View>
+        </TouchableOpacity>
+
+        {/* Reset Filters button */}
+        <TouchableOpacity style={[styles.button, styles.resetButton]} onPress={resetFilters}>
+          <Text style={styles.buttonText}>Reset</Text>
+          <View style={styles.circleIconContainerReset}>
+            <FontAwesomeIcon icon={faArrowRight} style={styles.icon} />
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
         
     );
@@ -134,10 +137,70 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 20,
+    width: '100%',
   },
   filterText: {
     color: '#fff',
     fontSize: 16,
+  },
+  // Button styles
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    borderWidth: 1,
+    width: '48%',
+   gap:'0 10px',
+   justifyContent: 'center',
+  },
+  applyButton: {
+    backgroundColor: '#007BFF', // Blue color
+    borderColor: '#007BFF', 
+  },
+  resetButton: {
+    backgroundColor: 'grey', // Light gray
+    borderColor: '#D3D3D3',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    flex: 1, // Ensures that text is centered
+    textAlign: 'center', // Center align the text
+  },
+  // Icon styles
+  circleIconContainer: {
+    width: 40,
+    height: 40,
+    gap:'0 10px',
+    borderRadius: 20, // Creates a circle
+    backgroundColor: '#74C0FC', // White background for circle
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#74C0FC', // Border color for the circle
+  },
+  circleIconContainerReset: {
+    width: 40,
+    height: 40,
+    gap:'0 10px',
+    borderRadius: 20, // Creates a circle
+    backgroundColor: '#D3D3D3', // White background for circle
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'grey', // Border color for the circle
+  },
+  icon: {
+    color: '#FFFFFF',
+    fontSize: 20,
   },
 });
 
