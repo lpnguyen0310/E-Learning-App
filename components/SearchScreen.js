@@ -161,12 +161,14 @@
       filteredResults = filteredResults.filter(course => course.categories === category);
     }
   
-      // Cập nhật filtered data
-      setFilteredData(filteredResults);
+      // Only update if filtered data has changed
+      if (JSON.stringify(filteredResults) !== JSON.stringify(filteredData)) {
+        setFilteredData(filteredResults);
+    }
   
       // Cập nhật trạng thái filterActive
       setFilterActive(filteredResults.length > 0);
-  }, [keyword, category, selectedSubcategories, selectedRatings, dataCourse]);
+  }, [keyword, category, selectedSubcategories, selectedRatings, dataCourse,filteredData]);
 
 //   const handleKeywordChange = (text) => {
 //     setKeyword(text);
