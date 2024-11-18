@@ -20,9 +20,13 @@
      const [filterActive, setFilterActive] = useState(false);
      // State lưu trữ kết quả lọc dựa trên từ khóa 
      const [filteredData, setFilteredData] = useState([]);
+
+     const [noResults, setNoResults] = useState(false);
        
      // Memoize courses để tránh thay đổi tham chiếu mỗi lần render
-  const memoizedCourses = useMemo(() => dataCourse, [dataCourse]);
+    const memoizedCourses = useMemo(() => dataCourse, [dataCourse]);
+
+    
 
     
     // 
@@ -83,7 +87,7 @@
         if (category) {
           setFilteredData(dataCourse.filter(course => course.categories === category));
         } else {
-          setFilteredData(dataCourse); // Không có danh mục, hiển thị toàn bộ
+          setFilteredData(dataCourse);
         }
       } else {
         // Nếu có từ khóa tìm kiếm, thực hiện lọc dữ liệu theo từ khóa và danh mục
@@ -133,6 +137,7 @@
           // Nếu không có từ khóa, hiển thị tất cả khóa học (trang chính của search)
           setFilteredData(dataCourse);
           setFilterActive(false);  // Không có bộ lọc hoạt động
+          setNoResults(false);  // Không có kết quả tìm kiếm
           return;  // Dừng việc lọc dữ liệu
       }
 
@@ -160,19 +165,23 @@
     if (category && isFromCategory) {
       filteredResults = filteredResults.filter(course => course.categories === category);
     }
+
+    if (filteredResults.length === 0) {
+      setNoResults(true);  // Hiển thị thông báo "NO RESULT FOUND"
+    } else {
+      setNoResults(false); // Không hiển thị thông báo nếu có kết quả
+    }
   
       // Only update if filtered data has changed
-      if (JSON.stringify(filteredResults) !== JSON.stringify(filteredData)) {
-        setFilteredData(filteredResults);
-    }
+        if (JSON.stringify(filteredResults) !== JSON.stringify(filteredData)) {
+            setFilteredData(filteredResults);
+        }
   
       // Cập nhật trạng thái filterActive
       setFilterActive(filteredResults.length > 0);
   }, [keyword, category, selectedSubcategories, selectedRatings, dataCourse,filteredData]);
 
-//   const handleKeywordChange = (text) => {
-//     setKeyword(text);
-//   }
+
 
 
     // Render một chủ đề trong danh sách chủ đề
@@ -254,6 +263,12 @@ const renderItemSearch = ({ item }) => (
       </View>
   </TouchableOpacity>
 );
+
+ const renderNoResults = () => (
+        <View style={styles.noResultsContainer}>
+            <Text style={styles.noResultsText}>NO RESULT FOUND</Text>
+        </View>
+    );
    
     return (
       <View style={{ flex: 1 }}>
@@ -278,6 +293,11 @@ const renderItemSearch = ({ item }) => (
               </View>
           </View>
           {filterActive ? (
+            filteredData.length === 0 ? (
+              <View style={styles.noResultContainer}>
+                <Text style={styles.noResultText}>NO RESULT FOUND</Text>
+              </View>
+            )  : (
             <View style ={styles.container_search}>
                 <View style ={styles.result_search}>
                 <FlatList
@@ -292,7 +312,7 @@ const renderItemSearch = ({ item }) => (
 
             </View>
             
-               
+            )
           ) : (
         <View style = {styles.containerBody}>
           <View style ={styles.titlehot}>
@@ -340,6 +360,10 @@ const renderItemSearch = ({ item }) => (
         </View>
       </View>
         )} 
+         {/* Show "No courses found" message when filterActive is false and no courses are in filteredData */}
+         {!filterActive && filteredData.length === 0 && (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>No courses found</Text>
+        )}
       </View>
       </ScrollView> 
       <View style={styles.footer}>
