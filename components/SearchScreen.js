@@ -28,7 +28,7 @@
     // 
     const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
     const navigateToCategory = (category) => {
-      navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true,selectedSubcategories, selectedRatings }); 
     };
 
      // Lọc theo từ khóa và các bộ lọc khác
@@ -42,6 +42,8 @@
         categoryType: category,
         selectedSubcategories,
         selectedRatings,
+        isFromCategory,
+        category,
         onApplyFilters: (newFilters) => {
           setFilteredCourses(newFilters);
           setFilterActive(true);

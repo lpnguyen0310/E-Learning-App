@@ -9,7 +9,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 
 const FilterScreen = ({ navigation, route }) => {
-  const { fromScreen ,courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] } = route.params || {};
+  const { fromScreen ,courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] ,isFromCategory,category } = route.params || {};
   
   const subcategories = ['Code', 'Movie', 'Design', 'Language','Business','Finance','Office','Writing'];
   const ratings = [3.0 , 3.5, 4.0, 4.5];
@@ -37,26 +37,33 @@ const FilterScreen = ({ navigation, route }) => {
 
   // Lọc khóa học theo subcategory và rating
   const applyFilters = () => {
-   
-
-    if(fromScreen === 'CourseList') {
-    // Truyền các bộ lọc về CourseList và cập nhật filteredCourses
-    navigation.navigate('CourseList', {
-      courses, // Truyền lại tất cả khóa học để lọc trên đó
-      selectedSubcategories,
-      selectedRatings,
-      categoryType,  // Truyền loại khóa học nếu cần thiết
-    });
-    }else if(fromScreen === 'SearchScreen'){
+    if (fromScreen === 'SearchScreen' && isFromCategory) {
+      // Giữ nguyên category khi áp dụng bộ lọc, tìm kiếm trong category
       navigation.navigate('Search', {
-        dataCourse, // Truyền lại tất cả khóa học để lọc trên đó
+        category, // Giữ nguyên category đang tìm kiếm
         selectedSubcategories,
         selectedRatings,
-        categoryType,  // Truyền loại khóa học nếu cần thiết
+        dataCourse, // Truyền lại tất cả khóa học để lọc trên đó
+        isFromCategory, // Đảm bảo vẫn là tìm kiếm trong category
+      });
+    } else if (fromScreen === 'SearchScreen' && !isFromCategory) {
+      // Trường hợp không phải là tìm kiếm trong category (isFromCategory = false)
+      navigation.navigate('Search', {
+        selectedSubcategories,
+        selectedRatings,
+        dataCourse, // Truyền lại tất cả khóa học để lọc trên đó
+        isFromCategory: false, // Không tìm kiếm trong category nữa
+      });
+    } else if (fromScreen === 'CourseList') {
+      // Trường hợp khác nếu có
+      navigation.navigate('CourseList', {
+        courses,
+        selectedSubcategories,
+        selectedRatings,
+        categoryType, // Truyền lại loại khóa học nếu cần thiết
       });
     }
   };
-
   // Reset bộ lọc
   const resetFilters = () => {
     setSelectedSubcategories([]);
@@ -76,7 +83,8 @@ const FilterScreen = ({ navigation, route }) => {
         dataCourse: resetCourses , // Truyền lại tất cả khóa học để lọc trên đó
         selectedSubcategories:[],
         selectedRatings:[],
-        categoryType,  // Truyền loại khóa học nếu cần thiết
+        categoryType,
+          // Truyền loại khóa học nếu cần thiết
       });
     }
   };
