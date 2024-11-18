@@ -112,7 +112,9 @@ export default function CourseList({route, navigation}) {
                             dataCourse: dataCourse,
                             onApplyFilters: (newFilters) => {
                                 setFilteredCourses(newFilters);
-                            },})}>
+                            },
+                            fromScreen: 'CourseList',
+                            })}>
               <Icon name="sliders" size={20} color="#fff" />
             </TouchableOpacity>
           </View>

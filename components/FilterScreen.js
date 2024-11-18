@@ -9,7 +9,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 
 const FilterScreen = ({ navigation, route }) => {
-  const { courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] } = route.params || {};
+  const { fromScreen ,courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] } = route.params || {};
   
   const subcategories = ['Code', 'Movie', 'Design', 'Language','Business','Finance','Office','Writing'];
   const ratings = [3.0 , 3.5, 4.0, 4.5];
@@ -37,6 +37,9 @@ const FilterScreen = ({ navigation, route }) => {
 
   // Lọc khóa học theo subcategory và rating
   const applyFilters = () => {
+   
+
+    if(fromScreen === 'CourseList') {
     // Truyền các bộ lọc về CourseList và cập nhật filteredCourses
     navigation.navigate('CourseList', {
       courses, // Truyền lại tất cả khóa học để lọc trên đó
@@ -44,19 +47,38 @@ const FilterScreen = ({ navigation, route }) => {
       selectedRatings,
       categoryType,  // Truyền loại khóa học nếu cần thiết
     });
+    }else if(fromScreen === 'SearchScreen'){
+      navigation.navigate('Search', {
+        dataCourse, // Truyền lại tất cả khóa học để lọc trên đó
+        selectedSubcategories,
+        selectedRatings,
+        categoryType,  // Truyền loại khóa học nếu cần thiết
+      });
+    }
   };
 
   // Reset bộ lọc
   const resetFilters = () => {
     setSelectedSubcategories([]);
     setSelectedRatings([]);
+    let resetCourses = courses || dataCourse;
+
     // Reset bộ lọc và trả về CourseList với tất cả khóa học
+   if(fromScreen === 'CourseList') {
     navigation.navigate('CourseList', {
       courses, // Truyền lại tất cả khóa học
       selectedSubcategories: [],
       selectedRatings: [],
       categoryType,  // Truyền lại loại khóa học nếu cần thiết
     });
+    }else if(fromScreen === 'SearchScreen'){
+      navigation.navigate('Search', {
+        dataCourse: resetCourses , // Truyền lại tất cả khóa học để lọc trên đó
+        selectedSubcategories:[],
+        selectedRatings:[],
+        categoryType,  // Truyền loại khóa học nếu cần thiết
+      });
+    }
   };
 
  

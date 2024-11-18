@@ -26,7 +26,9 @@ function Category({navigation,route}) {
         navigation.navigate('Search', {
             category: category.title,  // Truyền category vào SearchScreen
             isFromCategory: true,
-            dataCourse: dataCourse  // Truyền dataCourse vào SearchScreen
+            dataCourse: dataCourse,
+            selectedSubcategories: selectedSubcategories, // Truyền subcategories đã chọn
+            selectedRatings: selectedRatings,   // Truyền dataCourse vào SearchScreen
         });
     };
 
