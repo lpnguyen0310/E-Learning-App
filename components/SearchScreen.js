@@ -1,4 +1,4 @@
-  import React,{ useState, useEffect }  from 'react';
+  import React,{ useState, useEffect,useMemo  }  from 'react';
   import { View, Text, StyleSheet,TextInput, ScrollView,TouchableOpacity,FlatList,Image } from 'react-native';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import { faMagnifyingGlass,faFilter,faChartLine,faChevronRight,faPenNib,faCode,faVideo,faEarthAmericas } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +13,48 @@
 
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
-    const { dataCourse } = route.params;
+    const {category ,dataCourse,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
+     // State lưu trữ từ khóa tìm kiếm và kết quả lọc
+    const [keyword, setKeyword] = useState("");
+    // State lưu trữ kết quả lọc dựa trên từ khóa
+     const [filterActive, setFilterActive] = useState(false);
+     // State lưu trữ kết quả lọc dựa trên từ khóa 
+     const [filteredData, setFilteredData] = useState([]);
+
+     const [noResults, setNoResults] = useState(false);
+       
+     // Memoize courses để tránh thay đổi tham chiếu mỗi lần render
+    const memoizedCourses = useMemo(() => dataCourse, [dataCourse]);
+
+    
+
+    
+    // 
+    const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
+    const navigateToCategory = (category) => {
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true,selectedSubcategories, selectedRatings }); 
+    };
+
+     // Lọc theo từ khóa và các bộ lọc khác
+  
+
+    // Go to FilterScreen
+    const navigateToFilter = () => {
+      navigation.navigate('Filter', {
+        courses,
+        dataCourse,
+        categoryType: category,
+        selectedSubcategories,
+        selectedRatings,
+        isFromCategory,
+        category,
+        onApplyFilters: (newFilters) => {
+          setFilteredCourses(newFilters);
+          setFilterActive(true);
+      },
+        fromScreen: 'SearchScreen',  // Truyền thông tin về màn hình gốc
+      });
+    };
 
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
       const categories = [
@@ -24,130 +65,210 @@
           { id: '5',icon: <FontAwesomeIcon icon={faEarthAmericas} style={{color: "#f4aa0b",}} />, title: 'Language' },
         ];
 
-        const renderCategoryItem  = ({ item }) => (
-          <View style={styles.item}>
-            <TouchableOpacity style={styles.categoryItem} >
-                  <View style ={styles.inner_categorytitle}>
-                    {item.icon}
-                  <Text style={styles.categoryText}>{item.title}</Text>
-                  </View>
-                  <FontAwesomeIcon icon={faChevronRight} />
-                
-            </TouchableOpacity>
-          </View>
-        );
+    
        // Lọc ra các khóa học được recommend
         const recommendCourses = dataCourse.filter(course => course.type === 'Recommend');
 
      
 
-        // Render một khóa học trong danh sách khóa học được recommend
-        const CourseRecommentItem = ({ item  }) => (
+      
+
+        // State lưu trữ trang hiện tại của ứng dụng
+        const [currentPage, setCurrentPage] = useState('Search'); 
     
-          <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}
->
-            {item.bestSeller && (
-                  <View style={styles.bestSellerBadge}>
-                      <Text style={styles.bestSellerText}>Best Seller</Text>
-                  </View>
-              )}
-              {/* Hiển thị giảm giá nếu có */}
-              {item.discount && (
-                  <View style={styles.discountBadge}>
-                      <Text style={styles.discountText}>20% OFF</Text>
-                  </View>
-              )}
-            <Image source={item.image} style={styles.courseImage} />
-            <View style={styles.courseInfo}>
-              <View style ={styles.course_title_container}> 
-                <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
-                <FontAwesomeIcon icon={faBookmark} />
+   
+    // Search and filter
+    const handleFilter = () => {
+      const keywordLower = keyword.toLowerCase();
+      
+      // Nếu không có từ khóa tìm kiếm
+      if (!keywordLower) {
+        // Nếu có danh mục được chọn
+        if (category) {
+          setFilteredData(dataCourse.filter(course => course.categories === category));
+        } else {
+          setFilteredData(dataCourse);
+        }
+      } else {
+        // Nếu có từ khóa tìm kiếm, thực hiện lọc dữ liệu theo từ khóa và danh mục
+        const filteredResults = dataCourse.filter((item) => (
+          item.title.toLowerCase().includes(keywordLower) &&
+          (!category || item.categories === category)
+        ));
+        setFilteredData(filteredResults);
+      }
+    
+      // Cập nhật filterActive để chỉ hiển thị khi có dữ liệu lọc
+      setFilterActive(filteredData.length > 0);
+    };
+
+      // Xử lý khi chọn một chủ đề trong danh sách chủ đề
+      useEffect(() => {
+        if (category && isFromCategory) {
+          const filteredCourses = dataCourse.filter(course => course.categories === category);
+          setFilteredData(filteredCourses);
+          setFilterActive(true);
+        } else {
+          setFilteredData(dataCourse);
+          setFilterActive(false);
+        }
+      }, [category, isFromCategory,dataCourse]);
+
+
+      // Xử lý khi nhấn vào nút View All
+      const handleViewAllPress = () => {
+        navigation.navigate('Category', { dataCourse: dataCourse });
+      };
+
+      // Xử lý khi click vào một chủ đề hot topic
+      const handleTopicPress = (topic) => {
+        setKeyword(topic);
+        setFilterActive(true);
+        const filteredResults = dataCourse.filter((item) => (
+            item.title.toLowerCase().includes(topic.toLowerCase()) &&
+            (!category || item.categories === category)
+        ));
+        setFilteredData(filteredResults);
+      };
+
+     // Xử lý khi thay đổi từ khóa tìm kiếm
+     useEffect(() => {
+      if (!keyword.trim() && !category) {
+          // Nếu không có từ khóa, hiển thị tất cả khóa học (trang chính của search)
+          setFilteredData(dataCourse);
+          setFilterActive(false);  // Không có bộ lọc hoạt động
+          setNoResults(false);  // Không có kết quả tìm kiếm
+          return;  // Dừng việc lọc dữ liệu
+      }
+
+      // Bắt đầu lọc dữ liệu khi có thay đổi
+      let filteredResults = dataCourse.filter((item) => (
+          item.title.toLowerCase().includes(keyword.toLowerCase()) &&
+          (!category || item.categories === category)
+      ));
+  
+      // Lọc theo subcategory nếu có subcategory được chọn
+      if (selectedSubcategories.length > 0) {
+          filteredResults = filteredResults.filter((course) =>
+              selectedSubcategories.includes(course.categories)
+          );
+      }
+  
+      // Lọc theo rating nếu có rating được chọn
+      if (selectedRatings.length > 0) {
+          filteredResults = filteredResults.filter((course) =>
+              selectedRatings.some((rating) => parseFloat(course.rating) >= rating)
+          );
+      }
+
+      // Lọc theo category nếu có
+    if (category && isFromCategory) {
+      filteredResults = filteredResults.filter(course => course.categories === category);
+    }
+
+    if (filteredResults.length === 0) {
+      setNoResults(true);  // Hiển thị thông báo "NO RESULT FOUND"
+    } else {
+      setNoResults(false); // Không hiển thị thông báo nếu có kết quả
+    }
+  
+      // Only update if filtered data has changed
+        if (JSON.stringify(filteredResults) !== JSON.stringify(filteredData)) {
+            setFilteredData(filteredResults);
+        }
+  
+      // Cập nhật trạng thái filterActive
+      setFilterActive(filteredResults.length > 0);
+  }, [keyword, category, selectedSubcategories, selectedRatings, dataCourse,filteredData]);
+
+
+
+
+    // Render một chủ đề trong danh sách chủ đề
+    const renderCategoryItem  = ({ item }) => (
+      <View style={styles.item}>
+        <TouchableOpacity style={styles.categoryItem} onPress={() => navigateToCategory(item.title)} >
+              <View style ={styles.inner_categorytitle}>
+                {item.icon}
+              <Text style={styles.categoryText}>{item.title}</Text>
               </View>
+              <FontAwesomeIcon icon={faChevronRight} />
             
-              <Text style={styles.courseTeacher}>By {item.teacher}</Text>
-              <Text style={styles.coursePrice}>{item.price}</Text>
-              <View style ={styles.course_rating}>
+        </TouchableOpacity>
+      </View>
+    );
+
+  // Render một khóa học trong danh sách khóa học được recommend
+  const CourseRecommentItem = ({ item  }) => (
+    
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}
+>
+      {item.bestSeller && (
+            <View style={styles.bestSellerBadge}>
+                <Text style={styles.bestSellerText}>Best Seller</Text>
+            </View>
+        )}
+        {/* Hiển thị giảm giá nếu có */}
+        {item.discount && (
+            <View style={styles.discountBadge}>
+                <Text style={styles.discountText}>20% OFF</Text>
+            </View>
+        )}
+      <Image source={item.image} style={styles.courseImage} />
+      <View style={styles.courseInfo}>
+        <View style ={styles.course_title_container}> 
+          <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
+          <FontAwesomeIcon icon={faBookmark} />
+        </View>
+      
+        <Text style={styles.courseTeacher}>By {item.teacher}</Text>
+        <Text style={styles.coursePrice}>{item.price}</Text>
+        <View style ={styles.course_rating}>
+          <FontAwesomeIcon icon={faStar} />
+          <Text style={styles.courseRating}> {item.rating}</Text>
+          <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+          <Text style={styles.courseLessons}>{item.lessons}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+// Render kết quả tìm kiếm 
+const renderItemSearch = ({ item }) => (
+  <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
+      {item.bestSeller && (
+          <View style={styles.bestSellerBadge}>
+              <Text style={styles.bestSellerText}>Best Seller</Text>
+          </View>
+      )}
+      {item.discount && (
+          <View style={styles.discountBadge}>
+              <Text style={styles.discountText}>20% OFF</Text>
+          </View>
+      )}
+      <Image source={item.image} style={styles.courseImageSearch} />
+      <View style={styles.courseListSeach}>
+          <View style ={styles.course_item_title_search}> 
+              <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
+              <FontAwesomeIcon icon={faBookmark} />
+          </View>
+          <Text style={styles.courseTeacher}>{item.teacher}</Text>
+          <Text style={styles.coursePrice}>{item.price}</Text>
+          <View style ={styles.course_rating}>
                 <FontAwesomeIcon icon={faStar} />
                 <Text style={styles.courseRating}> {item.rating}</Text>
                 <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
                 <Text style={styles.courseLessons}>{item.lessons}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        );
+           </View>
+      </View>
+  </TouchableOpacity>
+);
 
-        // State lưu trữ trang hiện tại của ứng dụng
-        const [currentPage, setCurrentPage] = useState('Search'); 
-        
-
-        const handleNavigation = (page) => {
-          setCurrentPage(page); // Cập nhật trang hiện tại
-          navigation.navigate(page); // Chuyển hướng
-        };
-    
-        
-    
-        // State lưu trữ từ khóa tìm kiếm và kết quả lọc
-        const [keyword, setKeyword] = useState("");
-        // State lưu trữ kết quả lọc dựa trên từ khóa
-        const [filterActive, setFilterActive] = useState(false);
-        // State lưu trữ kết quả lọc dựa trên từ khóa và điều kiện giảm giá
-        const [filteredData, setFilteredData] = useState([]);
-    
-        // Xử lý khi nhấn nút Filter để lọc kết quả
-        const handleFilter = () => {
-          const keywordLower = keyword.toLowerCase();
-          if (!keywordLower) {
-            setFilteredData(dataCourse);
-        } else {
-            // Nếu có keyword, thực hiện lọc dựa trên từ khóa và điều kiện giảm giá
-            const filteredResults = dataCourse.filter((item) => (
-                item.title.toLowerCase().includes(keywordLower) && item.discount 
-            ));
-            setFilteredData(filteredResults);
-        }
-
-        setFilterActive(true);
-      };
-      
-
-      
-        // Render kết quả tìm kiếm 
-        const renderItemSearch = ({ item }) => (
-          <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item })}>
-              {item.bestSeller && (
-                  <View style={styles.bestSellerBadge}>
-                      <Text style={styles.bestSellerText}>Best Seller</Text>
-                  </View>
-              )}
-              {item.discount && (
-                  <View style={styles.discountBadge}>
-                      <Text style={styles.discountText}>20% OFF</Text>
-                  </View>
-              )}
-              <Image source={item.image} style={styles.courseImageSearch} />
-              <View style={styles.courseListSeach}>
-                  <View style ={styles.course_item_title_search}> 
-                      <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
-                      <FontAwesomeIcon icon={faBookmark} />
-                  </View>
-                  <Text style={styles.courseTeacher}>{item.teacher}</Text>
-                  <Text style={styles.coursePrice}>{item.price}</Text>
-                  <View style ={styles.course_rating}>
-                        <FontAwesomeIcon icon={faStar} />
-                        <Text style={styles.courseRating}> {item.rating}</Text>
-                        <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
-                        <Text style={styles.courseLessons}>{item.lessons}</Text>
-                   </View>
-              </View>
-          </TouchableOpacity>
-      );
-
-      // Xử lý khi click vào một chủ đề hot topic
-      const handleTopicPress = (topic) => {
-        setKeyword(topic);       
-        setFilterActive(true);    
-      };
+ const renderNoResults = () => (
+        <View style={styles.noResultsContainer}>
+            <Text style={styles.noResultsText}>NO RESULT FOUND</Text>
+        </View>
+    );
    
     return (
       <View style={{ flex: 1 }}>
@@ -157,22 +278,26 @@
               <View style ={styles.inputSearch}>
                   <FontAwesomeIcon icon={faMagnifyingGlass} style={{padding:8}} />
                       <TextInput
-                          placeholder="Search"
-                          clearButtonMode='always'
+                          placeholder={placeholderText}
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
                           value={keyword}
-                          onChangeText={text => setKeyword(text)}
-                           
-                           />
+                          onChangeText={(text) => setKeyword(text)}
+                          onSubmitEditing={handleFilter} 
+                          />
                 </View>
               <View style = {styles.filtercontainer}>
-                  <TouchableOpacity style ={styles.filterButton} onPress={handleFilter}>
+                  <TouchableOpacity style ={styles.filterButton}  onPress={navigateToFilter}>
                           <FontAwesomeIcon icon={faFilter} />
                           <Text style ={{marginLeft:5}}>Filter</Text>
                   </TouchableOpacity>
               </View>
           </View>
           {filterActive ? (
+            filteredData.length === 0 ? (
+              <View style={styles.noResultContainer}>
+                <Text style={styles.noResultText}>NO RESULT FOUND</Text>
+              </View>
+            )  : (
             <View style ={styles.container_search}>
                 <View style ={styles.result_search}>
                 <FlatList
@@ -181,15 +306,14 @@
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.resultsContainer}
                 numColumns={1}
+
               />
                 </View>
 
             </View>
             
-               
+            )
           ) : (
-               
-        
         <View style = {styles.containerBody}>
           <View style ={styles.titlehot}>
               <Text style = {{fontWeight:600}}>Hot Topics</Text>
@@ -203,8 +327,8 @@
           </View>
           <View style ={styles.titlesection}>
               <Text style ={{fontWeight: 600}}>Categories</Text>
-              <TouchableOpacity>
-              <Text style ={{color:"aqua"}}>View All</Text>
+              <TouchableOpacity  onPress={handleViewAllPress}>
+                <Text style ={{color:"aqua"}}>View All</Text>
               </TouchableOpacity>
           </View>
           <View style = {styles.flat_list_category}>
@@ -235,6 +359,10 @@
           />
         </View>
       </View>
+        )} 
+         {/* Show "No courses found" message when filterActive is false and no courses are in filteredData */}
+         {!filterActive && filteredData.length === 0 && (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>No courses found</Text>
         )}
       </View>
       </ScrollView> 

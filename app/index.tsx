@@ -9,6 +9,11 @@ import MyCourse from '../components/MyCourses_Chua_Xong';
 import lession from '../components/Learning_Lesson_Project_Q&A';
 import TeacherProfile from '../components/TeacherProfileScreen';
 
+import Category from '../components/Category';
+import Filter from '../components/FilterScreen';
+import CourseList from '../components/CourseList';
+
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -22,6 +27,9 @@ const App = () => {
         <Stack.Screen name="MyCourse" component={MyCourse} />
         <Stack.Screen name="Lession" component={lession} />
         <Stack.Screen name="TeacherProfile" component={TeacherProfile} />
+        <Stack.Screen name="Category" component={Category} />
+        <Stack.Screen name="Filter" component={Filter} />
+        <Stack.Screen name="CourseList" component={CourseList} />
       </Stack.Navigator>
     </NavigationContainer>
   );
