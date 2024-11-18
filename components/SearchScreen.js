@@ -5,14 +5,9 @@
   import { faStar,faBookmark } from '@fortawesome/free-regular-svg-icons';
   import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 
-
-
-
-
-
-
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
+
     const {category ,dataCourse,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
      // State lưu trữ từ khóa tìm kiếm và kết quả lọc
     const [keyword, setKeyword] = useState("");
@@ -56,6 +51,7 @@
       });
     };
 
+
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
       const categories = [
           { id: '1',icon: <FontAwesomeIcon icon={faChartLine} style={{color: "#74C0FC",}} /> ,title: 'Business' },
@@ -75,6 +71,11 @@
 
         // State lưu trữ trang hiện tại của ứng dụng
         const [currentPage, setCurrentPage] = useState('Search'); 
+
+         const handleNavigation = (page, params = {}) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
+  };
     
    
     // Search and filter
@@ -367,10 +368,10 @@ const renderItemSearch = ({ item }) => (
       </View>
       </ScrollView> 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => navigation.navigate('Home')}/>
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => setCurrentPage('Search')} />
-        <FooterItem icon={faBook} label="My Courses" currentPage={currentPage} onPress={() => setCurrentPage('MyCourses')} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => setCurrentPage('Profile')} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
       </View>
         </View>
     );
@@ -381,6 +382,8 @@ const renderItemSearch = ({ item }) => (
       <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
     </TouchableOpacity>
   );
+  
+  
   const styles = StyleSheet.create({
     container: {
       alignItems: "center",
@@ -605,30 +608,33 @@ const renderItemSearch = ({ item }) => (
 
   // Footer
   footer: {
-    height: 50,
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    height: 50,
     width: '100%',
-    borderTopWidth: 0.5,
-    borderTopColor: 'gray',
-    backgroundColor: 'white',    
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
   },
   footerItem: {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    padding: 12,
+    padding: 5, // Giảm padding để tiết kiệm không gian
   },
   footerText: {
     color: 'black',
     fontSize: 12,
     fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
   },
   activeFooterText: {
-    color: 'blue', 
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
   },
   // Kết quả tìm kiếm
   resultsContainer: {

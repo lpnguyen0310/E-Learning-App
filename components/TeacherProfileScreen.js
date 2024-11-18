@@ -10,11 +10,15 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
+
 const teacherProfile = {
   name: 'Sara Weise',
   role: 'UI/UX Designer',
   location: 'New York',
   time: '09:30 AM',
+  image: require('../assets/images/teacher1.png'),
   overview: [
     {
       id: '1',
@@ -39,7 +43,7 @@ const teacherProfile = {
           price: '$51',
           rating: 5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/uix.png'),
         },
         {
           id: '2',
@@ -47,7 +51,7 @@ const teacherProfile = {
           price: '$59',
           rating: 4.5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/mobieUiDesign.png'),
         },
       ],
     },
@@ -60,7 +64,7 @@ const teacherProfile = {
           price: '$59',
           rating: 4.5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/digitalPoster.png'),
         },
         {
           id: '4',
@@ -68,7 +72,7 @@ const teacherProfile = {
           price: '$59',
           rating: 4.5,
           lessons: 12,
-          image: require('../assets/snack-icon.png'),
+          image: require('../assets/images/patternDesign.png'),
         },
       ],
     },
@@ -87,6 +91,13 @@ const teacherProfile = {
 const TeacherProfileScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('Courses');
+
+  const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
+
+  const handleNavigation = (page) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page); // Chuyển hướng
+  };
 
   const renderContent = () => {
     if (activeTab === 'Overview') {
@@ -170,7 +181,7 @@ const TeacherProfileScreen = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.profileHeader}>
           <Image
-            source={require('../assets/snack-icon.png')}
+            source={teacherProfile.image}
             style={styles.profileImage}
           />
           <Text style={styles.profileName}>{teacherProfile.name}</Text>
@@ -210,11 +221,23 @@ const TeacherProfileScreen = () => {
           </View>
         </View>
         <View style={styles.contentContainer}>{renderContent()}</View>
+
+        <View style={styles.footer}>
+          <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+          <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
+          <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
+          <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
+        </View>
       </ScrollView>
     </View>
   );
 };
-
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+  <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+    <FontAwesomeIcon icon={icon} color={currentPage === label ? 'blue' : 'black'}/>
+    <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+  </TouchableOpacity>
+);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -315,6 +338,39 @@ const styles = StyleSheet.create({
     top: 5,
     right: 5,
   },
+
+  
+  //footer
+  footer: {
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 60,
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
+  },
+  footerItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 5, // Giảm padding để tiết kiệm không gian
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
+  },
+  activeFooterText: {
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+  },
+
 });
 
 export default TeacherProfileScreen;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,20 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+
 
 const userProfile = {
   name: 'Martha Rosie',
   role: 'UX/UI Designer',
   stats: { saved: 25, ongoing: 24, completed: 98 },
+  image: require('../assets/images/User1.png'),
   courses: [
     {
       id: '1',
@@ -21,7 +28,7 @@ const userProfile = {
       price: '$190',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/productDesign.png'),
     },
     {
       id: '2',
@@ -30,7 +37,7 @@ const userProfile = {
       price: '$59',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/webdesign.png'),
     },
     {
       id: '3',
@@ -39,7 +46,7 @@ const userProfile = {
       price: '$320',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/mobieUiDesign.png'),
     },
     {
       id: '4',
@@ -48,12 +55,17 @@ const userProfile = {
       price: '$67',
       rating: 4.5,
       lessons: 12,
-      image: require('../assets/snack-icon.png'),
+      image: require('../assets/images/digitalportrait.png'),
     },
   ],
 };
 
-const ProfileScreen = () => {
+function ProfileScreen ({route,navigation}) {
+
+  // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
+  //
+  const { dataCourse } = route.params;
+  
   const renderCourse = ({ item }) => (
     <View style={styles.courseContainer}>
       <Image source={item.image} style={styles.courseImage} />
@@ -69,11 +81,33 @@ const ProfileScreen = () => {
     </View>
   );
 
+  
+  // State lưu trữ trang hiện tại của ứng dụng
+  const [currentPage, setCurrentPage] = useState('Profile'); 
+        
+
+  // const handleNavigation = (page) => {
+  //   setCurrentPage(page); // Cập nhật trang hiện tại
+  //   navigation.navigate(page); // Chuyển hướng
+  // };
+  const handleNavigation = (page, params = {}) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+    navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
+  };
+  
   return (
     <View style={styles.container}>
+
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>User's profile</Text>
+        <Icon name="ellipsis-vertical" size={24} color="#000" /> {/* Đổi thành ellipsis-vertical */}
+      </View>
+
+
       <View style={styles.profileHeader}>
         <Image
-          source={require('../assets/snack-icon.png')}
+          source={(userProfile.image)}
           style={styles.profileImage}
         />
         <Text style={styles.profileName}>{userProfile.name}</Text>
@@ -91,21 +125,55 @@ const ProfileScreen = () => {
         </View>
       </View>
       <Text style={styles.sectionTitle}>Saved courses</Text>
+      <ScrollView  style={{margin:10,padding:10}}>
       <FlatList
         data={userProfile.courses}
         renderItem={renderCourse}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.courseList}
+        contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
       />
+      </ScrollView>
+     
+
+      <View style={styles.footer}>
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+      </View>
+
     </View>
   );
 };
+
+const FooterItem = ({ icon, label, currentPage, onPress }) => (
+  <TouchableOpacity style={styles.footerItem} onPress={onPress}>
+    <FontAwesomeIcon icon={icon} color={currentPage === label ? 'blue' : 'black'}/>
+    <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1, // Cho phép tiêu đề chiếm không gian giữa
+  },
+
   profileHeader: {
     alignItems: 'center',
     padding: 20,
@@ -174,6 +242,37 @@ const styles = StyleSheet.create({
   courseDetails: {
     color: 'gray',
   },
-});
 
+  //footer
+  footer: {
+    position: 'absolute',  // Đặt footer ở cuối màn hình
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 50,
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
+  },
+  footerItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 5, // Giảm padding để tiết kiệm không gian
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
+  },
+  activeFooterText: {
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+  },
+
+});
 export default ProfileScreen;
