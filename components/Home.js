@@ -14,9 +14,20 @@ function LandingPage({ navigation }) {
     { id: '5',image :require('../assets/images/writing.png'), title: 'Writing' },
     { id: '6',image :require('../assets/images/language.png'), title: 'Language' },
   ];
+
+  const navigateToCategory = (category) => {
+    navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
+  };
+
+  const handleViewAllPress = () => {
+    navigation.navigate('Category', { dataCourse: dataCourse });
+  };
+
+  
+
   const renderCategoryItem  = ({ item }) => (
     <View style={styles.item}>
-      <TouchableOpacity style={styles.categoryItem}>
+      <TouchableOpacity style={styles.categoryItem}   onPress={() => navigateToCategory(item.title)} >
             <Image source={item.image} style={{width: 40, height: 40, borderRadius: 8, objectFit: "cover"}}/>
             <Text style={styles.categoryText}>{item.title}</Text>
        </TouchableOpacity>
@@ -29,7 +40,7 @@ function LandingPage({ navigation }) {
       title: 'PHP in One Click',
       teacher: 'Ramano Wultschiner',
       price: '$59',
-      rating: '4.5 (1233)',
+      rating: '4.5',
       lessons: '18 Lessons',
       image: require('../assets/images/phponeclick.png'),
       bestSeller: false, 
@@ -41,7 +52,7 @@ function LandingPage({ navigation }) {
       title: 'Python Introduction Course',
       teacher: 'Ramano Wultschiner',
       price: '$39',
-      rating: '4.5 (1267)',
+      rating: '4.5',
       lessons: '12 Lessons',
       image: require('../assets/images/introductionpython.png'),
       bestSeller: true, 
@@ -53,7 +64,7 @@ function LandingPage({ navigation }) {
       title: 'Java Programming',
       teacher: 'Emily Johnson',
       price: '$19.99',
-      rating: '4.3 (2365)',
+      rating: '4.3',
       lessons: '10 Lessons',
       image: require('../assets/images/javaprogram.png'),
       bestSeller: false, 
@@ -65,7 +76,7 @@ function LandingPage({ navigation }) {
       title: 'Java Introduction Course',
       teacher: 'Michael Brown',
       price: '$20',
-      rating: '4.8 (1865)',
+      rating: '4.8',
       lessons: '25 Lessons',
       image: require('../assets/images/introductionjava.png'),
       bestSeller: true,
@@ -73,14 +84,14 @@ function LandingPage({ navigation }) {
       categories : 'Code'
     },
     {
-    id: '1',
+    id: '5',
       imageteacher: require('../assets/images/teacher1.png'),
       title: 'Website Design',
       teacher: 'Ramano Wultschiner',
       work: 'UI/UX Designer at Google',
       discription: 'We are a team of professional UX/UI designers, committed to creating products that are intuitive, easy to use and bring value to users. From user research to interface design, we will accompany you throughout the product development process..',
       price: '$59',
-      rating: '4.5 (1233)',
+      rating: '4.5',
       lessons: '9 Lessons',
       image: require('../assets/images/webdesign.png'),
       bestSeller: false, 
@@ -90,25 +101,36 @@ function LandingPage({ navigation }) {
         reviews: [
           {
             id: '1',
+            image: require('../assets/images/user/user1.png'),
             name: 'Jinny Oslin',
-            date: '1 day ago',
+            date: new Date("2024-11-01"),
             comment: 'Nostrud excepteur magna id est quis in aliqua.',
             rating: 5,
           },
           {
             id: '2',
             name: 'Jane Barry',
-            date: '1 day ago',
+            image: require('../assets/images/user/user2.png'),
+            date: new Date("2024-11-02"),
             comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
             rating: 4,
           },
           {
-             id: '3',
+            id: '3',
+            image: require('../assets/images/user/user3.png'),
             name: 'Claire Mignard',
-            date: '5 days ago',
+            date: new Date("2024-11-03"),
             comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
             rating: 3,
           },
+          {
+            id: '4',
+            image: require('../assets/images/user/user4.png'),
+           name: 'Claire Mignard',
+           date: new Date("2024-11-04"),
+           comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
+           rating: 2,
+         },
       ],   
     },
     {
@@ -116,7 +138,7 @@ function LandingPage({ navigation }) {
       title: 'Ux Research For Beginners',
       teacher: 'Olivia Wang',
       price: '$29',
-      rating: '4.5 (1782)',
+      rating: '4.5',
       lessons: '12 Lessons',
       image: require('../assets/images/uxresearch.png'),
       bestSeller: true, 
@@ -265,9 +287,37 @@ function LandingPage({ navigation }) {
 
     },
   ];
+
+
   const popularCourse = dataCourse.filter(course => course.type === 'Popular');
   const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
   const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
+
+  const navigateToCourses = (categoryType) => {
+    let courses = [];
+  
+    if (categoryType === 'Popular') {
+      courses = popularCourse;
+      categoryType = 'Popular Courses';
+    } else if (categoryType === 'Recommend') {
+      courses = recommendCourse;
+      categoryType = 'Recommended Courses';
+
+    } else if (categoryType === 'Inspire') {
+      courses = inspireCourse;
+      categoryType = 'Inspiring Courses';
+
+    }
+    
+    // Điều hướng tới màn hình CourseList với danh sách khóa học
+    navigation.navigate('CourseList', { courses,categoryType ,dataCourse: dataCourse });
+  };
+
+
+
+
+
+
   const renderCourseItem = ({ item }) => (
     <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })} >
       <View style={styles.imageContainer}>
@@ -492,7 +542,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Categories</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleViewAllPress}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -507,7 +557,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Popular courses</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToCourses('Popular')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -524,7 +574,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Recommended for you</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToCourses('Recommend')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -540,7 +590,7 @@ function LandingPage({ navigation }) {
       </View>
       <View style ={styles.titlesection}>
         <Text style ={{fontWeight: 600}}>Course that inspires</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToCourses('Inspire')}>
           <Text style ={{color:"aqua"}}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -577,19 +627,19 @@ function LandingPage({ navigation }) {
 
           <View style={styles.footer}>
         <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home')} >
-          <FontAwesomeIcon icon={faHome} size={20} />
+          <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse })}>
-          <FontAwesomeIcon icon={faSearch} size={20} />
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false})}>
+          <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse })}>
-          <FontAwesomeIcon icon={faBook} size={20} />
+          <FontAwesomeIcon icon={faBook} />
           <Text style={[styles.footerText, currentPage === 'MyCourses' && styles.activeFooterText]}>My Courses</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse })}>
-          <FontAwesomeIcon icon={faUser} size={20} />
+          <FontAwesomeIcon icon={faUser}  />
           <Text style={[styles.footerText,currentPage === 'Profile' && styles.activeFooterText]}>Profile</Text>
         </TouchableOpacity>
       </View>
@@ -828,35 +878,34 @@ courseInspireInfo: {
 
 // footer
 footer: {
-  flex: 1,
-  height: 60,
-  backgroundColor: 'red',
+  position: 'absolute',  // Đặt footer ở cuối màn hình
+  bottom: 0,
   flexDirection: 'row',
   justifyContent: 'space-around',
   alignItems: 'center',
+  height: 50,
   width: '100%',
-  borderTopWidth: 0.5,
-  borderTopColor: 'gray',
   backgroundColor: 'white',
-  position: 'relative',
-  marginTop: 10,
-  
+  borderTopWidth: 1,
+  borderTopColor: 'gray',  // Màu đường viền trên
+  paddingVertical: 10,
 },
 footerItem: {
   alignItems: 'center',
   justifyContent: 'center',
   flexDirection: 'column',
-  padding: 12,
+  padding: 5, // Giảm padding để tiết kiệm không gian
 },
 footerText: {
   color: 'black',
   fontSize: 12,
   fontWeight: '600',
+  marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
 },
 activeFooterText: {
-    color: 'blue', 
-
-  },
+  color: 'blue',
+  fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+},
 
 });
 

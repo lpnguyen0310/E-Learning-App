@@ -17,6 +17,7 @@ const coursesData = [
     title: 'UX Foundation',
     time: '2 hrs 25 mins',
     progress: 0.3,
+    status: 'ongoing',
     image: require('../assets/images/uxfoundation.png'),
     lessons: [
       {
@@ -214,7 +215,8 @@ const coursesData = [
     id: '2',
     title: 'Creative Art Design',
     time: '3 hrs 25 mins',
-    progress: 0.7,
+    progress: 1,
+    status: 'completed',
     image: require('../assets/images/creativeArtDesign.png'),
     lessons: [
       // Dữ liệu bài học cho "Palettes for Your App"
@@ -228,6 +230,7 @@ const coursesData = [
     title: 'Palettes for Your App',
     time: '4 hrs 50 mins',
     progress: 1,
+    status: 'completed',
     image: require('../assets/images/palettesforyourApp.png'),
     lessons: [
       // Dữ liệu bài học cho "Palettes for Your App"
@@ -241,6 +244,7 @@ const coursesData = [
     title: 'Typography in UI Design',
     time: '4 hrs 50 mins',
     progress: 0.5,
+    status: 'ongoing',
     image: require('../assets/images/TypographyInUIDesign.png'),
     lessons: [
       // Dữ liệu bài học cho "Typography in UI Design"
@@ -290,9 +294,18 @@ const MyCoursesScreen = ({ navigation,route }) => {
     navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
   };
   
+
+  const [activeTab, setActiveTab] = useState('all');
+
+  // Lọc danh sách khóa học dựa trên tab
+  const filteredCourses = coursesData.filter((course) => {
+    if (activeTab === 'all') return true; // Hiển thị tất cả
+    return course.status === activeTab; // Lọc dựa trên trạng thái
+  });
+
   return (
-    <View>
-      <View style={styles.container}>
+    <View style={{flex:1,}}>
+    <View style={styles.container}>
 
         {/* Header */}
         <View style={styles.headerContainer}>
@@ -300,52 +313,71 @@ const MyCoursesScreen = ({ navigation,route }) => {
         </View>
 
 
-        <View style={styles.banner}>
-          <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerText}>Courses that boost <br></br> your career!</Text>
-            <TouchableOpacity style={styles.bannerButton}>
-              <Text style={styles.bannerButtonText}>Check Now</Text>
-            </TouchableOpacity>
-          </View>
-          <Image
-            source={require('../assets/images/teacher1_khong_nen.png')} // Đảm bảo đúng đường dẫn tới ảnh của bạn
-            style={styles.bannerImage}
-          />
+      <View style={styles.banner}>
+        <View style={styles.bannerTextContainer}>
+          <Text style={styles.bannerText}>Courses that boost <br></br> your career!</Text>
+          <TouchableOpacity style={styles.bannerButton}>
+            <Text style={styles.bannerButtonText}>Check Now</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.tabContainer}>
-          <TouchableOpacity>
-            <Text style={[styles.tab, styles.activeTab]}>ALL</Text>
+        <Image
+          source={require('../assets/images/teacher1_khong_nen.png')} // Đảm bảo đúng đường dẫn tới ảnh của bạn
+          style={styles.bannerImage}
+        />
+      </View>
+
+      {/* Tabs */}
+      <View style={styles.tabContainer}>
+          <TouchableOpacity onPress={() => setActiveTab('all')}>
+            <Text style={[styles.tab, activeTab === 'all' && styles.activeTab]}>
+              ALL
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.tab}>ON GOING</Text>
+          <TouchableOpacity onPress={() => setActiveTab('ongoing')}>
+            <Text
+              style={[
+                styles.tab,
+                activeTab === 'ongoing' && styles.activeTab,
+              ]}
+            >
+              ON GOING
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.tab}>COMPLETED</Text>
+          <TouchableOpacity onPress={() => setActiveTab('completed')}>
+            <Text
+              style={[
+                styles.tab,
+                activeTab === 'completed' && styles.activeTab,
+              ]}
+            >
+              COMPLETED
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          data={coursesData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <CourseItem
-              title={item.title}
-              time={item.time}
-              progress={item.progress}
-              image={item.image}
-              item={item}
-              onPress={handleCoursePress} // Truyền hàm handleCoursePress vào đây
-            />
-          )}
-          contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
-        />
-      </View>
+      <FlatList
+        data={filteredCourses}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <CourseItem
+            title={item.title}
+            time={item.time}
+            progress={item.progress}
+            image={item.image}
+            item={item}
+            onPress={handleCoursePress} // Truyền hàm handleCoursePress vào đây
+          />
+        )}
+        contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
+      />
+     
+    </View>
       <View style={styles.footer}>
-          <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-          <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-          <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-          <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
-        </View>
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+      </View>
     </View>
   );
 };
@@ -358,13 +390,12 @@ const FooterItem = ({ icon, label, currentPage, onPress }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal:10,
+    padding: 10,
     backgroundColor: '#FFFFFF',
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,

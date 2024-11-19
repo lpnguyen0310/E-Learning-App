@@ -13,12 +13,17 @@ import LoginScreen from '../components/Login'; // Import LoginScreen
 import RegisterScreen from '../components/Register'; // Import RegisterScreen
 import MentorsScreen from '../components/MentorsScreen';
 
+import Category from '../components/Category';
+import Filter from '../components/FilterScreen';
+import CourseList from '../components/CourseList';
+
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
-    <NavigationContainer> 
-      <Stack.Navigator initialRouteName="Login">
+    <NavigationContainer independent={true}> 
+      <Stack.Navigator initialRouteName="Home">
 
       <Stack.Screen 
           name="Login" 
@@ -35,7 +40,7 @@ const App = () => {
         options={{ headerShown: false }}
         />
         <Stack.Screen name="Search" component={SearchScreen} />
-        {/* <Stack.Screen name="CourseDetail" component={CourseDetail} /> */}
+        <Stack.Screen name="CourseDetail" component={CourseDetail} /> 
         <Stack.Screen name="Profile" component={ProfileUser} 
         options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
         />
@@ -44,13 +49,18 @@ const App = () => {
         />
         <Stack.Screen name="Lession" component={lession} />
         <Stack.Screen name="TeacherProfile" component={TeacherProfile} />
+        <Stack.Screen name="Category" component={Category} />
+        <Stack.Screen name="Filter" component={Filter} />
+        <Stack.Screen name="CourseList" component={CourseList} />
         <Stack.Screen name="LearningLesson" component={LearningLesson} 
           options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
         />
         <Stack.Screen name="Mentors" component={MentorsScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
+  
 };
 
 export default App;
