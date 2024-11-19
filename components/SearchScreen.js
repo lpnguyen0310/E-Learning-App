@@ -75,31 +75,38 @@
 
         // State lưu trữ trang hiện tại của ứng dụng
         const [currentPage, setCurrentPage] = useState('Search'); 
+
+        const handleNavigation = (page, params = {}) => {
+          setCurrentPage(page); // Cập nhật trang hiện tại
+          navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
+        };
+          
     
    
-    // Search and filter
-    const handleFilter = () => {
+     // Search and filter
+     const handleFilter = () => {
       const keywordLower = keyword.toLowerCase();
-      
+      let filteredResults;
+    
       // Nếu không có từ khóa tìm kiếm
       if (!keywordLower) {
         // Nếu có danh mục được chọn
         if (category) {
-          setFilteredData(dataCourse.filter(course => course.categories === category));
-        } else {
-          setFilteredData(dataCourse);
-        }
+          filteredResults = dataCourse.filter(course => course.categories === category);
+        } 
       } else {
         // Nếu có từ khóa tìm kiếm, thực hiện lọc dữ liệu theo từ khóa và danh mục
-        const filteredResults = dataCourse.filter((item) => (
+        filteredResults = dataCourse.filter((item) => (
           item.title.toLowerCase().includes(keywordLower) &&
           (!category || item.categories === category)
         ));
-        setFilteredData(filteredResults);
       }
     
-      // Cập nhật filterActive để chỉ hiển thị khi có dữ liệu lọc
-      setFilterActive(filteredData.length > 0);
+      // Cập nhật dữ liệu lọc
+      setFilteredData(filteredResults);
+  
+      setFilterActive(true); // Kích hoạt bộ lọc khi có kết quả
+      setNoResults();   // Hiển thị "No results found" khi không có kết quả
     };
 
       // Xử lý khi chọn một chủ đề trong danh sách chủ đề
@@ -121,65 +128,74 @@
       };
 
       // Xử lý khi click vào một chủ đề hot topic
-      const handleTopicPress = (topic) => {
+       // Xử lý khi click vào một chủ đề hot topic
+       const handleTopicPress = (topic) => {
         setKeyword(topic);
-        setFilterActive(true);
         const filteredResults = dataCourse.filter((item) => (
             item.title.toLowerCase().includes(topic.toLowerCase()) &&
             (!category || item.categories === category)
         ));
         setFilteredData(filteredResults);
+        setFilterActive(filteredResults.length > 0);
+      setNoResults(filteredResults.length === 0);
       };
-
+     // Xử lý khi thay đổi từ khóa tìm kiếm
      // Xử lý khi thay đổi từ khóa tìm kiếm
      useEffect(() => {
+      // Nếu không có từ khóa hoặc danh mục, hiển thị toàn bộ
       if (!keyword.trim() && !category) {
-          // Nếu không có từ khóa, hiển thị tất cả khóa học (trang chính của search)
-          setFilteredData(dataCourse);
-          setFilterActive(false);  // Không có bộ lọc hoạt động
-          setNoResults(false);  // Không có kết quả tìm kiếm
-          return;  // Dừng việc lọc dữ liệu
-      }
-
-      // Bắt đầu lọc dữ liệu khi có thay đổi
+        if (dataCourse.length > 0) {
+            // Nếu có dữ liệu, hiển thị tất cả
+            setFilteredData(dataCourse);
+            setFilterActive(false);
+            setNoResults(false); // Đảm bảo trạng thái không kết quả là false
+        } else {
+            // Nếu không có dữ liệu
+            setFilteredData([]);
+            setFilterActive(false);
+            setNoResults(true); // Hiển thị "NO RESULT FOUND"
+        }
+        return; // Dừng xử lý thêm nếu không có từ khóa hoặc danh mục
+    }
+  
+      // Lọc theo từ khóa, danh mục, và các bộ lọc khác
       let filteredResults = dataCourse.filter((item) => (
           item.title.toLowerCase().includes(keyword.toLowerCase()) &&
           (!category || item.categories === category)
       ));
   
-      // Lọc theo subcategory nếu có subcategory được chọn
+      // Thêm các bộ lọc khác nếu cần
       if (selectedSubcategories.length > 0) {
           filteredResults = filteredResults.filter((course) =>
               selectedSubcategories.includes(course.categories)
           );
       }
-  
-      // Lọc theo rating nếu có rating được chọn
       if (selectedRatings.length > 0) {
           filteredResults = filteredResults.filter((course) =>
               selectedRatings.some((rating) => parseFloat(course.rating) >= rating)
           );
       }
-
-      // Lọc theo category nếu có
-    if (category && isFromCategory) {
-      filteredResults = filteredResults.filter(course => course.categories === category);
-    }
-
-    if (filteredResults.length === 0) {
-      setNoResults(true);  // Hiển thị thông báo "NO RESULT FOUND"
-    } else {
-      setNoResults(false); // Không hiển thị thông báo nếu có kết quả
-    }
   
-      // Only update if filtered data has changed
-        if (JSON.stringify(filteredResults) !== JSON.stringify(filteredData)) {
-            setFilteredData(filteredResults);
-        }
-  
-      // Cập nhật trạng thái filterActive
+      if (JSON.stringify(filteredResults) !== JSON.stringify(filteredData)) {
+        setFilteredData(filteredResults);
+    }
+      setNoResults(filteredResults.length === 0); 
       setFilterActive(filteredResults.length > 0);
-  }, [keyword, category, selectedSubcategories, selectedRatings, dataCourse,filteredData]);
+      
+      // Cập nhật trạng thái noResults
+    
+  }, [keyword, category, selectedSubcategories, selectedRatings, dataCourse]);
+
+  const handlekeyword = (text) => {
+    setKeyword(text);
+    if (text.trim() === '') {
+      setFilteredData(dataCourse);
+      setFilterActive(false);
+      setNoResults(false);
+    } else {
+      handleFilter();
+    }
+  };
 
 
 
@@ -264,11 +280,6 @@ const renderItemSearch = ({ item }) => (
   </TouchableOpacity>
 );
 
- const renderNoResults = () => (
-        <View style={styles.noResultsContainer}>
-            <Text style={styles.noResultsText}>NO RESULT FOUND</Text>
-        </View>
-    );
    
     return (
       <View style={{ flex: 1 }}>
@@ -281,7 +292,7 @@ const renderItemSearch = ({ item }) => (
                           placeholder={placeholderText}
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
                           value={keyword}
-                          onChangeText={(text) => setKeyword(text)}
+                          onChangeText={handlekeyword}                          
                           onSubmitEditing={handleFilter} 
                           />
                 </View>
@@ -292,12 +303,12 @@ const renderItemSearch = ({ item }) => (
                   </TouchableOpacity>
               </View>
           </View>
-          {filterActive ? (
-            filteredData.length === 0 ? (
-              <View style={styles.noResultContainer}>
-                <Text style={styles.noResultText}>NO RESULT FOUND</Text>
-              </View>
-            )  : (
+          {noResults ? (
+              <View style={styles.container_search}>
+                  <Text style={styles.noResultsText}>NO RESULT FOUND</Text>
+               </View>
+             ) :filterActive ? (
+            
             <View style ={styles.container_search}>
                 <View style ={styles.result_search}>
                 <FlatList
@@ -311,8 +322,6 @@ const renderItemSearch = ({ item }) => (
                 </View>
 
             </View>
-            
-            )
           ) : (
         <View style = {styles.containerBody}>
           <View style ={styles.titlehot}>
@@ -360,17 +369,13 @@ const renderItemSearch = ({ item }) => (
         </View>
       </View>
         )} 
-         {/* Show "No courses found" message when filterActive is false and no courses are in filteredData */}
-         {!filterActive && filteredData.length === 0 && (
-          <Text style={{ textAlign: 'center', marginTop: 20 }}>No courses found</Text>
-        )}
       </View>
       </ScrollView> 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => navigation.navigate('Home')}/>
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => setCurrentPage('Search')} />
-        <FooterItem icon={faBook} label="My Courses" currentPage={currentPage} onPress={() => setCurrentPage('MyCourses')} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => setCurrentPage('Profile')} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
       </View>
         </View>
     );
