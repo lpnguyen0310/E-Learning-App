@@ -14,7 +14,7 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     
     // Xử lý Tab
     const [selectedTab, setSelectedTab] = useState('Overview');
-    // Xử lý mở rộng mô tả
+    // Xử lý mở rộng mô tả abc
     const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
 
 

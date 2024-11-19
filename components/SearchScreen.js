@@ -5,14 +5,9 @@
   import { faStar,faBookmark } from '@fortawesome/free-regular-svg-icons';
   import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 
-
-
-
-
-
-
   function SearchScreen ({route,navigation}) {
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
+
     const {category ,dataCourse,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
      // State lưu trữ từ khóa tìm kiếm và kết quả lọc
     const [keyword, setKeyword] = useState("");
@@ -56,6 +51,7 @@
       });
     };
 
+
       const hotTopics = ['Java', 'SQL', 'Javascript', 'Python', 'Digital marketing', 'Photoshop', 'Watercolor'];
       const categories = [
           { id: '1',icon: <FontAwesomeIcon icon={faChartLine} style={{color: "#74C0FC",}} /> ,title: 'Business' },
@@ -76,11 +72,10 @@
         // State lưu trữ trang hiện tại của ứng dụng
         const [currentPage, setCurrentPage] = useState('Search'); 
 
-        const handleNavigation = (page, params = {}) => {
-          setCurrentPage(page); // Cập nhật trang hiện tại
-          navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
+         const handleNavigation = (page, params = {}) => {
+         setCurrentPage(page); // Cập nhật trang hiện tại
+        navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
         };
-          
     
    
      // Search and filter
@@ -197,8 +192,7 @@
     }
   };
 
-
-
+  
 
     // Render một chủ đề trong danh sách chủ đề
     const renderCategoryItem  = ({ item }) => (
@@ -280,7 +274,6 @@ const renderItemSearch = ({ item }) => (
   </TouchableOpacity>
 );
 
-   
     return (
       <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -292,7 +285,7 @@ const renderItemSearch = ({ item }) => (
                           placeholder={placeholderText}
                           style={{height: 40, borderColor: 'gray',width: "100%",color :"grey",borderRadius: 8}}
                           value={keyword}
-                          onChangeText={handlekeyword}                          
+                          onChangeText={handlekeyword}
                           onSubmitEditing={handleFilter} 
                           />
                 </View>
@@ -307,22 +300,20 @@ const renderItemSearch = ({ item }) => (
               <View style={styles.container_search}>
                   <Text style={styles.noResultsText}>NO RESULT FOUND</Text>
                </View>
-             ) :filterActive ? (
-            
-            <View style ={styles.container_search}>
-                <View style ={styles.result_search}>
-                <FlatList
-                data={filteredData}
-                renderItem={renderItemSearch}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.resultsContainer}
-                numColumns={1}
-
-              />
+             ) : filterActive ? (
+              <View style={styles.container_search}>
+                <View style={styles.result_search}>
+                  <FlatList
+                    data={filteredData}
+                    renderItem={renderItemSearch}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={styles.resultsContainer}
+                    numColumns={1}
+                    initialNumToRender={10} 
+                  />
                 </View>
-
-            </View>
-          ) : (
+              </View>
+            ) :(
         <View style = {styles.containerBody}>
           <View style ={styles.titlehot}>
               <Text style = {{fontWeight:600}}>Hot Topics</Text>
@@ -386,6 +377,8 @@ const renderItemSearch = ({ item }) => (
       <Text style={[styles.footerText, currentPage === label && styles.activeFooterText]}>{label}</Text>
     </TouchableOpacity>
   );
+  
+  
   const styles = StyleSheet.create({
     container: {
       alignItems: "center",
@@ -610,30 +603,32 @@ const renderItemSearch = ({ item }) => (
 
   // Footer
   footer: {
-    height: 50,
+    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    height: 50,
     width: '100%',
-    borderTopWidth: 0.5,
-    borderTopColor: 'gray',
-    backgroundColor: 'white',    
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: 'gray',  // Màu đường viền trên
+    paddingVertical: 10,
   },
   footerItem: {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    padding: 12,
+    padding: 5, // Giảm padding để tiết kiệm không gian
   },
   footerText: {
     color: 'black',
     fontSize: 12,
     fontWeight: '600',
+    marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
   },
   activeFooterText: {
-    color: 'blue', 
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: 'blue',
+    fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
   },
   // Kết quả tìm kiếm
   resultsContainer: {
@@ -680,6 +675,7 @@ course_item_title_search:{
   width: "100%",
   alignItems: "center",
 },
+
 
 
   });

@@ -410,6 +410,7 @@ function LandingPage({ navigation }) {
       rating: '4.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher1.png'),
+      course: '3D Modeling',
     },
     {
       id: '2',
@@ -418,14 +419,16 @@ function LandingPage({ navigation }) {
       rating: '4.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher2.png'),
+      course: '3D Animation',
     },
     {
       id: '3',
       title: 'Nancy Sweeneys',
       university: "University of California",
-      rating: '4.5 (1233)',
+      rating: '3.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher3.png'),
+      course: '3D Printing',
     },
     {
       id: '4',
@@ -434,6 +437,52 @@ function LandingPage({ navigation }) {
       rating: '4.5 (1233)',
       lessons: '18 Lessons',
       image: require('../assets/images/teacher4.png'),
+      course: '3D Rendering',
+    },
+    {
+      id: '5',
+      title: 'Chiristian Hayes',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher1.png'),
+      course: '3D Modeling',
+    },
+    {
+      id: '6',
+      title: 'Deniss Sweeneys',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher2.png'),
+      course: '3D Animation',
+    },
+    {
+      id: '7',
+      title: 'Nancy Sweeneys',
+      university: "University of California",
+      rating: '3.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher3.png'),
+      course: '3D Printing',
+    },
+    {
+      id: '8',
+      title: 'Linda Sweeneys',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher4.png'),
+      course: '3D Rendering',
+    },
+    {
+      id: '9',
+      title: 'Linda Sweeneys',
+      university: "University of California",
+      rating: '4.5 (1233)',
+      lessons: '18 Lessons',
+      image: require('../assets/images/teacher4.png'),
+      course: '3D Visualization',
     },
   ];
 
@@ -556,12 +605,13 @@ function LandingPage({ navigation }) {
         />
       </View>
 
-      <View style ={styles.titlesection}>
-        <Text style ={{fontWeight: 600}}>Top Teacher</Text>
-        <TouchableOpacity>
-          <Text style ={{color:"aqua"}}>View All</Text>
+      <View style={styles.titlesection}>
+        <Text style={{ fontWeight: '600' }}>Top Teacher</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Mentors', { topTeachers ,dataCourse})}>
+          <Text style={{ color: "aqua" }}>View All</Text>
         </TouchableOpacity>
       </View>
+
 
           <View style={styles.flat_list_courses}>
             <FlatList
@@ -584,12 +634,12 @@ function LandingPage({ navigation }) {
           <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
+        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse })}>
           <FontAwesomeIcon icon={faBook} />
           <Text style={[styles.footerText, currentPage === 'MyCourses' && styles.activeFooterText]}>My Courses</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
-          <FontAwesomeIcon icon={faUser} />
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse })}>
+          <FontAwesomeIcon icon={faUser}  />
           <Text style={[styles.footerText,currentPage === 'Profile' && styles.activeFooterText]}>Profile</Text>
         </TouchableOpacity>
       </View>
@@ -828,35 +878,33 @@ courseInspireInfo: {
 
 // footer
 footer: {
-  flex: 1,
-  height: 60,
-  backgroundColor: 'red',
+  bottom: 0,
   flexDirection: 'row',
   justifyContent: 'space-around',
   alignItems: 'center',
+  height: 50,
   width: '100%',
-  borderTopWidth: 0.5,
-  borderTopColor: 'gray',
   backgroundColor: 'white',
-  position: 'relative',
-  marginTop: 10,
-  
+  borderTopWidth: 1,
+  borderTopColor: 'gray',  // Màu đường viền trên
+  paddingVertical: 10,
 },
 footerItem: {
   alignItems: 'center',
   justifyContent: 'center',
   flexDirection: 'column',
-  padding: 12,
+  padding: 5, // Giảm padding để tiết kiệm không gian
 },
 footerText: {
   color: 'black',
   fontSize: 12,
   fontWeight: '600',
+  marginTop: 2, // Thêm khoảng cách nhỏ giữa icon và text
 },
 activeFooterText: {
-    color: 'blue', 
-
-  },
+  color: 'blue',
+  fontWeight: '700',  // Làm đậm thêm văn bản khi chọn
+},
 
 });
 
