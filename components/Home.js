@@ -878,7 +878,6 @@ courseInspireInfo: {
 
 // footer
 footer: {
-  position: 'absolute',  // Đặt footer ở cuối màn hình
   bottom: 0,
   flexDirection: 'row',
   justifyContent: 'space-around',
