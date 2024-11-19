@@ -23,7 +23,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   return (
     <NavigationContainer independent={true}> 
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Home">
 
       <Stack.Screen 
           name="Login" 

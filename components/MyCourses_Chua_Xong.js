@@ -17,6 +17,7 @@ const coursesData = [
     title: 'UX Foundation',
     time: '2 hrs 25 mins',
     progress: 0.3,
+    status: 'ongoing',
     image: require('../assets/images/uxfoundation.png'),
     lessons: [
       {
@@ -214,7 +215,8 @@ const coursesData = [
     id: '2',
     title: 'Creative Art Design',
     time: '3 hrs 25 mins',
-    progress: 0.7,
+    progress: 1,
+    status: 'completed',
     image: require('../assets/images/creativeArtDesign.png'),
     lessons: [
       // Dữ liệu bài học cho "Palettes for Your App"
@@ -228,6 +230,7 @@ const coursesData = [
     title: 'Palettes for Your App',
     time: '4 hrs 50 mins',
     progress: 1,
+    status: 'completed',
     image: require('../assets/images/palettesforyourApp.png'),
     lessons: [
       // Dữ liệu bài học cho "Palettes for Your App"
@@ -241,6 +244,7 @@ const coursesData = [
     title: 'Typography in UI Design',
     time: '4 hrs 50 mins',
     progress: 0.5,
+    status: 'ongoing',
     image: require('../assets/images/TypographyInUIDesign.png'),
     lessons: [
       // Dữ liệu bài học cho "Typography in UI Design"
@@ -290,7 +294,17 @@ const MyCoursesScreen = ({ navigation,route }) => {
     navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
   };
   
+
+  const [activeTab, setActiveTab] = useState('all');
+
+  // Lọc danh sách khóa học dựa trên tab
+  const filteredCourses = coursesData.filter((course) => {
+    if (activeTab === 'all') return true; // Hiển thị tất cả
+    return course.status === activeTab; // Lọc dựa trên trạng thái
+  });
+
   return (
+    <View style={{flex:1,}}>
     <View style={styles.container}>
 
       {/* Header */}
@@ -311,20 +325,38 @@ const MyCoursesScreen = ({ navigation,route }) => {
           style={styles.bannerImage}
         />
       </View>
+
+      {/* Tabs */}
       <View style={styles.tabContainer}>
-        <TouchableOpacity>
-          <Text style={[styles.tab, styles.activeTab]}>ALL</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.tab}>ON GOING</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.tab}>COMPLETED</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={() => setActiveTab('all')}>
+            <Text style={[styles.tab, activeTab === 'all' && styles.activeTab]}>
+              ALL
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('ongoing')}>
+            <Text
+              style={[
+                styles.tab,
+                activeTab === 'ongoing' && styles.activeTab,
+              ]}
+            >
+              ON GOING
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('completed')}>
+            <Text
+              style={[
+                styles.tab,
+                activeTab === 'completed' && styles.activeTab,
+              ]}
+            >
+              COMPLETED
+            </Text>
+          </TouchableOpacity>
+        </View>
 
       <FlatList
-        data={coursesData}
+        data={filteredCourses}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <CourseItem
@@ -338,7 +370,9 @@ const MyCoursesScreen = ({ navigation,route }) => {
         )}
         contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
       />
-     <View style={styles.footer}>
+     
+    </View>
+      <View style={styles.footer}>
         <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
         <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
         <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
