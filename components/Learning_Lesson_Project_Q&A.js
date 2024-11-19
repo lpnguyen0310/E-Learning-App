@@ -12,35 +12,49 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
+import { Audio } from 'expo-av';
 
-const LessonItem = ({ lesson }) => (
-  <View style={[styles.lessonItem, lesson.active ? styles.activeLesson : null]}>
-    <Text style={styles.lessonNumber}>{lesson.id}</Text>
+const renderLessonItem = ({ item }) => (
+  <TouchableOpacity
+    style={[
+      styles.lessonItem,
+      currentAudio === item.audioUrl && styles.activeLesson,
+    ]}
+    onPress={() => playAudio(item.audioUrl, item.id)} // Gửi thêm lessonId
+  >
     <View style={styles.lessonInfo}>
-      <Text style={styles.lessonTitle}>{lesson.title}</Text>
-      <Text style={styles.lessonDuration}>{lesson.duration}</Text>
+      <Text style={styles.lessonTitle}>{item.title}</Text>
+      <Text style={styles.lessonDuration}>{item.duration}</Text>
     </View>
-    {lesson.completed && <Icon name="checkmark" size={20} color="#00BFFF" />}
-    {lesson.active && <Icon name="play-outline" size={20} color="#00BFFF" />}
-  </View>
+    <Icon
+      name={
+        item.completed
+          ? 'checkmark-circle'
+          : currentAudio === item.audioUrl && isPlaying
+          ? 'pause-circle'
+          : 'play-circle-outline'
+      }
+      size={24}
+      color={item.completed ? 'green' : 'gray'}
+    />
+  </TouchableOpacity>
 );
 
 const LearningLesson = ({ route }) => {
   const navigation = useNavigation();
   const { course,dataCourse } = route.params;
 
-
-  const [lessonsData, setLessonsData] = useState(course.lessons);
-
-  const toggleSection = (sectionId) => {
-    setLessonsData((prevData) =>
-      prevData.map((section) =>
-        section.id === sectionId
-          ? { ...section, expanded: !section.expanded }
-          : section
+  // Hàm để mở rộng/collapse module
+  const toggleModule = (moduleIndex) => {
+    setLessons((prevLessons) =>
+      prevLessons.map((module, index) =>
+        index === moduleIndex
+          ? { ...module, expanded: !module.expanded } // Đảo trạng thái `expanded`
+          : module
       )
     );
   };
+  
 
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
@@ -53,6 +67,53 @@ const LearningLesson = ({ route }) => {
     navigation.navigate(page, params); // Chuyển hướng với dữ liệu params
   };
 
+    //Thực hiện phát âm thanh
+    const [lessons, setLessons] = useState(course.lessons); // Lưu danh sách bài học
+    const [currentAudio, setCurrentAudio] = useState(null); // Lưu URL của âm thanh đang phát
+    const [isPlaying, setIsPlaying] = useState(false); // Trạng thái đang phát
+    const [sound, setSound] = useState(null); // Instance âm thanh
+  
+    const playAudio = async (audioUrl, lessonId) => {
+      if (sound) {
+        await sound.stopAsync();
+        await sound.unloadAsync();
+        setSound(null);
+      }
+    
+      if (currentAudio === audioUrl && isPlaying) {
+        setIsPlaying(false);
+        return;
+      }
+    
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: audioUrl },
+        { shouldPlay: true }
+      );
+    
+      setSound(newSound);
+      setCurrentAudio(audioUrl);
+      setIsPlaying(true);
+    
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          setIsPlaying(false);
+          setCurrentAudio(null);
+          newSound.unloadAsync();
+    
+          // Đánh dấu bài học hoàn thành
+          setLessons((prevLessons) =>
+            prevLessons.map((module) => ({
+              ...module,
+              lessons: module.lessons.map((lesson) =>
+                lesson.id === lessonId ? { ...lesson, completed: true } : lesson
+              ),
+            }))
+          );
+        }
+      });
+    };
+    
+  
   return (
     <View style={{flex:1,}}>
     
@@ -107,32 +168,61 @@ const LearningLesson = ({ route }) => {
       {/* Lesson Sections */}
       {activeTab === 'LESSONS' && (
         <FlatList
-          data={lessonsData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          data={lessons} // Dữ liệu các module
+          keyExtractor={(item) => item.module} // Mỗi module có một key riêng
+          renderItem={({ item: module, index }) => (
             <View style={styles.sectionContainer}>
+              {/* Module Header */}
               <TouchableOpacity
-                onPress={() => toggleSection(item.id)}
+                onPress={() => toggleModule(index)} // Toggle mở/đóng module
                 style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>{item.module}</Text>
+                <Text style={styles.sectionTitle}>{module.module}</Text>
                 <Icon
-                  name={item.expanded ? 'chevron-up' : 'chevron-down'}
+                  name={module.expanded ? 'chevron-up' : 'chevron-down'}
                   size={20}
                   color="#000"
                 />
               </TouchableOpacity>
-              {item.expanded && (
-                <View style={styles.lessonsList}>
-                  {item.lessons.map((lesson) => (
-                    <LessonItem key={lesson.lessonId} lesson={lesson} />
-                  ))}
-                </View>
+
+              {/* Lesson List */}
+              {module.expanded && (
+                <FlatList
+                  data={module.lessons} // Bài học trong module
+                  keyExtractor={(lesson) => lesson.id}
+                  renderItem={({ item: lesson }) => (
+                    <TouchableOpacity
+                      style={[
+                        styles.lessonItem,
+                        currentAudio === lesson.audioUrl && styles.activeLesson,
+                      ]}
+                      onPress={() => playAudio(lesson.audioUrl, lesson.id)} // Gửi URL và ID bài học
+                    >
+                      <View style={styles.lessonInfo}>
+                        <Text style={styles.lessonTitle}>{lesson.title}</Text>
+                        <Text style={styles.lessonDuration}>{lesson.duration}</Text>
+                      </View>
+                      {/* Biểu tượng trạng thái của bài học */}
+                      <Icon
+                        name={
+                          lesson.completed
+                            ? 'checkmark-circle'
+                            : currentAudio === lesson.audioUrl && isPlaying
+                            ? 'pause-circle'
+                            : 'play-circle-outline'
+                        }
+                        size={24}
+                        color={lesson.completed ? 'green' : 'gray'}
+                      />
+                    </TouchableOpacity>
+                  )}
+                />
               )}
             </View>
           )}
           contentContainerStyle={styles.lessonsListContainer}
         />
       )}
+
 
       {activeTab === 'PROJECTS' && (
         <ScrollView
@@ -335,15 +425,6 @@ const styles = StyleSheet.create({
   lessonsList: {
     paddingLeft: 15,
   },
-  lessonItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#DDDDDD',
-    marginBottom: 8,
-  },
   lessonNumber: {
     width: 30,
     fontSize: 14,
@@ -351,24 +432,53 @@ const styles = StyleSheet.create({
     color: '#00BFFF',
     textAlign: 'center',
   },
+  lessonsListContainer: {
+    paddingBottom: 20,
+  },
+  lessonsListContainer: {
+    paddingBottom: 20,
+  },
+  sectionContainer: {
+    marginBottom: 15,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#f1f1f1',
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  lessonItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fafafa',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+  activeLesson: {
+    borderColor: '#00BFFF',
+    borderWidth: 1,
+  },
   lessonInfo: {
     flex: 1,
   },
   lessonTitle: {
     fontSize: 14,
+    fontWeight: 'bold',
   },
   lessonDuration: {
     fontSize: 12,
     color: 'gray',
   },
-  activeLesson: {
-    borderColor: '#00BFFF',
-    backgroundColor: '#E0F7FF',
-  },
-  lessonsListContainer: {
-    paddingBottom: 20,
-  },
-
+  
   //project styles
   projectSection: {
     padding: 10,

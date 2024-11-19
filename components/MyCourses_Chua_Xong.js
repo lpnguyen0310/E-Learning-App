@@ -24,14 +24,18 @@ const coursesData = [
         module: 'I - Introduction',
         lessons: [
           {
-            id: '01',
+            id: '1',
             title: 'Amet adipiscing consectetur',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            completed: false,
           },
           {
-            id: '02',
+            id: '2',
             title: 'Culpa est incididunt enim id adi',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+            completed: false,
           },
         ],
       },
@@ -40,14 +44,18 @@ const coursesData = [
         module: 'II - Introduction',
         lessons: [
           {
-            id: '01',
+            id: '1',
             title: 'Amet adipiscing consectetur',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            completed: false,
           },
           {
-            id: '02',
+            id: '2',
             title: 'Culpa est incididunt enim id adi',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+            completed: false,
           },
         ],
       },
@@ -55,14 +63,18 @@ const coursesData = [
         module: 'III - Introduction',
         lessons: [
           {
-            id: '01',
+            id: '1',
             title: 'Amet adipiscing consectetur',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            completed: false,
           },
           {
-            id: '02',
+            id: '2',
             title: 'Culpa est incididunt enim id adi',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+            completed: false,
           },
         ],
       },
@@ -70,14 +82,18 @@ const coursesData = [
         module: 'IV - Introduction',
         lessons: [
           {
-            id: '01',
+            id: '1',
             title: 'Amet adipiscing consectetur',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            completed: false,
           },
           {
-            id: '02',
+            id: '2',
             title: 'Culpa est incididunt enim id adi',
             duration: '01:23 mins',
+            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+            completed: false,
           },
         ],
       },

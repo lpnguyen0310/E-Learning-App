@@ -28,6 +28,7 @@ const userProfile = {
       price: '$190',
       rating: 4.5,
       lessons: 12,
+      saved: true, // Dữ liệu trạng thái "lưu"
       image: require('../assets/images/productDesign.png'),
     },
     {
@@ -37,6 +38,7 @@ const userProfile = {
       price: '$59',
       rating: 4.5,
       lessons: 12,
+      saved: true,
       image: require('../assets/images/webdesign.png'),
     },
     {
@@ -46,6 +48,7 @@ const userProfile = {
       price: '$320',
       rating: 4.5,
       lessons: 12,
+      saved: true,
       image: require('../assets/images/mobieUiDesign.png'),
     },
     {
@@ -55,31 +58,56 @@ const userProfile = {
       price: '$67',
       rating: 4.5,
       lessons: 12,
+      saved: true,
       image: require('../assets/images/digitalportrait.png'),
     },
   ],
 };
 
+
 function ProfileScreen ({route,navigation}) {
 
   // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
   //
+
+  //Thay đổi trạng thái có theo dỗi khóa học được lưu
+  const [courses, setCourses] = useState(userProfile.courses);
+
+  const toggleSaveCourse = (id) => {
+    const updatedCourses = courses.map((course) => {
+      if (course.id === id) {
+        return { ...course, saved: !course.saved }; // Thay đổi trạng thái saved
+      }
+      return course;
+    });
+    setCourses(updatedCourses.filter((course) => course.saved)); // Chỉ hiển thị các khóa học được lưu
+  };
+  
+
   const { dataCourse } = route.params;
   
   const renderCourse = ({ item }) => (
-    <View style={styles.courseContainer}>
-      <Image source={item.image} style={styles.courseImage} />
-      <View style={styles.courseInfo}>
-        <Text style={styles.courseTitle}>{item.title}</Text>
-        <Text style={styles.courseInstructor}>{item.instructor}</Text>
-        <Text style={styles.coursePrice}>{item.price}</Text>
-        <Text style={styles.courseDetails}>
-          ⭐ {item.rating} ({item.lessons} lessons)
-        </Text>
-      </View>
-      <Icon name="bookmark-outline" size={24} color="deepskyblue" />
+  <View style={styles.courseContainer}>
+    <Image source={item.image} style={styles.courseImage} />
+    <View style={styles.courseInfo}>
+      <Text style={styles.courseTitle}>{item.title}</Text>
+      <Text style={styles.courseInstructor}>{item.instructor}</Text>
+      <Text style={styles.coursePrice}>{item.price}</Text>
+      <Text style={styles.courseDetails}>
+        ⭐ {item.rating} ({item.lessons} lessons)
+      </Text>
     </View>
-  );
+    {/*  Thêm TouchableOpacity để bắt sự kiện khi click vào icon được lưu */}
+    <TouchableOpacity onPress={() => toggleSaveCourse(item.id)}>
+      <Icon
+        name={item.saved ? "bookmark" : "bookmark-outline"}
+        size={24}
+        color="deepskyblue"
+      />
+    </TouchableOpacity>
+  </View>
+);
+
 
   
   // State lưu trữ trang hiện tại của ứng dụng
@@ -127,11 +155,12 @@ function ProfileScreen ({route,navigation}) {
       <Text style={styles.sectionTitle}>Saved courses</Text>
       <ScrollView  style={{margin:10,padding:10}}>
       <FlatList
-        data={userProfile.courses}
+        data={courses}
         renderItem={renderCourse}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
       />
+
       </ScrollView>
      
 
