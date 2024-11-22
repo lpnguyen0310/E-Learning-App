@@ -3,9 +3,33 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell,faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { faBookmark,faStar } from '@fortawesome/free-regular-svg-icons';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getDatabase, ref, get } from 'firebase/database'; 
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
+  authDomain: "elearning-43ab4.firebaseapp.com",
+  databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "elearning-43ab4",
+  storageBucket: "elearning-43ab4.firebasestorage.app",
+  messagingSenderId: "259523190660",
+  appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
+  measurementId: "G-0Q3F48T7RM"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(); // Khởi tạo Firebase Realtime Database
+
+
 
 function LandingPage({ navigation }) {
+  const[dataCourse,setDataCourse] = useState([]);
+
   const categories = [
     { id: '1', image :require('../assets/images/business.png') , title: 'Business' },
     { id: '2',image :require('../assets/images/Code.png'), title: 'Code' },
@@ -34,265 +58,45 @@ function LandingPage({ navigation }) {
     </View> 
   );
 
-  const dataCourse = [
-    {
-      id: '1',
-      title: 'PHP in One Click',
-      teacher: 'Ramano Wultschiner',
-      price: '$59',
-      rating: '4.5',
-      lessons: '18 Lessons',
-      image: require('../assets/images/phponeclick.png'),
-      bestSeller: false, 
-      type : 'Popular',
-      categories : 'Code'
-    },
-    {
-      id: '2',
-      title: 'Python Introduction Course',
-      teacher: 'Ramano Wultschiner',
-      price: '$39',
-      rating: '4.5',
-      lessons: '12 Lessons',
-      image: require('../assets/images/introductionpython.png'),
-      bestSeller: true, 
-      type : 'Popular',
-      categories : 'Code'
-    },
-    {
-      id: '3',
-      title: 'Java Programming',
-      teacher: 'Emily Johnson',
-      price: '$19.99',
-      rating: '4.3',
-      lessons: '10 Lessons',
-      image: require('../assets/images/javaprogram.png'),
-      bestSeller: false, 
-      type : 'Popular',
-      categories : 'Code'
-    },
-    {
-      id: '4',
-      title: 'Java Introduction Course',
-      teacher: 'Michael Brown',
-      price: '$20',
-      rating: '4.8',
-      lessons: '25 Lessons',
-      image: require('../assets/images/introductionjava.png'),
-      bestSeller: true,
-      type : 'Popular',
-      categories : 'Code'
-    },
-    {
-    id: '5',
-      imageteacher: require('../assets/images/teacher1.png'),
-      title: 'Website Design',
-      teacher: 'Ramano Wultschiner',
-      work: 'UI/UX Designer at Google',
-      discription: 'We are a team of professional UX/UI designers, committed to creating products that are intuitive, easy to use and bring value to users. From user research to interface design, we will accompany you throughout the product development process..',
-      price: '$59',
-      rating: '4.5',
-      lessons: '9 Lessons',
-      image: require('../assets/images/webdesign.png'),
-      bestSeller: false, 
-      discount: true,
-      type : 'Recommend',
-      categories : 'Design',
-        reviews: [
-          {
-            id: '1',
-            image: require('../assets/images/user/user1.png'),
-            name: 'Jinny Oslin',
-            date: new Date("2024-11-01"),
-            comment: 'Nostrud excepteur magna id est quis in aliqua.',
-            rating: 5,
-          },
-          {
-            id: '2',
-            name: 'Jane Barry',
-            image: require('../assets/images/user/user2.png'),
-            date: new Date("2024-11-02"),
-            comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-            rating: 4,
-          },
-          {
-            id: '3',
-            image: require('../assets/images/user/user3.png'),
-            name: 'Claire Mignard',
-            date: new Date("2024-11-03"),
-            comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-            rating: 3,
-          },
-          {
-            id: '4',
-            image: require('../assets/images/user/user4.png'),
-           name: 'Claire Mignard',
-           date: new Date("2024-11-04"),
-           comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-           rating: 2,
-         },
-      ],   
-    },
-    {
-      id: '6',
-      title: 'Ux Research For Beginners',
-      teacher: 'Olivia Wang',
-      price: '$29',
-      rating: '4.5',
-      lessons: '12 Lessons',
-      image: require('../assets/images/uxresearch.png'),
-      bestSeller: true, 
-      discount: false,
-      type : 'Recommend',
-      categories : 'Design',
-      reviews: [
-        {
-          id: '1',
-          name: 'Jinny Oslin',
-          date: '1 day ago',
-          comment: 'Nostrud excepteur magna id est quis in aliqua.',
-          rating: 5,
-        },
-        {
-          id: '2',
-          name: 'Jane Barry',
-          date: '1 day ago',
-          comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-          rating: 4,
-        },
-        {
-          id: '3',
-          name: 'Claire Mignard',
-          date: '5 days ago',
-          comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-          rating: 3,
-        },
-      ],
-      
-    },
-    {
-      id: '7',
-      title: 'UI/UX for Beginners',
-      teacher: 'Emily Johnson',
-      price: '$20',
-      rating: '4.3 (3652)',
-      lessons: '15 Lessons',
-      image: require('../assets/images/uix.png'),
-      bestSeller: false, 
-      discount: true,
-       type : 'Recommend',
-      categories : 'Design',
-      reviews: [
-        {
-          id: '1',
-          name: 'Jinny Oslin',
-          date: '1 day ago',
-          comment: 'Nostrud excepteur magna id est quis in aliqua.',
-          rating: 5,
-        },
-        {
-          id: '2',
-          name: 'Jane Barry',
-          date: '1 day ago',
-          comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-          rating: 4,
-        },
-        {
-          id: '3',
-          name: 'Claire Mignard',
-          date: '5 days ago',
-          comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-          rating: 3,
-        },
-      ],
-     
-    },
-    {
-        id: '8',
-        title: 'Design Thinking 101',
-        teacher: 'Michael Brown',
-        price: '$36',
-        rating: '4.8 (3256)',
-        lessons: '25 Lessons',
-        image: require('../assets/images/designpattern.png'),
-        bestSeller: true,
-        discount: false,
-        type : 'Recommend',
-        categories : 'Design',
-        reviews: [
-          {
-            id: '1',
-            name: 'Jinny Oslin',
-            date: '1 day ago',
-            comment: 'Nostrud excepteur magna id est quis in aliqua.',
-            rating: 5,
-          },
-          {
-            id: '2',
-            name: 'Jane Barry',
-            date: '1 day ago',
-            comment: 'Deserunt minim incididunt cillum nostrud do voluptate.',
-            rating: 4,
-          },
-          {
-            id: '3',
-            name: 'Claire Mignard',
-            date: '5 days ago',
-            comment: 'Magna id sit iure in cillum esse nisi dolor laboris ullamco.',
-            rating: 3,
-          },
-        ],
-      },
-      
-   
-    {
-      id: '9',
-      title: 'Digital Portrait',
-      teacher: 'Ramano Wultschiner',
-      price: '$67',
-      rating: '4.5 (657)',
-      lessons: '12 Lessons',
-      image: require('../assets/images/digitalportrait.png'),
-      bestSeller: false, 
-      discount: true,
-      type : 'Inspire',
-      categories : 'Design'
-    },
-    {
-      id: '10',
-      title: 'Workspace Decor',
-      teacher: 'Ruth Dominguez',
-      price: '$19',
-      rating: '4.5 (33)',
-      lessons: '17 Lessons',
-      image: require('../assets/images/workspacedecor.png'),
-      bestSeller: true, 
-      discount: false,
-      type : 'Inspire',
-      categories : 'Design'
+  useEffect(() => {
+    // Fetch courses from Realtime Database on component mount
+    const fetchCourses = async () => {
+      try {
+        const coursesRef = ref(db, 'dataCourse'); // Tham chiếu đến đường dẫn 'dataCourse' trong Realtime Database
+        const snapshot = await get(coursesRef); // Lấy dữ liệu từ đường dẫn này
 
-    },
-    {
-      id: '11',
-      title: 'Packing Design',
-      teacher: 'Hui Anderson',
-      price: '$89',
-      rating: '4.5 (1233)',
-      lessons: '14 Lessons',
-      image: require('../assets/images/packagingdesign.png'),
-      bestSeller: false, 
-      discount: true,
-      type : 'Inspire',
-      categories : 'Design'
+        if (snapshot.exists()) {
+          // Nếu dữ liệu tồn tại, lưu vào state
+          const coursesData = snapshot.val();
+          setDataCourse(Object.values(coursesData)); // Convert object thành array nếu cần
+        } else {
+          console.log("No data available");
+        }
+      } catch (error) {
+        console.error("Error fetching courses: ", error);
+      }
+    };
+    fetchCourses(); // Gọi hàm để lấy dữ liệu khóa học
+  }, []); // Mảng phụ thuộc rỗng đảm bảo chỉ chạy một lần khi component mount
 
-    },
-  ];
+  // Phân loại khóa học
+  const categorizedCourses = dataCourse.reduce((acc, course) => {
+    const { type } = course; // Lấy loại khóa học từ từng course
 
+    // Kiểm tra xem loại khóa học đã tồn tại trong accumulator chưa, nếu chưa thì khởi tạo một mảng trống
+    if (!acc[type]) {
+      acc[type] = [];
+    }
 
-  const popularCourse = dataCourse.filter(course => course.type === 'Popular');
-  const recommendCourse = dataCourse.filter(course => course.type === 'Recommend');
-  const inspireCourse = dataCourse.filter(course => course.type === 'Inspire');
+    // Thêm khóa học vào danh sách tương ứng
+    acc[type].push(course);
 
+    return acc;
+  }, {});
+
+  const popularCourse = categorizedCourses['Popular'] || [];
+  const recommendCourse = categorizedCourses['Recommend'] || [];
+  const inspireCourse = categorizedCourses['Inspire'] || [];
   const navigateToCourses = (categoryType) => {
     let courses = [];
   
@@ -319,34 +123,38 @@ function LandingPage({ navigation }) {
 
 
   const renderCourseItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })} >
+    <TouchableOpacity
+      style={styles.courseItem}
+      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse })}
+    >
       <View style={styles.imageContainer}>
-      <Image source={item.image} style={styles.courseImage} />
-      {item.bestSeller && (
-        <View style={styles.bestSellerBadge}>
-          <Text style={styles.bestSellerText}>Best Seller</Text>
-        </View>
-      )}
-    </View>
+      <Image source={{ uri: item.image }} style={styles.courseImage} />
+        {item.bestSeller && (
+          <View style={styles.bestSellerBadge}>
+            <Text style={styles.bestSellerText}>Best Seller</Text>
+          </View>
+        )}
+      </View>
       <View style={styles.courseInfo}>
-        <View style ={styles.course_title_container} > 
-          <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
+        <View style={styles.course_title_container}>
+          <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail">
+            {item.title}
+          </Text>
           <FontAwesomeIcon icon={faBookmark} />
         </View>
-       
+  
         <Text style={styles.courseTeacher}>By {item.teacher}</Text>
         <Text style={styles.coursePrice}>{item.price}</Text>
-        <View style ={styles.course_rating}>
+        <View style={styles.course_rating}>
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
-          <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+          <Text style={{ color: "grey", marginLeft: 5, marginRight: 5 }}>.</Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
-
-
+  
   const CourseRecommentItem = ({ item }) => (
    
     <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
@@ -361,7 +169,7 @@ function LandingPage({ navigation }) {
                 <Text style={styles.discountText}>20% OFF</Text>
             </View>
         )}
-      <Image source={item.image} style={styles.courseImage} />
+      <Image source={{ uri: item.image }} style={styles.courseImage} />
       <View style={styles.courseInfo}>
         <View style ={styles.course_title_container}> 
           <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
@@ -382,7 +190,7 @@ function LandingPage({ navigation }) {
 
   const CourseInspireItem = ({ item }) => (
     <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
-      <Image source={item.image} style={styles.courseInpireImage} />
+      <Image source={{uri: item.image}} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 
           <Text style={styles.courseTitleInspire}> {item.title}</Text>
