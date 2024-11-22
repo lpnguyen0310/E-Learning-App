@@ -10,6 +10,28 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { getDatabase, ref, set } from 'firebase/database'; // Firebase Realtime Database
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
+  authDomain: "elearning-43ab4.firebaseapp.com",
+  databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "elearning-43ab4",
+  storageBucket: "elearning-43ab4.firebasestorage.app",
+  messagingSenderId: "259523190660",
+  appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
+  measurementId: "G-0Q3F48T7RM"
+};
+
+// Khởi tạo Firebase App
+const app = initializeApp(firebaseConfig);
+
+// Khởi tạo các dịch vụ Firebase Auth và Realtime Database
+const auth = getAuth(app);
+const db = getDatabase(app);
+
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -20,120 +42,167 @@ const SignUpScreen = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // State để hiển thị thông báo
+  const [message, setMessage] = useState('');
+
   const handleSignUp = () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields.');
+      setMessage('Please fill in all fields.');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
+      setMessage('Passwords do not match.');
       return;
     }
 
-    // Điều hướng về Login với dữ liệu đăng ký mới
-    navigation.navigate('Login', {
-      newUser: { email, password },
-    });
-    Alert.alert('Success', 'Registration successful!');
-  };
+    // Sử dụng Firebase Authentication để tạo người dùng mới
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Đăng ký thành công, lấy thông tin người dùng
+        const user = userCredential.user;
 
+        // Lưu thông tin người dùng vào Firebase Realtime Database
+        set(ref(db, 'User/users/' + user.uid), {
+          name: fullName,
+          email: email,
+          courses: [],
+        });
+
+        // Điều hướng đến màn hình Login
+        navigation.navigate('Login', {
+          newUser: { email, password },
+        });
+
+        // Hiển thị thông báo thành công
+        setMessage('Registration successful!');
+      })
+      .catch((error) => {
+        // Lỗi trả về từ Firebase
+        const errorCode = error.code;
+        let errorMessage = '';
+
+        switch (errorCode) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'The email address is already in use by another account.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'The email address is not valid.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'The password is too weak. Please choose a stronger password.';
+            break;
+          default:
+            errorMessage = `Error: ${error.message}`;
+        }
+
+        // Hiển thị thông báo lỗi
+        setMessage(errorMessage);
+      });
+  };
   return (
     <View style={styles.container}>
-      {/* Logo */}
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../assets/snack-icon.png')}
-          style={styles.logo}
+    {/* Logo */}
+    <View style={styles.logoContainer}>
+      <Image
+        source={require('../assets/snack-icon.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.logoText}>Telead</Text>
+      <Text style={styles.tagline}>LEARN FROM HOME</Text>
+    </View>
+
+    {/* Header */}
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerText}>Let’s Sign Up!</Text>
+      <Text style={styles.subHeaderText}>
+        Create an Account to Continue your Courses
+      </Text>
+    </View>
+
+    {/* Input Fields */}
+    <View style={styles.formContainer}>
+      <View style={styles.inputContainer}>
+        <Icon name="person-outline" size={20} color="#888" />
+        <TextInput
+          placeholder="Full Name"
+          style={styles.input}
+          value={fullName}
+          onChangeText={setFullName}
         />
-        <Text style={styles.logoText}>Telead</Text>
-        <Text style={styles.tagline}>LEARN FROM HOME</Text>
       </View>
-
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Let’s Sign Up!</Text>
-        <Text style={styles.subHeaderText}>
-          Create an Account to Continue your Courses
-        </Text>
+      <View style={styles.inputContainer}>
+        <Icon name="mail-outline" size={20} color="#888" />
+        <TextInput
+          placeholder="Email"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
       </View>
-
-      {/* Input Fields */}
-      <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Icon name="person-outline" size={20} color="#888" />
-          <TextInput
-            placeholder="Full Name"
-            style={styles.input}
-            value={fullName}
-            onChangeText={setFullName}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="mail-outline" size={20} color="#888" />
-          <TextInput
-            placeholder="Email"
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="lock-closed-outline" size={20} color="#888" />
-          <TextInput
-            placeholder="Password"
-            style={styles.input}
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="lock-closed-outline" size={20} color="#888" />
-          <TextInput
-            placeholder="Confirm Password"
-            style={styles.input}
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-        </View>
+      <View style={styles.inputContainer}>
+        <Icon name="lock-closed-outline" size={20} color="#888" />
+        <TextInput
+          placeholder="Password"
+          style={styles.input}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
       </View>
-
-      {/* Sign Up Button */}
-      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-        <Text style={styles.signUpButtonText}>Sign Up</Text>
-        <Icon name="arrow-forward-outline" size={20} color="#fff" />
-      </TouchableOpacity>
-
-      {/* Or Continue With */}
-      <Text style={styles.orText}>Or Continue With</Text>
-
-      {/* Social Login Buttons */}
-      <View style={styles.socialContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <Image
-            source={require('../assets/snack-icon.png')}
-            style={styles.socialIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton}>
-          <Image
-            source={require('../assets/snack-icon.png')}
-            style={styles.socialIcon}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Sign In Link */}
-      <View style={styles.signInContainer}>
-        <Text style={styles.signInText}>Already have an Account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.signInLink}>SIGN IN</Text>
-        </TouchableOpacity>
+      <View style={styles.inputContainer}>
+        <Icon name="lock-closed-outline" size={20} color="#888" />
+        <TextInput
+          placeholder="Confirm Password"
+          style={styles.input}
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
       </View>
     </View>
+
+    {/* Sign Up Button */}
+    <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+      <Text style={styles.signUpButtonText}>Sign Up</Text>
+      <Icon name="arrow-forward-outline" size={20} color="#fff" />
+    </TouchableOpacity>
+
+    {/* Hiển thị thông báo */}
+    {message ? (
+      <View style={styles.messageContainer}>
+        <Text style={styles.messageText}>{message}</Text>
+      </View>
+    ) : null}
+
+    {/* Or Continue With */}
+    <Text style={styles.orText}>Or Continue With</Text>
+
+    {/* Social Login Buttons */}
+    <View style={styles.socialContainer}>
+      <TouchableOpacity style={styles.socialButton}>
+        <Image
+          source={require('../assets/snack-icon.png')}
+          style={styles.socialIcon}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.socialButton}>
+        <Image
+          source={require('../assets/snack-icon.png')}
+          style={styles.socialIcon}
+        />
+      </TouchableOpacity>
+    </View>
+
+    {/* Sign In Link */}
+    <View style={styles.signInContainer}>
+      <Text style={styles.signInText}>Already have an Account? </Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.signInLink}>SIGN IN</Text>
+      </TouchableOpacity>
+    </View>
+  </View> 
   );
 };
 

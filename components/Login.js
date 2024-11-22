@@ -10,51 +10,99 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Firebase Authentication
+import { getDatabase, ref, get } from 'firebase/database'; // Firebase Realtime Database
+import { initializeApp } from "firebase/app";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
+  authDomain: "elearning-43ab4.firebaseapp.com",
+  databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "elearning-43ab4",
+  storageBucket: "elearning-43ab4.firebasestorage.app",
+  messagingSenderId: "259523190660",
+  appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
+  measurementId: "G-0Q3F48T7RM"
+};
+
+const app = initializeApp(firebaseConfig); // Initialize Firebase app
+const auth = getAuth(app); // Get Firebase Auth
+const db = getDatabase(app); // Get Firebase Realtime Database
 
 
 const LoginScreen = () => {
-    const navigation = useNavigation();
-    const route = useRoute();
+  const navigation = useNavigation();
+
+  // State để lưu thông tin email và mật khẩu đăng nhập
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   
-    // State để lưu thông tin email và mật khẩu đăng nhập
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-  
-    // Danh sách người dùng
-    const [users, setUsers] = useState([
-      { email: 'user1@example.com', password: 'password1' },
-      { email: 'user2@example.com', password: 'password2' },
-      { email: 'test@example.com', password: 'password123' },
-      { email: 'abc12@gmail.com', password: '123' },
-    ]);
-  
-    // Kiểm tra xem có người dùng mới được đăng ký từ SignUpScreen không
-    useEffect(() => {
-      if (route.params?.newUser) {
-        const { email: newEmail, password: newPassword } = route.params.newUser;
-        // Thêm người dùng mới vào danh sách
-        setUsers((prevUsers) => [...prevUsers, { email: newEmail, password: newPassword }]);
-      }
-    }, [route.params?.newUser]);
-  
-    const handleSignIn = () => {
-      if (!email || !password) {
-        alert('Error', 'Please enter both email and password.');
-        return;
-      }
-  
-      // Kiểm tra thông tin đăng nhập
-      const user = users.find(
-        (user) => user.email === email && user.password === password
-      );
-  
-      if (user) {
-        alert('Success', 'You have successfully signed in!');
-        navigation.navigate('Home'); // Điều hướng về màn hình chính nếu cần
+  // State để lưu người dùng từ Firebase
+  const [users, setUsers] = useState([]);
+
+  // Lấy dữ liệu người dùng từ Firebase
+  useEffect(() => {
+    const usersRef = ref(db, 'User/users'); // Đường dẫn đến danh sách người dùng
+
+    // Lấy thông tin người dùng
+    get(usersRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const usersList = Object.values(data); // Chuyển đổi dữ liệu Firebase thành mảng
+        setUsers(usersList);
       } else {
-        alert('Error', 'Invalid email or password.');
+        setUsers([]);
       }
-    };
+    });
+  }, []);
+
+  // Kiểm tra người dùng đăng nhập
+  const handleSignIn = () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password.');
+      return;
+    }
+
+    // Xác thực thông tin người dùng với Firebase Authentication
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user; // Lấy thông tin người dùng từ Firebase Auth
+
+        // Lấy thông tin người dùng từ Realtime Database nếu cần
+        const userRef = ref(db, 'User/users/' + user.uid);
+        get(userRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const userData = snapshot.val(); // Lấy thông tin người dùng từ Realtime Database
+              navigation.navigate('Home', { user: userData }); // Điều hướng đến trang chủ và truyền thông tin người dùng
+            } else {
+              Alert.alert('Error', 'User data not found.');
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            Alert.alert('Error', 'Error retrieving user data.');
+          });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        let errorMessage = '';
+
+        switch (errorCode) {
+          case 'auth/user-not-found':
+            errorMessage = 'No user found with this email.';
+            break;
+          case 'auth/wrong-password':
+            errorMessage = 'Incorrect password.';
+            break;
+          default:
+            errorMessage = `Error: ${error.message}`;
+        }
+
+        Alert.alert('Error', errorMessage); // Hiển thị lỗi
+      });
+  };
 
   return (
     <View style={styles.container}>

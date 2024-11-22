@@ -49,6 +49,7 @@
     "react-native-screens": "3.31.1",
     "react-native-slider": "^0.11.0",
     "react-native-svg": "^12.3.0",
+    "react-native-toast-message": "^2.2.1",
     "react-native-web": "~0.19.10"
   },
   "devDependencies": {

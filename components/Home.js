@@ -23,12 +23,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getDatabase(); // Khởi tạo Firebase Realtime Database
+const db = getDatabase();   
 
 
 
-function LandingPage({ navigation }) {
+function LandingPage({route, navigation }) {
   const[dataCourse,setDataCourse] = useState([]);
+  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
+  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
 
   const categories = [
     { id: '1', image :require('../assets/images/business.png') , title: 'Business' },
@@ -116,10 +118,6 @@ function LandingPage({ navigation }) {
     // Điều hướng tới màn hình CourseList với danh sách khóa học
     navigation.navigate('CourseList', { courses,categoryType ,dataCourse: dataCourse });
   };
-
-
-
-
 
 
   const renderCourseItem = ({ item }) => (
@@ -327,7 +325,7 @@ function LandingPage({ navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style ={styles.header_title}>
-          <Text style={styles.title}>Hello Lê phước Nguyên</Text>
+          <Text style={styles.title}>Hello {userName}</Text>
           <View style = {styles.inner_icon_header}>
                 <FontAwesomeIcon icon={faCartShopping} />     
                 <FontAwesomeIcon icon={faBell} />
