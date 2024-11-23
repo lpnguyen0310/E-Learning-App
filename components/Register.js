@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,15 @@ import {
   StyleSheet,
   Image,
   Alert,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from 'firebase/database'; // Firebase Realtime Database
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential,signInWithPopup } from 'firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
@@ -45,6 +48,15 @@ const SignUpScreen = () => {
   // State để hiển thị thông báo
   const [message, setMessage] = useState('');
 
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      GoogleSignin.configure({
+        webClientId: '259523190660-btqt3212k7odqalob49nkngqe7jmunk1.apps.googleusercontent.com', // Your Web Client ID from Firebase Console
+      });
+    }
+  }, []);
+
+
   const handleSignUp = () => {
     if (!fullName || !email || !password || !confirmPassword) {
       setMessage('Please fill in all fields.');
@@ -54,25 +66,29 @@ const SignUpScreen = () => {
       setMessage('Passwords do not match.');
       return;
     }
-
+  
     // Sử dụng Firebase Authentication để tạo người dùng mới
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Đăng ký thành công, lấy thông tin người dùng
         const user = userCredential.user;
 
+        // Nếu mảng trống, thay thế bằng null hoặc giá trị mặc định khác
+  
         // Lưu thông tin người dùng vào Firebase Realtime Database
         set(ref(db, 'User/users/' + user.uid), {
           name: fullName,
           email: email,
-          courses: [],
+          courses: {},  // Thay thế mảng trống bằng null nếu cần
+          courseFollow: {},  // Thay thế mảng trống bằng null nếu cầnrỗng
+          age: 0,
         });
-
+  
         // Điều hướng đến màn hình Login
         navigation.navigate('Login', {
           newUser: { email, password },
         });
-
+  
         // Hiển thị thông báo thành công
         setMessage('Registration successful!');
       })
@@ -80,7 +96,7 @@ const SignUpScreen = () => {
         // Lỗi trả về từ Firebase
         const errorCode = error.code;
         let errorMessage = '';
-
+  
         switch (errorCode) {
           case 'auth/email-already-in-use':
             errorMessage = 'The email address is already in use by another account.';
@@ -94,11 +110,74 @@ const SignUpScreen = () => {
           default:
             errorMessage = `Error: ${error.message}`;
         }
-
+  
         // Hiển thị thông báo lỗi
         setMessage(errorMessage);
       });
   };
+  const handleGoogleSignUpWeb = async () => {
+    try {
+      // Khởi tạo provider Google
+      const provider = new GoogleAuthProvider();
+      
+      // Mở cửa sổ pop-up cho phép người dùng chọn tài khoản Google
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+  
+      // Lưu thông tin người dùng vào Firebase Realtime Database
+      set(ref(db, 'User/users/' + user.uid), {
+        name: user.displayName,
+        email: user.email,
+        courses: {},
+        courseFollow: {},
+        age: 0,
+      });
+  
+      // Điều hướng đến màn hình Home
+      navigation.navigate('Home', { user: user });
+  
+      setMessage('Registration successful!');
+    } catch (error) {
+      setMessage(`Google Sign-Up failed: ${error.message}`);
+    }
+  };
+
+  const handleGoogleSignUpMobile = async () => {
+    try {
+      const { idToken } = await GoogleSignin.signIn(); // Hiển thị danh sách tài khoản Google
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(auth, googleCredential);
+      const user = userCredential.user;
+  
+      // Lưu thông tin người dùng vào Firebase Realtime Database
+      set(ref(db, 'User/users/' + user.uid), {
+        name: user.displayName,
+        email: user.email,
+        courses: {},
+        courseFollow: {},
+        age: 0,
+      });
+  
+      // Điều hướng đến màn hình Home
+      navigation.navigate('Home', { user: user });
+  
+      setMessage('Registration successful!');
+    } catch (error) {
+      setMessage(`Google Sign-Up failed: ${error.message}`);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    if (Platform.OS === 'web') {
+      // Sử dụng Firebase Web Authentication
+      await handleGoogleSignUpWeb();
+    } else {
+      // Sử dụng @react-native-google-signin cho di động
+      await handleGoogleSignUpMobile();
+    }
+  };
+
+
   return (
     <View style={styles.container}>
     {/* Logo */}
@@ -181,7 +260,7 @@ const SignUpScreen = () => {
 
     {/* Social Login Buttons */}
     <View style={styles.socialContainer}>
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity style={styles.socialButton}  onPress={handleGoogleSignUp}>
         <Image
           source={require('../assets/snack-icon.png')}
           style={styles.socialIcon}

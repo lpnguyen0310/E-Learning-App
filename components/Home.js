@@ -99,6 +99,7 @@ function LandingPage({route, navigation }) {
   const popularCourse = categorizedCourses['Popular'] || [];
   const recommendCourse = categorizedCourses['Recommend'] || [];
   const inspireCourse = categorizedCourses['Inspire'] || [];
+  
   const navigateToCourses = (categoryType) => {
     let courses = [];
   
