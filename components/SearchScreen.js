@@ -4,8 +4,75 @@
   import { faMagnifyingGlass,faFilter,faChartLine,faChevronRight,faPenNib,faCode,faVideo,faEarthAmericas } from '@fortawesome/free-solid-svg-icons';
   import { faStar,faBookmark } from '@fortawesome/free-regular-svg-icons';
   import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
+  import { useIsFocused } from '@react-navigation/native';
+
+
+  import { getDatabase, ref, set,get } from "firebase/database";
+
+  //Kết nối firebase
+  import { app } from "../components/firebaseConfig";
+  const db = getDatabase(app);
 
   function SearchScreen ({route,navigation}) {
+
+    //Lấy dữ liệu User
+  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+
+  const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const userProfileRef = ref(db, "Users/users/0");
+      try {
+        const snapshot = await get(userProfileRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const getFollowCourses = data.followCourses || [];
+          setUserProfile(data);
+          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
+          console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
+        } else {
+          console.error("Không tìm thấy dữ liệu userProfile.");
+          setfollowCourses([]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+      }
+    };
+
+    if (isFocused) {
+      fetchUserProfile(); // Gọi hàm khi màn hình được focus
+    }
+  }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
+ 
+
+  //Xử lí add dữ liệu vào followCourses
+  const handleBookmark = async (course) => {
+    try {
+      const isBookmarked = followCourses.some(
+        (followedCourse) => followedCourse.id === course.id
+      );
+  
+      let updatedFollowCourses;
+  
+      if (isBookmarked) {
+        updatedFollowCourses = followCourses.filter(
+          (followedCourse) => followedCourse.id !== course.id
+        );
+      } else {
+        updatedFollowCourses = [...followCourses, course];
+      }
+  
+      setfollowCourses(updatedFollowCourses);
+  
+      // Đồng bộ với Firebase
+      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      await set(userProfileRef, updatedFollowCourses);
+    } catch (error) {
+      console.error("Error updating followCourses:", error);
+    }
+  };
     // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
 
     const {category ,dataCourse,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
@@ -219,7 +286,16 @@
       <View style={styles.courseInfo}>
         <View style ={styles.course_title_container}> 
           <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
-          <FontAwesomeIcon icon={faBookmark} />
+          <TouchableOpacity onPress={() => handleBookmark(item)}>
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                color: followCourses.some((course) => course.id === item.id)
+                  ? "blue" // Nếu đã bookmark, đổi màu
+                  : "gray", // Nếu chưa bookmark, màu xám
+              }}
+            />
+          </TouchableOpacity>
         </View>
       
         <Text style={styles.courseTeacher}>By {item.teacher}</Text>

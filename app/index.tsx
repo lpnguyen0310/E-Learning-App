@@ -17,7 +17,6 @@ import Category from '../components/Category';
 import Filter from '../components/FilterScreen';
 import CourseList from '../components/CourseList';
 
-
 const Stack = createNativeStackNavigator();
 
 const App = () => {

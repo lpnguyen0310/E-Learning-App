@@ -10,267 +10,249 @@ import {
 import * as Progress from 'react-native-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
-// Dữ liệu mẫu cho danh sách khóa học
-const coursesData = [
-  {
-    id: '1',
-    title: 'UX Foundation',
-    time: '2 hrs 25 mins',
-    progress: 0.3,
-    status: 'ongoing',
-    image: require('../assets/images/uxfoundation.png'),
-    lessons: [
-      {
-        module: 'I - Introduction',
-        lessons: [
-          {
-            id: '1',
-            title: 'Amet adipiscing consectetur',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-            completed: false,
-          },
-          {
-            id: '2',
-            title: 'Culpa est incididunt enim id adi',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-            completed: false,
-          },
-        ],
-      },
-      // Các module khác
-      {
-        module: 'II - Introduction',
-        lessons: [
-          {
-            id: '1',
-            title: 'Amet adipiscing consectetur',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-            completed: false,
-          },
-          {
-            id: '2',
-            title: 'Culpa est incididunt enim id adi',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-            completed: false,
-          },
-        ],
-      },
-      {
-        module: 'III - Introduction',
-        lessons: [
-          {
-            id: '1',
-            title: 'Amet adipiscing consectetur',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-            completed: false,
-          },
-          {
-            id: '2',
-            title: 'Culpa est incididunt enim id adi',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-            completed: false,
-          },
-        ],
-      },
-      {
-        module: 'IV - Introduction',
-        lessons: [
-          {
-            id: '1',
-            title: 'Amet adipiscing consectetur',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-            completed: false,
-          },
-          {
-            id: '2',
-            title: 'Culpa est incididunt enim id adi',
-            duration: '01:23 mins',
-            audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-            completed: false,
-          },
-        ],
-      },
-    ],
-    projects: {
-      studentProjects: [
-        {
-          id: '1',
-          title: 'Wireframe',
-          author: 'Ramono Wultschner',
-          image: require('../assets/images/uxfoundation.png'),
-        },
-        {
-          id: '2',
-          title: 'Personal',
-          author: 'Thomas Carlson',
-          image: require('../assets/images/uxresearch.png'),
-        },
-        {
-          id: '3',
-          title: 'Website Redesign',
-          author: 'Ramon Wultschner',
-          image: require('../assets/images/webdesign.png'),
-        },
-        {
-          id: '4',
-          title: 'Wireframe',
-          author: 'Ramono Wultschner',
-          image: require('../assets/images/uxfoundation.png'),
-        },
-        {
-          id: '5',
-          title: 'Personal',
-          author: 'Thomas Carlson',
-          image: require('../assets/images/uxresearch.png'),
-        },
-        {
-          id: '6',
-          title: 'Website Redesign',
-          author: 'Ramon Wultschner',
-          image: require('../assets/images/webdesign.png'),
-        },
-        {
-          id: '7',
-          title: 'Wireframe',
-          author: 'Ramono Wultschner',
-          image: require('../assets/images/uxfoundation.png'),
-        },
-        {
-          id: '8',
-          title: 'Personal',
-          author: 'Thomas Carlson',
-          image: require('../assets/images/uxresearch.png'),
-        },
-        {
-          id: '9',
-          title: 'Website Redesign',
-          author: 'Ramon Wultschner',
-          image: require('../assets/images/webdesign.png'),
-        },
-        {
-          id: '10',
-          title: 'Wireframe',
-          author: 'Ramono Wultschner',
-          image: require('../assets/images/uxfoundation.png'),
-        },
-        {
-          id: '11',
-          title: 'Personal',
-          author: 'Thomas Carlson',
-          image: require('../assets/images/uxresearch.png'),
-        },
-        {
-          id: '12',
-          title: 'Website Redesign',
-          author: 'Ramon Wultschner',
-          image: require('../assets/images/webdesign.png'),
-        },
-      ],
-      description:
-        'Culpa aliquip commodo incididunt nostrud aliqua ut adipisicing officia. Laborum consequat ea reprehenderit voluptate voluptate quis pariatur dolor. Laboris proident ea fugiat nulla...',
-      resources: [
-        {
-          id: '1',
-          name: 'Document 1.txt',
-          size: '612 Kb',
-          type: '.txt',
-          downloadLink: 'link_to_document_1',
-        },
-        {
-          id: '2',
-          name: 'Document 2.pdf',
-          size: '35 Mb',
-          type: '.pdf',
-          downloadLink: 'link_to_document_2',
-        },
-      ],
-    },
 
-    qna: [
-      {
-        id: '1',
-        user: 'Jane Barry',
-        avatar: require('../assets/images/teacher1.png'), // Đường dẫn đến ảnh đại diện
-        time: 'A day ago',
-        content:
-          'Deserunt minim incididunt cillum nostrud do voluptate excepteur excepteur minim ex minim est',
-        likes: 23,
-        comments: 5,
-      },
-      {
-        id: '2',
-        user: 'Thomas',
-        avatar: require('../assets/images/teacher2.png'), // Đường dẫn đến ảnh đại diện
-        time: 'A day ago',
-        content:
-          'Excepteur excepteur minim nostrud cillum nostrud dolore voluptate ex minim est.',
-        likes: 15,
-        comments: 3,
-      },
-      {
-        id: '3',
-        user: 'Jenny Barry',
-        avatar: require('../assets/images/teacher3.png'), // Đường dẫn đến ảnh đại diện
-        time: 'A day ago',
-        content:
-          'Minim incididunt cillum nostrud do voluptate excepteur excepteur minim ex minim est.',
-        likes: 18,
-        comments: 2,
-      },
-      // Thêm nhiều câu hỏi hơn nếu cần
-    ],
-  },
-  {
-    id: '2',
-    title: 'Creative Art Design',
-    time: '3 hrs 25 mins',
-    progress: 1,
-    status: 'completed',
-    image: require('../assets/images/creativeArtDesign.png'),
-    lessons: [
-      // Dữ liệu bài học cho "Palettes for Your App"
-    ],
-    qna: [
-      // Dữ liệu Q&A cho "Palettes for Your App"
-    ],
-  },
-  {
-    id: '3',
-    title: 'Palettes for Your App',
-    time: '4 hrs 50 mins',
-    progress: 1,
-    status: 'completed',
-    image: require('../assets/images/palettesforyourApp.png'),
-    lessons: [
-      // Dữ liệu bài học cho "Palettes for Your App"
-    ],
-    qna: [
-      // Dữ liệu Q&A cho "Palettes for Your App"
-    ],
-  },
-  {
-    id: '4',
-    title: 'Typography in UI Design',
-    time: '4 hrs 50 mins',
-    progress: 0.5,
-    status: 'ongoing',
-    image: require('../assets/images/TypographyInUIDesign.png'),
-    lessons: [
-      // Dữ liệu bài học cho "Typography in UI Design"
-    ],
-    qna: [
-      // Dữ liệu Q&A cho "Typography in UI Design"
-    ],
-  },
-  // Add more course data as needed
-];
+import { getDatabase, ref, set,get } from "firebase/database";
+
+//Kết nối firebase
+import { app } from "../components/firebaseConfig";
+const db = getDatabase(app);
+
+
+const imageMapper = {
+  "uxfoundation.png": require('../assets/images/uxfoundation.png'),
+  "uxresearch.png": require('../assets/images/uxresearch.png'),
+  "webdesign.png": require('../assets/images/webdesign.png'),
+  "creativeArtDesign.png": require('../assets/images/creativeArtDesign.png'),
+  "palettesforyourApp.png": require('../assets/images/palettesforyourApp.png'),
+  "TypographyInUIDesign.png": require('../assets/images/TypographyInUIDesign.png'),
+  "teacher1.png": require('../assets/images/teacher1.png'),
+  "teacher2.png": require('../assets/images/teacher2.png'),
+  "teacher3.png": require('../assets/images/teacher3.png'),
+};
+
+
+// Dữ liệu mẫu cho danh sách khóa học
+// const coursesData = [
+//   {
+//     id: '1',
+//     title: 'UX Foundation',
+//     time: '2 hrs 25 mins',
+//     progress: 0.3,
+//     status: 'ongoing',
+//     image: "uxfoundation.png", // Sử dụng khóa trong imageMapper
+//     lessons: [
+//       {
+//         module: 'I - Introduction',
+//         lessons: [
+//           {
+//             id: '1',
+//             title: 'Amet adipiscing consectetur',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+//             completed: false,
+//           },
+//           {
+//             id: '2',
+//             title: 'Culpa est incididunt enim id adi',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+//             completed: false,
+//           },
+//         ],
+//       },
+//       {
+//         module: 'II - Introduction',
+//         lessons: [
+//           {
+//             id: '1',
+//             title: 'Amet adipiscing consectetur',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+//             completed: false,
+//           },
+//           {
+//             id: '2',
+//             title: 'Culpa est incididunt enim id adi',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+//             completed: false,
+//           },
+//         ],
+//       },
+//       {
+//         module: 'II - Introduction',
+//         lessons: [
+//           {
+//             id: '1',
+//             title: 'Amet adipiscing consectetur',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+//             completed: false,
+//           },
+//           {
+//             id: '2',
+//             title: 'Culpa est incididunt enim id adi',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+//             completed: false,
+//           },
+//         ],
+//       },
+//       {
+//         module: 'IV - Introduction',
+//         lessons: [
+//           {
+//             id: '1',
+//             title: 'Amet adipiscing consectetur',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+//             completed: false,
+//           },
+//           {
+//             id: '2',
+//             title: 'Culpa est incididunt enim id adi',
+//             duration: '01:23 mins',
+//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
+//             completed: false,
+//           },
+//         ],
+//       },
+//     ],
+//     projects: {
+//       studentProjects: [
+//         {
+//           id: '1',
+//           title: 'Wireframe',
+//           author: 'Ramono Wultschner',
+//           image: "uxfoundation.png", // Sử dụng khóa trong imageMapper
+//         },
+//         {
+//           id: '2',
+//           title: 'Personal',
+//           author: 'Thomas Carlson',
+//           image: "uxresearch.png",
+//         },
+//       ],
+//       description: 'Culpa aliquip commodo incididunt nostrud aliqua ut adipisicing officia.',
+//       resources: [
+//         {
+//           id: '1',
+//           name: 'Document 1.txt',
+//           size: '612 Kb',
+//           type: '.txt',
+//           downloadLink: 'link_to_document_1',
+//         },
+//         {
+//           id: '2',
+//           name: 'Document 2.pdf',
+//           size: '35 Mb',
+//           type: '.pdf',
+//           downloadLink: 'link_to_document_2',
+//         },
+//       ],
+//     },
+//     qna: [
+//       {
+//         id: '1',
+//         user: 'Jane Barry',
+//         avatar: "teacher1.png", // Sử dụng khóa trong imageMapper
+//         time: 'A day ago',
+//         content:
+//           'Deserunt minim incididunt cillum nostrud do voluptate excepteur excepteur minim ex minim est',
+//         likes: 23,
+//         comments: 5,
+//       },
+//       {
+//         id: '2',
+//         user: 'Thomas',
+//         avatar: "teacher2.png",
+//         time: 'A day ago',
+//         content: 'Excepteur excepteur minim nostrud cillum nostrud dolore voluptate ex minim est.',
+//         likes: 15,
+//         comments: 3,
+//       },
+//     ],
+//   },
+//   {
+//     id: '2',
+//     title: 'Creative Art Design',
+//     time: '3 hrs 25 mins',
+//     progress: 1,
+//     status: 'completed',
+//     image: "creativeArtDesign.png", // Sử dụng khóa trong imageMapper
+//   },
+//   {
+//     id: '3',
+//     title: 'Palettes for Your App',
+//     time: '4 hrs 50 mins',
+//     progress: 1,
+//     status: 'completed',
+//     image: "palettesforyourApp.png",
+//   },
+//   {
+//     id: '4',
+//     title: 'Typography in UI Design',
+//     time: '4 hrs 50 mins',
+//     progress: 0.5,
+//     status: 'ongoing',
+//     image: "TypographyInUIDesign.png",
+//   },
+//   {
+//     id: '5',
+//     title: 'Creative Art Design',
+//     time: '3 hrs 25 mins',
+//     progress: 1,
+//     status: 'completed',
+//     image: 'creativeArtDesign.png',
+//     lessons: [
+//       // Dữ liệu bài học cho "Palettes for Your App"
+//     ],
+//     qna: [
+//       // Dữ liệu Q&A cho "Palettes for Your App"
+//     ],
+//   },
+//   {
+//     id: '6',
+//     title: 'Palettes for Your App',
+//     time: '4 hrs 50 mins',
+//     progress: 1,
+//     status: 'completed',
+//     image: 'palettesforyourApp.png',
+//     lessons: [
+//       // Dữ liệu bài học cho "Palettes for Your App"
+//     ],
+//     qna: [
+//       // Dữ liệu Q&A cho "Palettes for Your App"
+//     ],
+//   },
+//   {
+//     id: '7',
+//     title: 'Typography in UI Design',
+//     time: '4 hrs 50 mins',
+//     progress: 0.5,
+//     status: 'ongoing',
+//     image: 'TypographyInUIDesign.png',
+//     lessons: [
+//       // Dữ liệu bài học cho "Typography in UI Design"
+//     ],
+//     qna: [
+//       // Dữ liệu Q&A cho "Typography in UI Design"
+//     ],
+//   },
+//   // Add more course data as needed
+// ];
+
+//Gửi dữ liệu đã tạo lên firebase
+// function guiDuLieu(coursesData) {
+//   const db = getDatabase(); // Lấy đối tượng database từ Firebase
+//   set(ref(db, "coursesData"), coursesData) // Lưu dữ liệu userProfile vào Firebase
+//     .then(() => {
+//       console.log("Dữ liệu đã được lưu thành công!");
+//     })
+//     .catch((error) => {
+//       console.error("Lỗi khi lưu dữ liệu:", error);
+//     });
+// }
 
 // Thành phần khóa học
 const CourseItem = ({ title, time, progress, image, item, onPress }) => (
@@ -290,6 +272,35 @@ const CourseItem = ({ title, time, progress, image, item, onPress }) => (
 );
 
 const MyCoursesScreen = ({ navigation,route }) => {
+  //Truyền dữ liệu khi load trang
+  // useEffect(() => {
+  //   guiDuLieu(coursesData); // Truyền dữ liệu userProfile vào hàm
+  // }, []);
+
+  const [coursesData, setCoursesData] = useState([]); // Khởi tạo là một đối tượng rỗng
+
+  useEffect(() => {
+    const fetchCoursesData = async () => {
+      try {
+        // Thay 'user1' bằng ID người dùng bạn cần truy cập
+        const coursesRef = ref(db, 'Users/users/0/courses'); 
+        const snapshot = await get(coursesRef);
+  
+        if (snapshot.exists()) {
+          const rawData = snapshot.val(); // Dữ liệu thô từ Firebase
+          setCoursesData(rawData); // Lưu dữ liệu courses vào state
+          console.log('Courses Data:', rawData); // Debug dữ liệu
+        } else {
+          console.error('Không tìm thấy dữ liệu courses trong Firebase.');
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu từ Firebase:', error);
+      }
+    };
+  
+    fetchCoursesData(); // Gọi hàm khi component được render
+  }, []);
+  
 
   const { dataCourse } = route.params;
 
