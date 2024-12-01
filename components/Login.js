@@ -9,17 +9,17 @@
   import { GoogleAuthProvider, signInWithCredential as firebaseSignInWithCredential } from 'firebase/auth'; 
 
 
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
-    authDomain: "elearning-43ab4.firebaseapp.com",
-    databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "elearning-43ab4",
-    storageBucket: "elearning-43ab4.firebasestorage.app",
-    messagingSenderId: "259523190660",
-    appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
-    measurementId: "G-0Q3F48T7RM"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
+  authDomain: "elearning-43ab4.firebaseapp.com",
+  databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "elearning-43ab4",
+  storageBucket: "elearning-43ab4.firebasestorage.app",
+  messagingSenderId: "259523190660",
+  appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
+  measurementId: "G-0Q3F48T7RM"
+};
+
 
   const app = initializeApp(firebaseConfig); // Initialize Firebase app
   const auth = getAuth(app); // Get Firebase Auth
@@ -199,7 +199,8 @@
               <TouchableOpacity style={styles.checkbox}></TouchableOpacity>
               <Text style={styles.rememberMeText}>Remember Me</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}
+            >
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
@@ -244,9 +245,9 @@
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F6FD',
     padding: 20,
     justifyContent: 'space-between',
+    backgroundColor: '##2D9461',
   },
   logoContainer: {
     alignItems: 'center',

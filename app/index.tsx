@@ -17,6 +17,8 @@ import Category from '../components/Category';
 import Filter from '../components/FilterScreen';
 import CourseList from '../components/CourseList';
 
+import ForgotPassword from '../components/ForgotPassword';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -56,6 +58,9 @@ const App = () => {
           options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
         />
         <Stack.Screen name="Mentors" component={MentorsScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} 
+          options={{ headerShown: false }} // Ẩn tiêu đề cho ForgotPassword
+        />
 
       </Stack.Navigator>
     </NavigationContainer>
