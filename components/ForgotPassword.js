@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword,sendPasswordResetEmail, signInWithPopup } from 'firebase/auth';
 import { getDatabase, ref, get } from 'firebase/database'; // Firebase Realtime Database
 import { initializeApp } from "firebase/app";
 
@@ -23,48 +23,72 @@ const auth = getAuth(app); // Get Firebase Auth
 const db = getDatabase(app); // Get Firebase Realtime Database
 
 const ForgotPassword = () => {
-    const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const navigation = useNavigation();
 
-    const handleForgotPassword = async () => {
-      if (!email) {
-        Alert.alert('Thông báo', 'Vui lòng nhập email của bạn.');
-        return;
-      }
-  
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert('Thành công', `Yêu cầu đặt lại mật khẩu đã được gửi đến: ${email}`);
-        setEmail('');
-        navigation.goBack(); // Quay lại màn hình trước đó
-      } catch (error) {
-        console.error(error);
-        if (error.code === 'auth/user-not-found') {
-          alert('Lỗi', 'Email không tồn tại trong hệ thống.');
-        } else if (error.code === 'auth/invalid-email') {
-          alert('Lỗi', 'Định dạng email không hợp lệ.');
-        } else {
-          alert('Lỗi', 'Có lỗi xảy ra. Vui lòng thử lại sau.');
+  const handleForgotPassword = () => {
+    if (!email) {
+      setMessage('Please enter your email address');
+      return;
+    }
+
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        setMessage('A reset link has been sent to your email');
+        setTimeout(() => {
+          navigation.navigate('Login');
+        }, 2000);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        let errorMessage = '';
+
+        switch (errorCode) {
+          case 'auth/invalid-email':
+            errorMessage = 'The email address is not valid.';
+            break;
+          case 'auth/user-not-found':
+            errorMessage = 'No user found with this email address.';
+            break;
+          default:
+            errorMessage = `Error: ${error.message}`;
         }
-      }
-    };
-  
+
+        setMessage(errorMessage);
+      });
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Quên mật khẩu</Text>
-      <Text style={styles.description}>
-        Vui lòng nhập email đã đăng ký để đặt lại mật khẩu.
-      </Text>
+      <Text style={styles.title}>Forgot Password</Text>
+
+      {/* Email Input */}
       <TextInput
         style={styles.input}
-        placeholder="Nhập email của bạn"
-        placeholderTextColor="#888"
-        keyboardType="email-address"
+        placeholder="Enter your email address"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
-      <TouchableOpacity style={styles.button} onPress={handleForgotPassword}    >
-        <Text style={styles.buttonText}>Gửi yêu cầu</Text>
+
+      {/* Message Display */}
+      {message ? <Text style={styles.message}>{message}</Text> : null}
+
+      {/* Reset Button */}
+      <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
+        <Text style={styles.buttonText}>Send Reset Link</Text>
       </TouchableOpacity>
+
+      {/* Back to Login */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Remember your password?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.linkText}>Log In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -73,45 +97,57 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f9f9f9',
+    paddingHorizontal: 30,
+    backgroundColor: '#f4f6f9',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     color: '#333',
-  },
-  description: {
-    fontSize: 16,
     textAlign: 'center',
-    color: '#666',
     marginBottom: 20,
   },
   input: {
-    width: '100%',
     height: 50,
-    borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderWidth: 1,
+    borderRadius: 10,
     paddingHorizontal: 15,
-    marginBottom: 20,
+    marginBottom: 15,
     backgroundColor: '#fff',
     fontSize: 16,
   },
+  message: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
   button: {
-    width: '100%',
-    height: 50,
     backgroundColor: '#007bff',
-    justifyContent: 'center',
+    borderRadius: 10,
+    paddingVertical: 12,
+    marginBottom: 20,
     alignItems: 'center',
-    borderRadius: 8,
   },
   buttonText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  linkText: {
+    fontSize: 14,
+    color: '#007bff',
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
 });
 
