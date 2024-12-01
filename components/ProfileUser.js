@@ -14,78 +14,195 @@ import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 
+import { getDatabase, ref, set,get } from "firebase/database";
 
-const userProfile = {
-  name: 'Martha Rosie',
-  role: 'UX/UI Designer',
-  stats: { saved: 25, ongoing: 24, completed: 98 },
-  image: require('../assets/images/User1.png'),
-  courses: [
-    {
-      id: '1',
-      title: 'Product Design',
-      instructor: 'Dennis Sweeney',
-      price: '$190',
-      rating: 4.5,
-      lessons: 12,
-      image: require('../assets/images/productDesign.png'),
-    },
-    {
-      id: '2',
-      title: 'Website Design',
-      instructor: 'Ramono Wultschner',
-      price: '$59',
-      rating: 4.5,
-      lessons: 12,
-      image: require('../assets/images/webdesign.png'),
-    },
-    {
-      id: '3',
-      title: 'Mobile UI Design',
-      instructor: 'Ramono Wultschner',
-      price: '$320',
-      rating: 4.5,
-      lessons: 12,
-      image: require('../assets/images/mobieUiDesign.png'),
-    },
-    {
-      id: '4',
-      title: 'Digital Portrait',
-      instructor: 'Ramono Wultschner',
-      price: '$67',
-      rating: 4.5,
-      lessons: 12,
-      image: require('../assets/images/digitalportrait.png'),
-    },
-  ],
+//Kết nối firebase
+import { app } from "../components/firebaseConfig";
+const db = getDatabase(app);
+
+// const userProfile = {
+//   name: 'Martha Rosie',
+//   role: 'UX/UI Designer',
+//   stats: { saved: 25, ongoing: 24, completed: 98 },
+//   image: "User1.png", // Lưu tên tệp hoặc URL thay vì require()
+//   courses: [
+//     {
+//       id: '1',
+//       title: 'Product Design',
+//       instructor: 'Dennis Sweeney',
+//       price: '$190',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "productDesign.png", // Lưu tên tệp
+//     },
+//     {
+//       id: '2',
+//       title: 'Website Design',
+//       instructor: 'Ramono Wultschner',
+//       price: '$59',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "webdesign.png", // Lưu tên tệp
+//     },
+//     {
+//       id: '3',
+//       title: 'Mobile UI Design',
+//       instructor: 'Ramono Wultschner',
+//       price: '$320',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "mobieUiDesign.png", // Lưu tên tệp
+//     },
+//     {
+//       id: '4',
+//       title: 'Digital Portrait',
+//       instructor: 'Ramono Wultschner',
+//       price: '$67',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "digitalportrait.png", // Lưu tên tệp
+//     },
+//   ],
+// };
+
+// Gửi dữ liệu đã tạo lên firebase
+// function guiDuLieu(userProfile) {
+//   const db = getDatabase(); // Lấy đối tượng database từ Firebase
+//   set(ref(db, "userProfile"), userProfile) // Lưu dữ liệu userProfile vào Firebase
+//     .then(() => {
+//       console.log("Dữ liệu đã được lưu thành công!");
+//     })
+//     .catch((error) => {
+//       console.error("Lỗi khi lưu dữ liệu:", error);
+//     });
+// }
+
+const imageMapper = {
+  "productDesign.png": require("../assets/images/productDesign.png"),
+  "webdesign.png": require("../assets/images/webdesign.png"),
+  "mobieUiDesign.png": require("../assets/images/mobieUiDesign.png"),
+  "digitalportrait.png": require("../assets/images/digitalportrait.png"),
+  "User1.png": require("../assets/images/User1.png"),
 };
 
 function ProfileScreen ({route,navigation}) {
-
+//Truyền dữ liệu khi load trang
+  // useEffect(() => {
+  //   guiDuLieu(userProfile); // Truyền dữ liệu userProfile vào hàm
+  // }, []);
+  
   // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
   //
-  const { dataCourse } = route.params;
+
+  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const db = getDatabase();
+      const userProfileRef = ref(db, "Users/users/0");
+      try {
+        const snapshot = await get(userProfileRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log("Dữ liệu userProfile:", data); // In dữ liệu ra console
+
+          const getFollowCourses = data.followCourses.map((course) => ({
+            ...course,
+          }));
+
+          setUserProfile(data); // Cập nhật state userProfile
+          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học
+          console.log("Danh sách khóa học:", getFollowCourses); // In dữ liệu courses
+        } else {
+          console.error("Không tìm thấy dữ liệu userProfile.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []); //
+
+  // if (!userProfile || courses.length === 0) {
+  //   return (
+  //     <View style={styles.loadingContainer}>
+  //       <Text>Đang tải dữ liệu...</Text>
+  //     </View>
+  //   );
+  // }
   
-  const renderCourse = ({ item }) => (
-    <View style={styles.courseContainer}>
-      <Image source={item.image} style={styles.courseImage} />
-      <View style={styles.courseInfo}>
-        <Text style={styles.courseTitle}>{item.title}</Text>
-        <Text style={styles.courseInstructor}>{item.instructor}</Text>
-        <Text style={styles.coursePrice}>{item.price}</Text>
-        <Text style={styles.courseDetails}>
-          ⭐ {item.rating} ({item.lessons} lessons)
-        </Text>
+  // const toggleSaveCourse = (id) => {  
+  //   const updatedCourses = courses.map((course) => {
+  //     if (course.id === id) {
+  //       return { ...course, saved: !course.saved }; // Thay đổi trạng thái saved
+  //     }
+  //     return course;
+  //   });
+  //   setCourses(updatedCourses.filter((course) => course.saved)); // Chỉ hiển thị các khóa học được lưu
+  // };
+  const toggleSaveCourse = async (id) => {
+    try {
+      // Lọc danh sách followCourses để loại bỏ khóa học có `id` trùng
+      const updatedCourses = followCourses.filter((course) => course.id !== id);
+  
+      // Cập nhật lại state
+      setfollowCourses(updatedCourses);
+  
+      // Cập nhật danh sách mới lên Firebase
+      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      await set(userProfileRef, updatedCourses);
+  
+      console.log("Updated followCourses:", updatedCourses);
+    } catch (error) {
+      console.error("Error removing course from followCourses:", error);
+    }
+  };
+  
+  
+
+  const { dataCourse } = route.params;
+  const renderCourse = ({ item }) => {
+    if (!item) {
+      console.log("Lỗi: Dữ liệu item không đúng:", item);
+      return null; // Bỏ qua nếu `item` không tồn tại hoặc không có `saved`
+    }
+  
+    return (
+      <View style={styles.courseContainer}>
+        <Image source={item.image} style={styles.courseImage} />
+        <View style={styles.courseInfo}>
+          <Text style={styles.courseTitle}>{item.title}</Text>
+          <Text style={styles.courseInstructor}>{item.teacher}</Text>
+          <Text style={styles.coursePrice}>{item.price}</Text>
+          <Text style={styles.courseDetails}>
+            ⭐ {item.rating} ({item.lessons} lessons)
+          </Text>
+        </View>
+        <TouchableOpacity onPress={() => toggleSaveCourse(item.id)}>
+          <Icon
+            name="bookmark"
+            size={24}
+            color="deepskyblue"
+          />
+        </TouchableOpacity>
       </View>
-      <Icon name="bookmark-outline" size={24} color="deepskyblue" />
-    </View>
-  );
+    );
+  };
+  
+  
+  
+
 
   
   // State lưu trữ trang hiện tại của ứng dụng
   const [currentPage, setCurrentPage] = useState('Profile'); 
-        
-
+      
   // const handleNavigation = (page) => {
   //   setCurrentPage(page); // Cập nhật trang hiện tại
   //   navigation.navigate(page); // Chuyển hướng
@@ -114,26 +231,25 @@ function ProfileScreen ({route,navigation}) {
         <Text style={styles.profileRole}>{userProfile.role}</Text>
         <View style={styles.statsContainer}>
           <Text style={styles.statText}>
-            {userProfile.stats.saved} {'\n'}Save
+            {userProfile.stats?.saved} {'\n'}Save
           </Text>
           <Text style={styles.statText}>
-            {userProfile.stats.ongoing} {'\n'}On Going
+            {userProfile.stats?.ongoing} {'\n'}On Going
           </Text>
           <Text style={styles.statText}>
-            {userProfile.stats.completed} {'\n'}Completed
+            {userProfile.stats?.completed} {'\n'}Completed
           </Text>
         </View>
       </View>
       <Text style={styles.sectionTitle}>Saved courses</Text>
       <ScrollView  style={{margin:10,padding:10}}>
       <FlatList
-        data={userProfile.courses}
+        data={followCourses}
         renderItem={renderCourse}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.courseList, { paddingBottom: 80 }]}
       />
       </ScrollView>
-     
 
       <View style={styles.footer}>
         <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
@@ -141,7 +257,7 @@ function ProfileScreen ({route,navigation}) {
         <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
         <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
       </View>
-
+      
     </View>
   );
 };
@@ -154,6 +270,7 @@ const FooterItem = ({ icon, label, currentPage, onPress }) => (
 );
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#fff',

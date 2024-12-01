@@ -172,7 +172,16 @@ function LandingPage({route, navigation }) {
       <View style={styles.courseInfo}>
         <View style ={styles.course_title_container}> 
           <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
-          <FontAwesomeIcon icon={faBookmark} />
+          <TouchableOpacity onPress={() => handleBookmark(item)}>
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                color: followCourses.some((course) => course.id === item.id)
+                  ? "blue" // Nếu đã bookmark, đổi màu
+                  : "gray", // Nếu chưa bookmark, màu xám
+              }}
+            />
+          </TouchableOpacity>
         </View>
        
         <Text style={styles.courseTeacher}>By {item.teacher}</Text>
@@ -193,7 +202,16 @@ function LandingPage({route, navigation }) {
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 
           <Text style={styles.courseTitleInspire}> {item.title}</Text>
-          <FontAwesomeIcon icon={faBookmark} />
+          <TouchableOpacity onPress={() => handleBookmark(item)}>
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                color: followCourses.some((course) => course.id === item.id)
+                  ? "blue" // Nếu đã bookmark, đổi màu
+                  : "gray", // Nếu chưa bookmark, màu xám
+              }}
+            />
+          </TouchableOpacity>
         </View>
        
         <Text style={styles.courseTeacher}>{item.teacher}</Text>

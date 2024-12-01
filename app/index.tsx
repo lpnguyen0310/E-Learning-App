@@ -17,7 +17,8 @@ import Category from '../components/Category';
 import Filter from '../components/FilterScreen';
 import CourseList from '../components/CourseList';
 
-import ForgotPassword from '../components/ForgotPassword';
+import ForgotPassword from '../components/ForgotPassword'; // Import ForgotPassword
+
 
 
 const Stack = createNativeStackNavigator();
