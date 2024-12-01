@@ -5,29 +5,97 @@ import { faBookmark,faStar } from '@fortawesome/free-regular-svg-icons';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 import React, { useState,useEffect } from 'react';
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { getDatabase, ref, get } from 'firebase/database'; 
+// import { getDatabase, ref, get } from 'firebase/database'; 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 
+// import React, { useState, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
-  authDomain: "elearning-43ab4.firebaseapp.com",
-  databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "elearning-43ab4",
-  storageBucket: "elearning-43ab4.firebasestorage.app",
-  messagingSenderId: "259523190660",
-  appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
-  measurementId: "G-0Q3F48T7RM"
-};
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getDatabase();   
+import { getDatabase, ref, set,get } from "firebase/database";
+
+//Kết nối firebase
+import { app } from "../components/firebaseConfig";
+const db = getDatabase(app);
+
+
+// const firebaseConfig = {
+//   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
+//   authDomain: "elearning-43ab4.firebaseapp.com",
+//   databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
+//   projectId: "elearning-43ab4",
+//   storageBucket: "elearning-43ab4.firebasestorage.app",
+//   messagingSenderId: "259523190660",
+//   appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
+//   measurementId: "G-0Q3F48T7RM"
+// };
+
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
+// const db = getDatabase();   
 
 
 
 function LandingPage({route, navigation }) {
+
+  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+
+  const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const userProfileRef = ref(db, "Users/users/0");
+      try {
+        const snapshot = await get(userProfileRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const getFollowCourses = data.followCourses || [];
+          setUserProfile(data);
+          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
+          console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
+        } else {
+          console.error("Không tìm thấy dữ liệu userProfile.");
+          setfollowCourses([]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+      }
+    };
+
+    if (isFocused) {
+      fetchUserProfile(); // Gọi hàm khi màn hình được focus
+    }
+  }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
+
+  //Xử lí add dữ liệu vào followCourses
+  const handleBookmark = async (course) => {
+    try {
+      const isBookmarked = followCourses.some(
+        (followedCourse) => followedCourse.id === course.id
+      );
+  
+      let updatedFollowCourses;
+  
+      if (isBookmarked) {
+        updatedFollowCourses = followCourses.filter(
+          (followedCourse) => followedCourse.id !== course.id
+        );
+      } else {
+        updatedFollowCourses = [...followCourses, course];
+      }
+  
+      setfollowCourses(updatedFollowCourses);
+  
+      // Đồng bộ với Firebase
+      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      await set(userProfileRef, updatedFollowCourses);
+    } catch (error) {
+      console.error("Error updating followCourses:", error);
+    }
+  };
+
   const[dataCourse,setDataCourse] = useState([]);
   const user = route.params?.user; // Nhận thông tin người dùng từ navigation
   const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
@@ -139,7 +207,16 @@ function LandingPage({route, navigation }) {
           <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail">
             {item.title}
           </Text>
-          <FontAwesomeIcon icon={faBookmark} />
+          <TouchableOpacity onPress={() => handleBookmark(item)}>
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                color: followCourses.some((course) => course.id === item.id)
+                  ? "blue" // Nếu đã bookmark, đổi màu
+                  : "gray", // Nếu chưa bookmark, màu xám
+              }}
+            />
+          </TouchableOpacity>
         </View>
   
         <Text style={styles.courseTeacher}>By {item.teacher}</Text>
