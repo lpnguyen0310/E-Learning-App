@@ -271,41 +271,49 @@ const CourseItem = ({ title, time, progress, image, item, onPress }) => (
   </TouchableOpacity>
 );
 
-const MyCoursesScreen = ({ navigation,route }) => {
+function MyCoursesScreen({ navigation,route }) {
   //Truyền dữ liệu khi load trang
   // useEffect(() => {
   //   guiDuLieu(coursesData); // Truyền dữ liệu userProfile vào hàm
   // }, []);
-
-  const [coursesData, setCoursesData] = useState([]); // Khởi tạo là một đối tượng rỗng
+  const { dataCourse,user } = route.params;
+  const [coursesData, setCoursesData] = useState(user.courses||[]); // Khởi tạo là một đối tượng rỗng
 
   useEffect(() => {
-    const fetchCoursesData = async () => {
-      try {
-        // Thay 'user1' bằng ID người dùng bạn cần truy cập
-        const coursesRef = ref(db, 'Users/users/0/courses'); 
-        const snapshot = await get(coursesRef);
+    if (!user || !user.uid) {
+      console.error("user hoặc user.uid không hợp lệ");
+      return;  // Nếu không có user hoặc user.uid, dừng việc fetch dữ liệu
+    }
   
+    const fetchCourses = async () => {
+      try {
+        const userProfileRef = ref(db, `Users/users/${user.uid}/courses`);
+        const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
-          const rawData = snapshot.val(); // Dữ liệu thô từ Firebase
-          setCoursesData(rawData); // Lưu dữ liệu courses vào state
-          console.log('Courses Data:', rawData); // Debug dữ liệu
+          const data = snapshot.val();
+          // Nếu data là object, chuyển thành mảng
+          const coursesArray = Array.isArray(data) ? data : Object.values(data);
+          setCoursesData(coursesArray);  // Cập nhật lại danh sách khóa học
+          console.log("Dữ liệu Courses MyCourses:", coursesArray);
         } else {
-          console.error('Không tìm thấy dữ liệu courses trong Firebase.');
+          console.log("Không tìm thấy khóa học cho người dùng.");
         }
       } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu từ Firebase:', error);
+        console.error("Lỗi khi fetch MyCourses:", error);
       }
     };
   
-    fetchCoursesData(); // Gọi hàm khi component được render
-  }, []);
+    fetchCourses();
+  }, [user.uid]); // Dependency array: Chỉ fetch khi user.uid thay đổi
+  
+  
+  
   
 
-  const { dataCourse } = route.params;
+  
 
   const handleCoursePress = (course) => {
-    navigation.navigate('LearningLesson', { course ,dataCourse});
+    navigation.navigate('LearningLesson', { course ,dataCourse,user});
   };
  
  
@@ -400,10 +408,10 @@ const MyCoursesScreen = ({ navigation,route }) => {
      
     </View>
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user})} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
       </View>
     </View>
   );

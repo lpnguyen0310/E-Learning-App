@@ -39,14 +39,19 @@ const db = getDatabase(app);
 
 function LandingPage({route, navigation }) {
 
-  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+  const[dataCourse,setDataCourse] = useState([]);
+  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
+  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
+  
+
+  const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState(); // Khởi tạo danh sách khóa học là mảng rỗng
 
   const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const userProfileRef = ref(db, "Users/users/0");
+      const userProfileRef = ref(db, `Users/users/${user.uid}`);
       try {
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
@@ -89,16 +94,13 @@ function LandingPage({route, navigation }) {
       setfollowCourses(updatedFollowCourses);
   
       // Đồng bộ với Firebase
-      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
       await set(userProfileRef, updatedFollowCourses);
     } catch (error) {
       console.error("Error updating followCourses:", error);
     }
   };
 
-  const[dataCourse,setDataCourse] = useState([]);
-  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
-  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
 
   const categories = [
     { id: '1', image :require('../assets/images/business.png') , title: 'Business' },
@@ -532,15 +534,15 @@ function LandingPage({route, navigation }) {
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false})}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false,user})}>
           <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse })}>
+        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse, user })}>
           <FontAwesomeIcon icon={faBook} />
           <Text style={[styles.footerText, currentPage === 'MyCourses' && styles.activeFooterText]}>My Courses</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse })}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse , user})}>
           <FontAwesomeIcon icon={faUser}  />
           <Text style={[styles.footerText,currentPage === 'Profile' && styles.activeFooterText]}>Profile</Text>
         </TouchableOpacity>

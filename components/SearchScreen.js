@@ -14,7 +14,9 @@
   const db = getDatabase(app);
 
   function SearchScreen ({route,navigation}) {
+    // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
 
+    const {category ,dataCourse,user,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
     //Lấy dữ liệu User
   const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
   const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
@@ -23,7 +25,7 @@
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const userProfileRef = ref(db, "Users/users/0");
+      const userProfileRef = ref(db, `Users/users/${user.uid}`);
       try {
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
@@ -31,7 +33,7 @@
           const getFollowCourses = data.followCourses || [];
           setUserProfile(data);
           setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
-          console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
+          console.log("Dữ liệu followCourses SearchScreen:", getFollowCourses);
         } else {
           console.error("Không tìm thấy dữ liệu userProfile.");
           setfollowCourses([]);
@@ -45,7 +47,6 @@
       fetchUserProfile(); // Gọi hàm khi màn hình được focus
     }
   }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
- 
 
   //Xử lí add dữ liệu vào followCourses
   const handleBookmark = async (course) => {
@@ -67,15 +68,13 @@
       setfollowCourses(updatedFollowCourses);
   
       // Đồng bộ với Firebase
-      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
       await set(userProfileRef, updatedFollowCourses);
     } catch (error) {
       console.error("Error updating followCourses:", error);
     }
   };
-    // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
-
-    const {category ,dataCourse,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
+    
      // State lưu trữ từ khóa tìm kiếm và kết quả lọc
     const [keyword, setKeyword] = useState("");
     // State lưu trữ kết quả lọc dựa trên từ khóa
@@ -439,10 +438,10 @@ const renderItemSearch = ({ item }) => (
       </View>
       </ScrollView> 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user})} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse ,user})} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse ,user})} />
       </View>
         </View>
     );

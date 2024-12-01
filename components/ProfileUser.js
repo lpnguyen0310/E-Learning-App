@@ -97,37 +97,34 @@ function ProfileScreen ({route,navigation}) {
   
   // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
   //
+  const { dataCourse,user } = route.params;
+  const [userProfile, setUserProfile] = useState(user); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState(user.followCourses||[]); // Khởi tạo danh sách khóa học là mảng rỗng
 
-  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+    // Tính toán số lượng khóa học đã lưu, ongoing, completed
+  const savedCount = followCourses.length;  // Số khóa học đã lưu
+  const ongoingCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'ongoing').length; // Số khóa học đang diễn ra
+  const completedCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'completed').length; // Số khóa học đã hoàn thành
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      const db = getDatabase();
-      const userProfileRef = ref(db, "Users/users/0");
+    const fetchFollowCourses = async () => {
       try {
+        const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
-          console.log("Dữ liệu userProfile:", data); // In dữ liệu ra console
-
-          const getFollowCourses = data.followCourses.map((course) => ({
-            ...course,
-          }));
-
-          setUserProfile(data); // Cập nhật state userProfile
-          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học
-          console.log("Danh sách khóa học:", getFollowCourses); // In dữ liệu courses
-        } else {
-          console.error("Không tìm thấy dữ liệu userProfile.");
+          setfollowCourses(data);  // Cập nhật lại danh sách khóa học
+          console.log("Dữ liệu followCourses ProfileUser:", data);
         }
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+        console.error("Error fetching followCourses:", error);
       }
     };
-
-    fetchUserProfile();
-  }, []); //
+  
+    fetchFollowCourses();
+  }, [user.uid]); // Chỉ khi user.uid thay đổi mới fetch lại
+  
+  
 
   // if (!userProfile || courses.length === 0) {
   //   return (
@@ -148,25 +145,36 @@ function ProfileScreen ({route,navigation}) {
   // };
   const toggleSaveCourse = async (id) => {
     try {
-      // Lọc danh sách followCourses để loại bỏ khóa học có `id` trùng
-      const updatedCourses = followCourses.filter((course) => course.id !== id);
+      // Kiểm tra khóa học có trong danh sách followCourses hay không
+      const isSaved = followCourses.some(course => course.id === id);
   
-      // Cập nhật lại state
+      let updatedCourses = [];
+      if (isSaved) {
+        // Nếu khóa học đã có trong followCourses, thì cần xóa nó
+        updatedCourses = followCourses.filter(course => course.id !== id);
+      } else {
+        // Nếu khóa học chưa có, thì thêm vào danh sách followCourses
+        const courseToAdd = dataCourse.find(course => course.id === id);
+        updatedCourses = [...followCourses, courseToAdd];
+      }
+  
+      // Cập nhật lại state followCourses
       setfollowCourses(updatedCourses);
   
-      // Cập nhật danh sách mới lên Firebase
-      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      // Cập nhật lại followCourses lên Firebase
+      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
       await set(userProfileRef, updatedCourses);
   
       console.log("Updated followCourses:", updatedCourses);
     } catch (error) {
-      console.error("Error removing course from followCourses:", error);
+      console.error("Error updating followCourses:", error);
     }
   };
   
   
+  
+  
 
-  const { dataCourse } = route.params;
   const renderCourse = ({ item }) => {
     if (!item) {
       console.log("Lỗi: Dữ liệu item không đúng:", item);
@@ -231,13 +239,13 @@ function ProfileScreen ({route,navigation}) {
         <Text style={styles.profileRole}>{userProfile.role}</Text>
         <View style={styles.statsContainer}>
           <Text style={styles.statText}>
-            {userProfile.stats?.saved} {'\n'}Save
+            {savedCount} {'\n'}Save
           </Text>
           <Text style={styles.statText}>
-            {userProfile.stats?.ongoing} {'\n'}On Going
+            {ongoingCount} {'\n'}On Going
           </Text>
           <Text style={styles.statText}>
-            {userProfile.stats?.completed} {'\n'}Completed
+            {completedCount} {'\n'}Completed
           </Text>
         </View>
       </View>
@@ -252,10 +260,10 @@ function ProfileScreen ({route,navigation}) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user})} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
       </View>
       
     </View>
