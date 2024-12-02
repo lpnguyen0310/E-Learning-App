@@ -7,6 +7,7 @@
   import { initializeApp } from "firebase/app";
   import { GoogleSignin } from '@react-native-google-signin/google-signin';
   import { GoogleAuthProvider, signInWithCredential as firebaseSignInWithCredential } from 'firebase/auth'; 
+  import { useUser } from '../contexts/UserContext'; // Import useUser hook để truy cập vào UserContext
 
   import { ActivityIndicator } from 'react-native';
 const firebaseConfig = {
@@ -28,7 +29,7 @@ const firebaseConfig = {
 
   const LoginScreen = () => {
     const navigation = useNavigation();
-
+    const { setUserData } = useUser(); 
     // State to store email and password
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -75,6 +76,7 @@ const firebaseConfig = {
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
+              setUserData(userData);  // Set user data in UserContext
               navigation.navigate('Home', { user: userData });
             } else {
               alert('User data not found.');
@@ -115,6 +117,7 @@ const firebaseConfig = {
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
+              setUserData(userData); 
               navigation.navigate('Home', { user: userData });
             } else {
               alert('Không tìm thấy dữ liệu người dùng.');
@@ -139,6 +142,7 @@ const firebaseConfig = {
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
+              setUserData(userData); 
               navigation.navigate('Home', { user: userData });
             } else {
               alert('Không tìm thấy dữ liệu người dùng.');

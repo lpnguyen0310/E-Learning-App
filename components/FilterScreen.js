@@ -9,7 +9,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 
 const FilterScreen = ({ navigation, route }) => {
-  const { fromScreen ,courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] ,isFromCategory,category } = route.params || {};
+  const { user,fromScreen ,courses,dataCourse: dataCourse, categoryType,selectedSubcategories: prevSelectedSubcategories = [], selectedRatings: prevSelectedRatings = [] ,isFromCategory,category } = route.params || {};
   
   const subcategories = ['Code', 'Movie', 'Design', 'Language','Business','Finance','Office','Writing'];
   const ratings = [3.0 , 3.5, 4.0, 4.5];
@@ -43,6 +43,7 @@ const FilterScreen = ({ navigation, route }) => {
         category, // Giữ nguyên category đang tìm kiếm
         selectedSubcategories,
         selectedRatings,
+        user, // Truyền lại thông tin người dùng nếu cần thiết
         dataCourse, // Truyền lại tất cả khóa học để lọc trên đó
         isFromCategory, // Đảm bảo vẫn là tìm kiếm trong category
       });
@@ -51,6 +52,7 @@ const FilterScreen = ({ navigation, route }) => {
       navigation.navigate('Search', {
         selectedSubcategories,
         selectedRatings,
+        user, // Truyền lại thông tin người dùng nếu cần thiết
         dataCourse, // Truyền lại tất cả khóa học để lọc trên đó
         isFromCategory: false, // Không tìm kiếm trong category nữa
       });
@@ -58,6 +60,7 @@ const FilterScreen = ({ navigation, route }) => {
       // Trường hợp khác nếu có
       navigation.navigate('CourseList', {
         courses,
+        user, // Truyền lại thông tin người dùng nếu cần thiết
         selectedSubcategories,
         selectedRatings,
         categoryType, // Truyền lại loại khóa học nếu cần thiết

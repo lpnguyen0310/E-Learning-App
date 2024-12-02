@@ -11,8 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation ,useRoute} from '@react-navigation/native';
 import { getAuth } from "firebase/auth"; // Để lấy auth của Firebase
 
 import { getDatabase, ref, set,get } from "firebase/database";
@@ -38,16 +37,24 @@ function ProfileScreen ({route,navigation}) {
   
   // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
   //
+  const { dataCourse,user } = route.params;
+  const [userProfile, setUserProfile] = useState(user); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState(user.followCourses||[]); // Khởi tạo danh sách khóa học là mảng rỗng
 
-  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+  // const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
+  // const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
   const auth = getAuth(); // Firebase Authentication
-  const user = route.params?.user;// Lấy user hiện tại sau khi đăng nhập
+      // Tính toán số lượng khóa học đã lưu, ongoing, completed
+      const savedCount = followCourses.length;  // Số khóa học đã lưu
+      const ongoingCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'ongoing').length; // Số khóa học đang diễn ra
+      const completedCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'completed').length; // Số khóa học đã hoàn thành
+  //const user = route.params?.user;// Lấy user hiện tại sau khi đăng nhập
   useEffect(() => {
     const fetchUserProfile = async () => {
       const db = getDatabase();
       const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
       try {
+        const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -64,7 +71,7 @@ function ProfileScreen ({route,navigation}) {
           console.error("Không tìm thấy dữ liệu userProfile.");
         }
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+        console.error("Error fetching followCourses:", error);
       }
     };
   
@@ -90,10 +97,20 @@ function ProfileScreen ({route,navigation}) {
   // };
   const toggleSaveCourse = async (id) => {
     try {
-      // Lọc danh sách followCourses để loại bỏ khóa học có `id` trùng
-      const updatedCourses = followCourses.filter((course) => course.id !== id);
+      // Kiểm tra khóa học có trong danh sách followCourses hay không
+      const isSaved = followCourses.some(course => course.id === id);
   
-      // Cập nhật lại state
+      let updatedCourses = [];
+      if (isSaved) {
+        // Nếu khóa học đã có trong followCourses, thì cần xóa nó
+        updatedCourses = followCourses.filter(course => course.id !== id);
+      } else {
+        // Nếu khóa học chưa có, thì thêm vào danh sách followCourses
+        const courseToAdd = dataCourse.find(course => course.id === id);
+        updatedCourses = [...followCourses, courseToAdd];
+      }
+  
+      // Cập nhật lại state followCourses
       setfollowCourses(updatedCourses);
   
       // Cập nhật danh sách mới lên Firebase với ID của người dùng hiện tại
@@ -102,12 +119,11 @@ function ProfileScreen ({route,navigation}) {
   
       console.log("Updated followCourses:", updatedCourses);
     } catch (error) {
-      console.error("Error removing course from followCourses:", error);
+      console.error("Error updating followCourses:", error);
     }
   };
   
 
-  const { dataCourse } = route.params;
   const renderCourse = ({ item }) => {
     if (!item) {
       console.log("Lỗi: Dữ liệu item không đúng:", item);
@@ -172,13 +188,13 @@ function ProfileScreen ({route,navigation}) {
         <Text style={styles.profileRole}>{userProfile.role}</Text>
         <View style={styles.statsContainer}>
           <Text style={styles.statText}>
-            {userProfile.stats?.saved} {'\n'}Save
+            {savedCount} {'\n'}Save
           </Text>
           <Text style={styles.statText}>
-            {userProfile.stats?.ongoing} {'\n'}On Going
+            {ongoingCount} {'\n'}On Going
           </Text>
           <Text style={styles.statText}>
-            {userProfile.stats?.completed} {'\n'}Completed
+            {completedCount} {'\n'}Completed
           </Text>
         </View>
       </View>
@@ -193,7 +209,7 @@ function ProfileScreen ({route,navigation}) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{ dataCourse,user })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user })} />
         <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse ,user})} />
         <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
         <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse ,user})} />

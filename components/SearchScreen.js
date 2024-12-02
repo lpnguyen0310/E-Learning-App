@@ -14,8 +14,9 @@
   const db = getDatabase(app);
 
   function SearchScreen ({route,navigation}) {
-    const user = route.params?.user;
+
     //Lấy dữ liệu User
+    const {category ,dataCourse,user,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
   const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
   const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
 
@@ -23,15 +24,16 @@
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const userProfileRef = ref(db, "Users/users/0");
+      const userProfileRef = ref(db, `Users/users/${user.uid}`);
       try {
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
           const getFollowCourses = data.followCourses || [];
+           set
           setUserProfile(data);
           setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
-          console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
+          console.log("Dữ liệu followCourses SearchScreen:", getFollowCourses);
         } else {
           console.error("Không tìm thấy dữ liệu userProfile.");
           setfollowCourses([]);
@@ -45,7 +47,6 @@
       fetchUserProfile(); // Gọi hàm khi màn hình được focus
     }
   }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
- 
 
   //Xử lí add dữ liệu vào followCourses
   const handleBookmark = async (course) => {
@@ -67,15 +68,13 @@
       setfollowCourses(updatedFollowCourses);
   
       // Đồng bộ với Firebase
-      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
       await set(userProfileRef, updatedFollowCourses);
     } catch (error) {
       console.error("Error updating followCourses:", error);
     }
   };
-    // Lấy dữ liệu khóa học từ route params từ trang HomeScreen
-
-    const {category ,dataCourse,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
+    
      // State lưu trữ từ khóa tìm kiếm và kết quả lọc
     const [keyword, setKeyword] = useState("");
     // State lưu trữ kết quả lọc dựa trên từ khóa
@@ -114,7 +113,8 @@
           setFilteredCourses(newFilters);
           setFilterActive(true);
       },
-        fromScreen: 'SearchScreen',  // Truyền thông tin về màn hình gốc
+        fromScreen: 'SearchScreen',
+        user,  // Truyền thông tin về màn hình gốc
       });
     };
 
@@ -321,7 +321,7 @@
 
 // Render kết quả tìm kiếm 
 const renderItemSearch = ({ item }) => (
-  <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
+  <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse ,user })}>
       {item.bestSeller && (
           <View style={styles.bestSellerBadge}>
               <Text style={styles.bestSellerText}>Best Seller</Text>

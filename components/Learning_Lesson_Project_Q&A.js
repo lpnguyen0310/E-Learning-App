@@ -42,7 +42,7 @@ const renderLessonItem = ({ item }) => (
 
 const LearningLesson = ({ route }) => {
   const navigation = useNavigation();
-  const { course,dataCourse } = route.params;
+  const { course,dataCourse,user } = route.params;
 
   // Hàm để mở rộng/collapse module
   const toggleModule = (moduleIndex) => {
@@ -236,7 +236,9 @@ const LearningLesson = ({ route }) => {
 
           {/* Student Projects with "View more" */}
           <View style={styles.studentProjectsHeader}>
-            <Text style={styles.sectionTitle}>12 Student Projects</Text>
+            <Text style={styles.sectionTitle}>
+              {course.projects.studentProjects.length} Student Projects
+            </Text>
             <TouchableOpacity onPress={() => console.log("View more pressed")}>
               <Text style={styles.viewMoreText}>View more</Text>
             </TouchableOpacity>
@@ -338,10 +340,10 @@ const LearningLesson = ({ route }) => {
      
     </View>
       <View style={styles.footer}>
-          <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-          <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-          <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-          <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+          <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user})} />
+          <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
+          <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
+          <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
       </View>
     </View>
   );

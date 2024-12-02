@@ -20,27 +20,17 @@ import { app } from "../components/firebaseConfig";
 const db = getDatabase(app);
 
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
-//   authDomain: "elearning-43ab4.firebaseapp.com",
-//   databaseURL: "https://elearning-43ab4-default-rtdb.asia-southeast1.firebasedatabase.app",
-//   projectId: "elearning-43ab4",
-//   storageBucket: "elearning-43ab4.firebasestorage.app",
-//   messagingSenderId: "259523190660",
-//   appId: "1:259523190660:web:c39c8bb5d3380bffe647d1",
-//   measurementId: "G-0Q3F48T7RM"
-// };
-
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-// const db = getDatabase();   
-
 
 
 function LandingPage({route, navigation }) {
 
-  const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+  const[dataCourse,setDataCourse] = useState([]);
+  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
+  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
+  
+
+  const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState([]);; // Khởi tạo danh sách khóa học là mảng rỗng
 
   const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
 
@@ -88,17 +78,15 @@ function LandingPage({route, navigation }) {
   
       setfollowCourses(updatedFollowCourses);
   
-      // Đồng bộ với Firebase
+
       const userProfileRef = ref(db, "Users/users/${user.uid}/followCourses");
+
       await set(userProfileRef, updatedFollowCourses);
     } catch (error) {
       console.error("Error updating followCourses:", error);
     }
   };
 
-  const[dataCourse,setDataCourse] = useState([]);
-  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
-  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
 
   const categories = [
     { id: '1', image :require('../assets/images/business.png') , title: 'Business' },
@@ -110,11 +98,11 @@ function LandingPage({route, navigation }) {
   ];
 
   const navigateToCategory = (category) => {
-    navigation.navigate('Search', { category , dataCourse,isFromCategory: true });
+    navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user });
   };
 
   const handleViewAllPress = () => {
-    navigation.navigate('Category', { dataCourse: dataCourse });
+    navigation.navigate('Category', { dataCourse: dataCourse,user  });
   };
 
   

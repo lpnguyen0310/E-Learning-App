@@ -61,14 +61,13 @@ const CourseItem = ({ title, time, progress, image, item, onPress }) => (
   </TouchableOpacity>
 );
 
-const MyCoursesScreen = ({ navigation,route }) => {
+function MyCoursesScreen({ navigation,route }) {
   //Truyền dữ liệu khi load trang
   // useEffect(() => {
   //   guiDuLieu(coursesData); // Truyền dữ liệu userProfile vào hàm
   // }, []);
-
+  const { dataCourse,user } = route.params;
   const [coursesData, setCoursesData] = useState([]); // Khởi tạo là một đối tượng rỗng
-  const user = route.params?.user;
   const userId = user?.uid;
   useEffect(() => {
     if (userId) {
@@ -96,10 +95,10 @@ const MyCoursesScreen = ({ navigation,route }) => {
   }, [userId]); // Chạy // Chạy lại useEffect nếu user thay đổi
   
 
-  const { dataCourse } = route.params;
+  
 
   const handleCoursePress = (course) => {
-    navigation.navigate('LearningLesson', { course ,dataCourse});
+    navigation.navigate('LearningLesson', { course ,dataCourse,user});
   };
  
  
@@ -194,7 +193,7 @@ const MyCoursesScreen = ({ navigation,route }) => {
      
     </View>
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{ dataCourse,user })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user })} />
         <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
         <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
         <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
