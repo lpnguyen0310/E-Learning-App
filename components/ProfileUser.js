@@ -40,44 +40,33 @@ function ProfileScreen ({route,navigation}) {
   const { dataCourse,user } = route.params;
   const [userProfile, setUserProfile] = useState(user); // Khởi tạo là một đối tượng rỗng
   const [followCourses, setfollowCourses] = useState(user.followCourses||[]); // Khởi tạo danh sách khóa học là mảng rỗng
+  console.log("Dữ liệu UserID", user.uid);
 
   // const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
   // const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
-  const auth = getAuth(); // Firebase Authentication
+    const auth = getAuth(); // Firebase Authentication
       // Tính toán số lượng khóa học đã lưu, ongoing, completed
       const savedCount = followCourses.length;  // Số khóa học đã lưu
       const ongoingCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'ongoing').length; // Số khóa học đang diễn ra
       const completedCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'completed').length; // Số khóa học đã hoàn thành
   //const user = route.params?.user;// Lấy user hiện tại sau khi đăng nhập
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      const db = getDatabase();
-      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
+    const fetchFollowCourses = async () => {
       try {
         const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
-          console.log("Dữ liệu userProfile:", data); // In dữ liệu ra console
-  
-          const getFollowCourses = data.map((course) => ({
-            ...course,
-          }));
-  
-          setUserProfile(data); // Cập nhật state userProfile
-          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học
-          console.log("Danh sách khóa học:", getFollowCourses); // In dữ liệu courses
-        } else {
-          console.error("Không tìm thấy dữ liệu userProfile.");
+          setfollowCourses(data);  // Cập nhật lại danh sách khóa học
+          console.log("Dữ liệu followCourses ProfileUser:", data);
         }
       } catch (error) {
         console.error("Error fetching followCourses:", error);
       }
     };
   
-    fetchUserProfile();
-  }, []);
-
+    fetchFollowCourses();
+  }, [user.uid]); 
   // if (!userProfile || courses.length === 0) {
   //   return (
   //     <View style={styles.loadingContainer}>

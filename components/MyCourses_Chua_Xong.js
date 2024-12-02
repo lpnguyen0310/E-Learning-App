@@ -67,32 +67,34 @@ function MyCoursesScreen({ navigation,route }) {
   //   guiDuLieu(coursesData); // Truyền dữ liệu userProfile vào hàm
   // }, []);
   const { dataCourse,user } = route.params;
-  const [coursesData, setCoursesData] = useState([]); // Khởi tạo là một đối tượng rỗng
-  const userId = user?.uid;
+  const [coursesData, setCoursesData] = useState(user.courses||[]); // Khởi tạo là một đối tượng rỗng
+
   useEffect(() => {
-    if (userId) {
-      const fetchCoursesData = async () => {
-        try {
-          // Tạo tham chiếu đến đường dẫn courses của người dùng trong Firebase
-          const coursesRef = ref(db, `Users/${userId}/courses`);
-          const snapshot = await get(coursesRef);
-
-          if (snapshot.exists()) {
-            const rawData = snapshot.val(); // Dữ liệu khóa học từ Firebase
-            setCoursesData(rawData); // Lưu dữ liệu vào state
-          } else {
-            console.log('Không tìm thấy khóa học nào');
-          }
-        } catch (error) {
-          console.error('Lỗi khi lấy dữ liệu khóa học từ Firebase:', error);
-        } finally {
-          setLoading(false); // Đặt trạng thái loading là false sau khi hoàn thành
-        }
-      };
-
-      fetchCoursesData();
+    if (!user || !user.uid) {
+      console.error("user hoặc user.uid không hợp lệ");
+      return;  // Nếu không có user hoặc user.uid, dừng việc fetch dữ liệu
     }
-  }, [userId]); // Chạy // Chạy lại useEffect nếu user thay đổi
+  
+    const fetchCourses = async () => {
+      try {
+        const userProfileRef = ref(db, `Users/users/${user.uid}/courses`);
+        const snapshot = await get(userProfileRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          // Nếu data là object, chuyển thành mảng
+          const coursesArray = Array.isArray(data) ? data : Object.values(data);
+          setCoursesData(coursesArray);  // Cập nhật lại danh sách khóa học
+          console.log("Dữ liệu Courses MyCourses:", coursesArray);
+        } else {
+          console.log("Không tìm thấy khóa học cho người dùng.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi fetch MyCourses:", error);
+      }
+    };
+  
+    fetchCourses();
+  }, [user.uid]);  // Chạy // Chạy lại useEffect nếu user thay đổi
   
 
   
