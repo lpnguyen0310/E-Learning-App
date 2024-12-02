@@ -31,216 +31,6 @@ const imageMapper = {
 };
 
 
-// Dữ liệu mẫu cho danh sách khóa học
-// const coursesData = [
-//   {
-//     id: '1',
-//     title: 'UX Foundation',
-//     time: '2 hrs 25 mins',
-//     progress: 0.3,
-//     status: 'ongoing',
-//     image: "uxfoundation.png", // Sử dụng khóa trong imageMapper
-//     lessons: [
-//       {
-//         module: 'I - Introduction',
-//         lessons: [
-//           {
-//             id: '1',
-//             title: 'Amet adipiscing consectetur',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-//             completed: false,
-//           },
-//           {
-//             id: '2',
-//             title: 'Culpa est incididunt enim id adi',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-//             completed: false,
-//           },
-//         ],
-//       },
-//       {
-//         module: 'II - Introduction',
-//         lessons: [
-//           {
-//             id: '1',
-//             title: 'Amet adipiscing consectetur',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-//             completed: false,
-//           },
-//           {
-//             id: '2',
-//             title: 'Culpa est incididunt enim id adi',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-//             completed: false,
-//           },
-//         ],
-//       },
-//       {
-//         module: 'II - Introduction',
-//         lessons: [
-//           {
-//             id: '1',
-//             title: 'Amet adipiscing consectetur',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-//             completed: false,
-//           },
-//           {
-//             id: '2',
-//             title: 'Culpa est incididunt enim id adi',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-//             completed: false,
-//           },
-//         ],
-//       },
-//       {
-//         module: 'IV - Introduction',
-//         lessons: [
-//           {
-//             id: '1',
-//             title: 'Amet adipiscing consectetur',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-//             completed: false,
-//           },
-//           {
-//             id: '2',
-//             title: 'Culpa est incididunt enim id adi',
-//             duration: '01:23 mins',
-//             audioUrl: 'https://www.w3schools.com/html/movie.mp4',
-//             completed: false,
-//           },
-//         ],
-//       },
-//     ],
-//     projects: {
-//       studentProjects: [
-//         {
-//           id: '1',
-//           title: 'Wireframe',
-//           author: 'Ramono Wultschner',
-//           image: "uxfoundation.png", // Sử dụng khóa trong imageMapper
-//         },
-//         {
-//           id: '2',
-//           title: 'Personal',
-//           author: 'Thomas Carlson',
-//           image: "uxresearch.png",
-//         },
-//       ],
-//       description: 'Culpa aliquip commodo incididunt nostrud aliqua ut adipisicing officia.',
-//       resources: [
-//         {
-//           id: '1',
-//           name: 'Document 1.txt',
-//           size: '612 Kb',
-//           type: '.txt',
-//           downloadLink: 'link_to_document_1',
-//         },
-//         {
-//           id: '2',
-//           name: 'Document 2.pdf',
-//           size: '35 Mb',
-//           type: '.pdf',
-//           downloadLink: 'link_to_document_2',
-//         },
-//       ],
-//     },
-//     qna: [
-//       {
-//         id: '1',
-//         user: 'Jane Barry',
-//         avatar: "teacher1.png", // Sử dụng khóa trong imageMapper
-//         time: 'A day ago',
-//         content:
-//           'Deserunt minim incididunt cillum nostrud do voluptate excepteur excepteur minim ex minim est',
-//         likes: 23,
-//         comments: 5,
-//       },
-//       {
-//         id: '2',
-//         user: 'Thomas',
-//         avatar: "teacher2.png",
-//         time: 'A day ago',
-//         content: 'Excepteur excepteur minim nostrud cillum nostrud dolore voluptate ex minim est.',
-//         likes: 15,
-//         comments: 3,
-//       },
-//     ],
-//   },
-//   {
-//     id: '2',
-//     title: 'Creative Art Design',
-//     time: '3 hrs 25 mins',
-//     progress: 1,
-//     status: 'completed',
-//     image: "creativeArtDesign.png", // Sử dụng khóa trong imageMapper
-//   },
-//   {
-//     id: '3',
-//     title: 'Palettes for Your App',
-//     time: '4 hrs 50 mins',
-//     progress: 1,
-//     status: 'completed',
-//     image: "palettesforyourApp.png",
-//   },
-//   {
-//     id: '4',
-//     title: 'Typography in UI Design',
-//     time: '4 hrs 50 mins',
-//     progress: 0.5,
-//     status: 'ongoing',
-//     image: "TypographyInUIDesign.png",
-//   },
-//   {
-//     id: '5',
-//     title: 'Creative Art Design',
-//     time: '3 hrs 25 mins',
-//     progress: 1,
-//     status: 'completed',
-//     image: 'creativeArtDesign.png',
-//     lessons: [
-//       // Dữ liệu bài học cho "Palettes for Your App"
-//     ],
-//     qna: [
-//       // Dữ liệu Q&A cho "Palettes for Your App"
-//     ],
-//   },
-//   {
-//     id: '6',
-//     title: 'Palettes for Your App',
-//     time: '4 hrs 50 mins',
-//     progress: 1,
-//     status: 'completed',
-//     image: 'palettesforyourApp.png',
-//     lessons: [
-//       // Dữ liệu bài học cho "Palettes for Your App"
-//     ],
-//     qna: [
-//       // Dữ liệu Q&A cho "Palettes for Your App"
-//     ],
-//   },
-//   {
-//     id: '7',
-//     title: 'Typography in UI Design',
-//     time: '4 hrs 50 mins',
-//     progress: 0.5,
-//     status: 'ongoing',
-//     image: 'TypographyInUIDesign.png',
-//     lessons: [
-//       // Dữ liệu bài học cho "Typography in UI Design"
-//     ],
-//     qna: [
-//       // Dữ liệu Q&A cho "Typography in UI Design"
-//     ],
-//   },
-//   // Add more course data as needed
-// ];
 
 //Gửi dữ liệu đã tạo lên firebase
 // function guiDuLieu(coursesData) {
@@ -278,28 +68,32 @@ const MyCoursesScreen = ({ navigation,route }) => {
   // }, []);
 
   const [coursesData, setCoursesData] = useState([]); // Khởi tạo là một đối tượng rỗng
-
+  const user = route.params?.user;
+  const userId = user?.uid;
   useEffect(() => {
-    const fetchCoursesData = async () => {
-      try {
-        // Thay 'user1' bằng ID người dùng bạn cần truy cập
-        const coursesRef = ref(db, 'Users/users/0/courses'); 
-        const snapshot = await get(coursesRef);
-  
-        if (snapshot.exists()) {
-          const rawData = snapshot.val(); // Dữ liệu thô từ Firebase
-          setCoursesData(rawData); // Lưu dữ liệu courses vào state
-          console.log('Courses Data:', rawData); // Debug dữ liệu
-        } else {
-          console.error('Không tìm thấy dữ liệu courses trong Firebase.');
+    if (userId) {
+      const fetchCoursesData = async () => {
+        try {
+          // Tạo tham chiếu đến đường dẫn courses của người dùng trong Firebase
+          const coursesRef = ref(db, `Users/${userId}/courses`);
+          const snapshot = await get(coursesRef);
+
+          if (snapshot.exists()) {
+            const rawData = snapshot.val(); // Dữ liệu khóa học từ Firebase
+            setCoursesData(rawData); // Lưu dữ liệu vào state
+          } else {
+            console.log('Không tìm thấy khóa học nào');
+          }
+        } catch (error) {
+          console.error('Lỗi khi lấy dữ liệu khóa học từ Firebase:', error);
+        } finally {
+          setLoading(false); // Đặt trạng thái loading là false sau khi hoàn thành
         }
-      } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu từ Firebase:', error);
-      }
-    };
-  
-    fetchCoursesData(); // Gọi hàm khi component được render
-  }, []);
+      };
+
+      fetchCoursesData();
+    }
+  }, [userId]); // Chạy // Chạy lại useEffect nếu user thay đổi
   
 
   const { dataCourse } = route.params;
@@ -400,10 +194,10 @@ const MyCoursesScreen = ({ navigation,route }) => {
      
     </View>
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{ dataCourse,user })} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
       </View>
     </View>
   );

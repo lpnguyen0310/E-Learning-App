@@ -46,18 +46,18 @@ function LandingPage({route, navigation }) {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const userProfileRef = ref(db, "Users/users/0");
+      const userProfileRef = ref(db, `Users/users/${user.uid}`); // Sử dụng userId động
       try {
         const snapshot = await get(userProfileRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
           const getFollowCourses = data.followCourses || [];
           setUserProfile(data);
-          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
+          setFollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
           console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
         } else {
           console.error("Không tìm thấy dữ liệu userProfile.");
-          setfollowCourses([]);
+          setFollowCourses([]);
         }
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
@@ -89,7 +89,7 @@ function LandingPage({route, navigation }) {
       setfollowCourses(updatedFollowCourses);
   
       // Đồng bộ với Firebase
-      const userProfileRef = ref(db, "Users/users/0/followCourses");
+      const userProfileRef = ref(db, "Users/users/${user.uid}/followCourses");
       await set(userProfileRef, updatedFollowCourses);
     } catch (error) {
       console.error("Error updating followCourses:", error);
@@ -532,15 +532,15 @@ function LandingPage({route, navigation }) {
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false})}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false,user})}>
           <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse })}>
+        <TouchableOpacity style={styles.footerItem}  onPress={() => navigation.navigate('MyCourse', { dataCourse,user})}>
           <FontAwesomeIcon icon={faBook} />
           <Text style={[styles.footerText, currentPage === 'MyCourses' && styles.activeFooterText]}>My Courses</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse })}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Profile', { dataCourse,user })}>
           <FontAwesomeIcon icon={faUser}  />
           <Text style={[styles.footerText,currentPage === 'Profile' && styles.activeFooterText]}>Profile</Text>
         </TouchableOpacity>

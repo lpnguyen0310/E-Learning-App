@@ -8,7 +8,7 @@
   import { GoogleSignin } from '@react-native-google-signin/google-signin';
   import { GoogleAuthProvider, signInWithCredential as firebaseSignInWithCredential } from 'firebase/auth'; 
 
-
+  import { ActivityIndicator } from 'react-native';
 const firebaseConfig = {
   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
   authDomain: "elearning-43ab4.firebaseapp.com",
@@ -32,12 +32,13 @@ const firebaseConfig = {
     // State to store email and password
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+    const [loading, setLoading] = useState(false);
+
     // State to store users from Firebase
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-      const usersRef = ref(db, 'Users/users'); // Path to users in Firebase
+      const usersRef = ref(db, 'User/users'); // Path to users in Firebase
 
       get(usersRef).then((snapshot) => {
         if (snapshot.exists()) {
@@ -64,10 +65,12 @@ const firebaseConfig = {
         return;
       }
 
+      setLoading(true); // Show loading spinner
+
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          const userRef = ref(db, 'Users/users/' + user.uid);
+          const userRef = ref(db, 'User/users/' + user.uid);
 
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
@@ -82,6 +85,7 @@ const firebaseConfig = {
           });
         })
         .catch((error) => {
+          setLoading(false); // Hide loading spinner
           const errorCode = error.code;
           let errorMessage = '';
           switch (errorCode) {
@@ -107,7 +111,7 @@ const firebaseConfig = {
           const result = await signInWithPopup(auth, provider);
           const user = result.user;
     
-          const userRef = ref(db, 'Users/users/' + user.uid);
+          const userRef = ref(db, 'User/users/' + user.uid);
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
@@ -131,7 +135,7 @@ const firebaseConfig = {
           const userCredential = await firebaseSignInWithCredential(auth, googleCredential);
           const user = userCredential.user;
     
-          const userRef = ref(db, 'Users/users/' + user.uid);
+          const userRef = ref(db, 'User/users/' + user.uid);
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
@@ -206,10 +210,16 @@ const firebaseConfig = {
           </View>
 
           {/* Sign In Button */}
-          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-            <Text style={styles.signInButtonText}>Sign In</Text>
-            <Icon name="arrow-forward-outline" size={20} color="#fff" />
-          </TouchableOpacity>     
+          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#fff" />
+          ) : (
+            <>
+              <Text style={styles.signInButtonText}>Sign In</Text>
+              <Icon name="arrow-forward-outline" size={20} color="#fff" />
+            </>
+          )}
+        </TouchableOpacity>    
         </View>
 
         {/* Or Continue With */}
@@ -217,7 +227,7 @@ const firebaseConfig = {
 
         {/* Social Login Buttons */}
         <View style={styles.socialContainer}>
-          <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn}>
+          <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn} disabled={loading}>
             <Image
               source={require('../assets/snack-icon.png')}
               style={styles.socialIcon}

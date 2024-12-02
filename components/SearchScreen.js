@@ -14,7 +14,7 @@
   const db = getDatabase(app);
 
   function SearchScreen ({route,navigation}) {
-
+    const user = route.params?.user;
     //Lấy dữ liệu User
   const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
   const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
@@ -439,10 +439,10 @@ const renderItemSearch = ({ item }) => (
       </View>
       </ScrollView> 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{ dataCourse,user })} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse ,user})} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse ,user})} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse ,user})} />
       </View>
         </View>
     );
