@@ -72,6 +72,8 @@ const firebaseConfig = {
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
+              // Truyền toàn bộ dữ liệu user và thêm uid vào params
+              userData.uid = user.uid;
               navigation.navigate('Home', { user: userData });
             } else {
               alert('User data not found.');
