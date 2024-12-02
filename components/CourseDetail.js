@@ -2,26 +2,37 @@ import { StyleSheet, Text, View,ImageBackground,TouchableOpacity,FlatList,Image,
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell,faCartShopping,faChevronLeft,faEllipsisVertical} from '@fortawesome/free-solid-svg-icons';
 import { faBookmark,faStar } from '@fortawesome/free-regular-svg-icons';
-import { faHome,faSearch,faBook,faUser,faVideo,faGlobe,faFileLines,faClock,faCertificate,faCheckDouble} from '@fortawesome/free-solid-svg-icons';
+import { faHome,faSearch,faBook,faUser,faVideo,faGlobe,faPauseCircle,faFileLines,faClock,faCertificate,faCheckDouble,faPlayCircle, faCheckCircle, faLock,faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
+import { Audio } from 'expo-av';
 
 
 
 function CourseDetail ({route,selectedCourse,navigation  }) {
     // Lấy dữ liệu từ route 
-    const { course,dataCourse  } = route.params;
+    const { course,dataCourse,user  } = route.params;
     // Dữ liệu khóa học
-    
+    const [currentSound, setCurrentSound] = useState(null); // Store the current playing sound
+    const [playingLessonId, setPlayingLessonId] = useState(null);
+    const [lessonStatus, setLessonStatus] = useState({}); 
+    const [playbackStatus, setPlaybackStatus] = useState({});
     // Xử lý Tab
     const [selectedTab, setSelectedTab] = useState('Overview');
     // Xử lý mở rộng mô tả abc
     const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
-
+    // Kiểm tra xem khóa học đã được mua hay chưa
+  const hasPurchasedCourse = user.courses.some(
+    (userCourse) => userCourse.id === course.id
+  );
 
       // Lọc các khóa học cùng category với khóa học đang xem
       const similarCourses = dataCourse.filter((item) => item.categories === course.categories && item.id !== course.id).slice(0, 3);
 
-    
+    // Chuyển đổi price từ chuỗi sang số (loại bỏ ký hiệu "$")
+    const priceNumber = parseFloat(course.price.replace('$', ''));
+
+    // Tính toán giá sau khi giảm (nếu discount là true)
+    const discountedPrice = course.discount ? (priceNumber * 0.8).toFixed(2) : null;
     
     
       const renderSimilarCourse = ({ item }) => (
@@ -56,6 +67,7 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     : course.reviews.filter(review => review.rating === selectedRating);
     
 
+    
 
     // Tính số ngày trước đó    
     const calculateTimeAgo = (reviewDate) => {
@@ -105,6 +117,97 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     </View>
   );
 
+   // Play or pause audio for the selected lesson
+  const toggleAudio = async (audioUrl, lessonId) => {
+    if (playingLessonId === lessonId) {
+      // If the selected lesson is already playing, pause it
+      if (currentSound) {
+        await currentSound.stopAsync();
+        setCurrentSound(null);
+        setPlayingLessonId(null); // Reset playing lesson
+        setLessonStatus((prevStatus) => ({
+          ...prevStatus,
+          [lessonId]: 'paused',
+        }));
+      }
+    } else {
+      // If a different lesson is selected, stop the current one and play the new one
+      if (currentSound) {
+        await currentSound.stopAsync();
+      }
+
+      try {
+        // Create a new sound and play it
+        const { sound, status } = await Audio.Sound.createAsync(
+          { uri: audioUrl },
+          { shouldPlay: true }
+        );
+        setCurrentSound(sound); // Set the new sound to the currentSound state
+        setPlayingLessonId(lessonId); // Update the playing lesson ID
+        setLessonStatus((prevStatus) => ({
+          ...prevStatus,
+          [lessonId]: 'playing', // Mark the lesson as playing
+        }));
+
+        // Monitor playback status to update when finished and track progress
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if (status.isLoaded) {
+            setPlaybackStatus((prevStatus) => ({
+              ...prevStatus,
+              [lessonId]: {
+                progress: status.positionMillis / status.durationMillis, // Calculate progress as a percentage
+                currentTime: status.positionMillis, // Current position in milliseconds
+                duration: status.durationMillis, // Total duration in milliseconds
+              }
+            }));
+
+            if (status.didJustFinish) {
+              setLessonStatus((prevStatus) => ({
+                ...prevStatus,
+                [lessonId]: 'completed', // Mark the lesson as completed when finished
+              }));
+            }
+          }
+        });
+
+        await sound.playAsync(); // Play the audio
+      } catch (error) {
+        console.error('Error playing audio:', error);
+      }
+    }
+  };
+
+// const [expandedSection, setExpandedSection] = useState(null)
+// const toggleSection = (index) => {
+//     setExpandedSection(expandedSection === index ? null : index);
+// };
+const [expandedSections, setExpandedSections] = useState([]); // Trạng thái mở rộng của từng mục
+
+// const toggleSection = (index) => {
+//     setExpandedSections((prev) => {
+//         const updatedSections = [...prev];
+//         updatedSections[index] = !updatedSections[index]; // Đảo trạng thái của mục được bấm
+//         return updatedSections;
+//     });
+// };
+ // Toggle section expansion
+ const toggleSection = (index) => {
+    setExpandedSections((prev) => {
+      const newSections = [...prev];
+      newSections[index] = !newSections[index];
+      return newSections;
+    });
+  };
+
+  // Dọn dẹp khi component unmount
+  useEffect(() => {
+    return () => {
+      // Nếu có âm thanh đang phát, dừng lại khi component bị unmounted
+      if (currentSound) {
+        currentSound.stopAsync();
+      }
+    };
+  }, [currentSound]);
     // Render Tab Content
 
     const renderTabContent = () => {
@@ -132,7 +235,7 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
                                 </View>
                                 <Text style ={{fontSize:15,marginTop:15,fontWeight:700}}>Description</Text>
                                 <Text numberOfLines={isDescriptionExpanded ? undefined : 3} style={styles.descriptionText}>
-                                    {course.discription}
+                                    {course.description}
                                 </Text>
                                 <TouchableOpacity onPress={() => setDescriptionExpanded(!isDescriptionExpanded)}>
                                     <Text style={styles.seeMoreText}>
@@ -182,11 +285,66 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
                 );
             case 'Lesson':
                 return (
-                    <View>
-                        <Text>Lesson Content</Text>
-                       
-                    </View>
-                );
+                    <ScrollView>
+                      <View style={styles.lessonContainer}>
+                        <FlatList
+                          data={course.sections} // Danh sách các mục (sections)
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item, index }) => (
+                            <View>
+                              {/* Section Header */}
+                              <TouchableOpacity onPress={() => toggleSection(index)} style={styles.sectionHeader}>
+                                <Text style={styles.sectionTitle}>{item.module}</Text>
+                                <FontAwesomeIcon
+                                  icon={expandedSections[index] ? faChevronUp : faChevronDown}
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+                              {/* Section Content */}
+                              {expandedSections[index] && (
+                                <FlatList
+                                  data={item.lessons} // Các bài học trong section
+                                  keyExtractor={(lesson) => lesson.id.toString()}
+                                  renderItem={({ item }) => (
+                                    <View style={styles.lessonItem}>
+                                      <View style={styles.lessonDetails}>
+                                        <Text style={styles.lessonName}>{item.title}</Text>
+                                        <Text style={styles.lessonDuration}>{item.duration}</Text>
+                                      </View>
+                                      <TouchableOpacity
+                                        onPress={() => item.status !== 'locked' && toggleAudio(item.audioUrl, item.id)}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={
+                                            item.status === 'completed'
+                                              ? faCheckCircle // Show check icon when completed
+                                              : item.status === 'current'
+                                              ? playingLessonId === item.id
+                                                ? faPauseCircle // Show pause icon if this lesson is playing
+                                                : faPlayCircle // Show play icon if not playing
+                                              : faLock // Lock icon if the lesson is locked
+                                          }
+                                          style={
+                                            item.status === 'completed'
+                                              ? styles.completedIcon
+                                              : item.status === 'current'
+                                              ? playingLessonId === item.id
+                                                ? styles.pauseIcon
+                                                : styles.currentIcon
+                                              : styles.lockedIcon
+                                          }
+                                        />
+                                      </TouchableOpacity>
+                                    </View>
+                                  )}
+                                />
+                              )}
+                            </View>
+                          )}
+                        />
+                      </View>
+                    </ScrollView>
+                  );
             case 'Review':
                 return (
                     <View>
@@ -258,8 +416,9 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
                                 <Text style ={{fontWeight:700,fontSize:18,marginTop:10}}>{course.title}</Text>
                                 <View style ={styles.course_rating}>
                                     <FontAwesomeIcon icon={faStar} />
-                                    <Text style={styles.courseRating}> {course.rating}</Text>
-                                    <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+                                    <Text style={styles.courseRating}> {course.rating}</Text> 
+                                    <Text style ={{color:'#808690',gap: '0 10px'}}> ( {totalReviews} )</Text>
+                                    <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
                                     <Text style={styles.courseLessons}>{course.lessons}</Text>
                                 </View>                      
                             </View>
@@ -282,14 +441,41 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
                 </ScrollView>
                 <View style={styles.footer}>
                     <View>
-                            <Text>{course.price}</Text>
-                            <Text>80% disc. 73.75$</Text>
+                     {/* Hiển thị giá gốc (in đậm nếu có giảm giá) */}
+                {course.discount ? (
+                    <Text style={styles.originalPrice}>
+                        Original: ${priceNumber.toFixed(2)}
+                    </Text>
+                ) : (
+                    <Text style={styles.price}>
+                        Price: ${priceNumber.toFixed(2)}
+                    </Text>
+                )}
+                {/* Hiển thị giá giảm (nếu có) */}
+                {course.discount && (
+                    <Text style={styles.discountedPrice}>
+                        20% disc: ${discountedPrice}
+                    </Text>
+                )}
                     </View>
                     <View style = {styles.footer_button}>
+                    {user.courses.some((userCourse) => userCourse.id === course.id) ? (
                         <TouchableOpacity style={styles.button}>
-                            <FontAwesomeIcon icon={faCartShopping} style={{color: "#edeff3",marginTop:2}} />
+                            <FontAwesomeIcon
+                                icon={faCartShopping}
+                                style={{ color: "#edeff3", marginTop: 2 }}
+                            />
                             <Text style={styles.buttonText}>Start Course</Text>
                         </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity style={styles.button}>
+                            <FontAwesomeIcon
+                                icon={faCartShopping}
+                                style={{ color: "#edeff3", marginTop: 2 }}
+                            />
+                            <Text style={styles.buttonText}>Buy Course</Text>
+                        </TouchableOpacity>
+                    )}
                     </View>
                 </View>
             </View>
@@ -555,6 +741,7 @@ const styles = StyleSheet.create({
         justifyContent:'space-between',
         padding:10,
         height:60,
+        border: '1px solid #e0e0e0',
     },
     footer_button:{
         flexDirection:'row',
@@ -572,6 +759,68 @@ const styles = StyleSheet.create({
     buttonText:{
         color:'white',
         marginLeft:5,
+    },
+
+    // Price
+    originalPrice: {
+        fontWeight: "bold", // Làm chữ in đậm
+        fontSize: 16,
+        color: "#555", // Màu xám đậm
+    },
+    price: {
+        fontSize: 16,
+        color: "#555",
+    },
+    discountedPrice: {
+        fontSize: 14,
+        color: "#ff5733", // Màu đỏ cam cho giá giảm
+    },
+    // Lesson
+    lessonContainer: {
+        padding: 16,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    icon: {
+        fontSize: 14,
+        color: '#000',
+    },
+    lessonItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 10,
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderColor: '#eee',
+    },
+    lessonName: {
+        fontSize: 14,
+    },
+    lessonDuration: {
+        fontSize: 15,
+        color: '#888',
+    },
+    completedIcon: {
+        color: '#4caf50',
+        fontSize: 15,
+    },
+    currentIcon: {
+        color: '#2196f3',
+        fontSize: 15,
+    },
+    lockedIcon: {
+        color: '#f44336',
+        fontSize: 15,    
     },
 });
 

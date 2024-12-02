@@ -22,165 +22,166 @@ const db = getDatabase(app);
 
 
 
-function LandingPage({route, navigation }) {
+  function LandingPage({route, navigation }) {
 
-  const[dataCourse,setDataCourse] = useState([]);
-  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
-  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
-  console.log("User ID in Home:", user?.uid);  // Truyền user.uid
-  console.log("Full user data:", user);
+    const[dataCourse,setDataCourse] = useState([]);
+    const user = route.params?.user; // Nhận thông tin người dùng từ navigation
+    const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
+    console.log("User ID in Home:", user?.uid);  // Truyền user.uid
+    console.log("Full user data:", user);
 
-  const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+    const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
+    const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
 
-  const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const userProfileRef = ref(db, `Users/users/${user.uid}`); // Sử dụng userId động
-      try {
-        const snapshot = await get(userProfileRef);
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const getFollowCourses = data.followCourses || [];
-          setUserProfile(data);
-          setFollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
-          console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
-        } else {
-          console.error("Không tìm thấy dữ liệu userProfile.");
-          setFollowCourses([]);
+    const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
+
+    useEffect(() => {
+      const fetchUserProfile = async () => {
+        const userProfileRef = ref(db, `Users/users/${user.uid}`); // Sử dụng userId động
+        try {
+          const snapshot = await get(userProfileRef);
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const getFollowCourses = data.followCourses || [];
+            setUserProfile(data);
+            setFollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
+            console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
+          } else {
+            console.error("Không tìm thấy dữ liệu userProfile.");
+            setFollowCourses([]);
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
         }
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+      };
+
+      if (isFocused) {
+        fetchUserProfile(); // Gọi hàm khi màn hình được focus
       }
-    };
+    }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
 
-    if (isFocused) {
-      fetchUserProfile(); // Gọi hàm khi màn hình được focus
-    }
-  }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
-
-  //Xử lí add dữ liệu vào followCourses
-  const handleBookmark = async (course) => {
-    try {
-      const isBookmarked = followCourses.some(
-        (followedCourse) => followedCourse.id === course.id
-      );
-  
-      let updatedFollowCourses;
-  
-      if (isBookmarked) {
-        updatedFollowCourses = followCourses.filter(
-          (followedCourse) => followedCourse.id !== course.id
+    //Xử lí add dữ liệu vào followCourses
+    const handleBookmark = async (course) => {
+      try {
+        const isBookmarked = followCourses.some(
+          (followedCourse) => followedCourse.id === course.id
         );
-      } else {
-        updatedFollowCourses = [...followCourses, course];
-      }
-  
-      setfollowCourses(updatedFollowCourses);
-  
-      // Đồng bộ với Firebase
-      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
-      await set(userProfileRef, updatedFollowCourses);
-    } catch (error) {
-      console.error("Error updating followCourses:", error);
-    }
-  };
-
-
-  const categories = [
-    { id: '1', image :require('../assets/images/business.png') , title: 'Business' },
-    { id: '2',image :require('../assets/images/Code.png'), title: 'Code' },
-    { id: '3',image :require('../assets/images/movie.png'), title: 'Movie' },
-    { id: '4',image :require('../assets/images/design.png'), title: 'Design' },
-    { id: '5',image :require('../assets/images/writing.png'), title: 'Writing' },
-    { id: '6',image :require('../assets/images/language.png'), title: 'Language' },
-  ];
-
-  const navigateToCategory = (category) => {
-    navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user });
-  };
-
-  const handleViewAllPress = () => {
-    navigation.navigate('Category', { dataCourse: dataCourse,user  });
-  };
-
-  
-
-  const renderCategoryItem  = ({ item }) => (
-    <View style={styles.item}>
-      <TouchableOpacity style={styles.categoryItem}   onPress={() => navigateToCategory(item.title)} >
-            <Image source={item.image} style={{width: 40, height: 40, borderRadius: 8, objectFit: "cover"}}/>
-            <Text style={styles.categoryText}>{item.title}</Text>
-       </TouchableOpacity>
-    </View> 
-  );
-
-  useEffect(() => {
-    // Fetch courses from Realtime Database on component mount
-    const fetchCourses = async () => {
-      try {
-        const coursesRef = ref(db, 'dataCourse'); // Tham chiếu đến đường dẫn 'dataCourse' trong Realtime Database
-        const snapshot = await get(coursesRef); // Lấy dữ liệu từ đường dẫn này
-
-        if (snapshot.exists()) {
-          // Nếu dữ liệu tồn tại, lưu vào state
-          const coursesData = snapshot.val();
-          setDataCourse(Object.values(coursesData)); // Convert object thành array nếu cần
+    
+        let updatedFollowCourses;
+    
+        if (isBookmarked) {
+          updatedFollowCourses = followCourses.filter(
+            (followedCourse) => followedCourse.id !== course.id
+          );
         } else {
-          console.log("No data available");
+          updatedFollowCourses = [...followCourses, course];
         }
+    
+        setfollowCourses(updatedFollowCourses);
+    
+        // Đồng bộ với Firebase
+        const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
+        await set(userProfileRef, updatedFollowCourses);
       } catch (error) {
-        console.error("Error fetching courses: ", error);
+        console.error("Error updating followCourses:", error);
       }
     };
-    fetchCourses(); // Gọi hàm để lấy dữ liệu khóa học
-  }, []); // Mảng phụ thuộc rỗng đảm bảo chỉ chạy một lần khi component mount
 
-  // Phân loại khóa học
-  const categorizedCourses = dataCourse.reduce((acc, course) => {
-    const { type } = course; // Lấy loại khóa học từ từng course
 
-    // Kiểm tra xem loại khóa học đã tồn tại trong accumulator chưa, nếu chưa thì khởi tạo một mảng trống
-    if (!acc[type]) {
-      acc[type] = [];
-    }
+    const categories = [
+      { id: '1', image :require('../assets/images/business.png') , title: 'Business' },
+      { id: '2',image :require('../assets/images/Code.png'), title: 'Code' },
+      { id: '3',image :require('../assets/images/movie.png'), title: 'Movie' },
+      { id: '4',image :require('../assets/images/design.png'), title: 'Design' },
+      { id: '5',image :require('../assets/images/writing.png'), title: 'Writing' },
+      { id: '6',image :require('../assets/images/language.png'), title: 'Language' },
+    ];
 
-    // Thêm khóa học vào danh sách tương ứng
-    acc[type].push(course);
+    const navigateToCategory = (category) => {
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user });
+    };
 
-    return acc;
-  }, {});
+    const handleViewAllPress = () => {
+      navigation.navigate('Category', { dataCourse: dataCourse,user  });
+    };
 
-  const popularCourse = categorizedCourses['Popular'] || [];
-  const recommendCourse = categorizedCourses['Recommend'] || [];
-  const inspireCourse = categorizedCourses['Inspire'] || [];
-  
-  const navigateToCourses = (categoryType) => {
-    let courses = [];
-  
-    if (categoryType === 'Popular') {
-      courses = popularCourse;
-      categoryType = 'Popular Courses';
-    } else if (categoryType === 'Recommend') {
-      courses = recommendCourse;
-      categoryType = 'Recommended Courses';
-
-    } else if (categoryType === 'Inspire') {
-      courses = inspireCourse;
-      categoryType = 'Inspiring Courses';
-
-    }
     
-    // Điều hướng tới màn hình CourseList với danh sách khóa học
-    navigation.navigate('CourseList', { courses,categoryType ,dataCourse: dataCourse });
-  };
+
+    const renderCategoryItem  = ({ item }) => (
+      <View style={styles.item}>
+        <TouchableOpacity style={styles.categoryItem}   onPress={() => navigateToCategory(item.title)} >
+              <Image source={item.image} style={{width: 40, height: 40, borderRadius: 8, objectFit: "cover"}}/>
+              <Text style={styles.categoryText}>{item.title}</Text>
+        </TouchableOpacity>
+      </View> 
+    );
+
+    useEffect(() => {
+      // Fetch courses from Realtime Database on component mount
+      const fetchCourses = async () => {
+        try {
+          const coursesRef = ref(db, 'data'); // Tham chiếu đến đường dẫn 'dataCourse' trong Realtime Database
+          const snapshot = await get(coursesRef); // Lấy dữ liệu từ đường dẫn này
+
+          if (snapshot.exists()) {
+            // Nếu dữ liệu tồn tại, lưu vào state
+            const coursesData = snapshot.val();
+            setDataCourse(Object.values(coursesData)); // Convert object thành array nếu cần
+          } else {
+            console.log("No data available");
+          }
+        } catch (error) {
+          console.error("Error fetching courses: ", error);
+        }
+      };
+      fetchCourses(); // Gọi hàm để lấy dữ liệu khóa học
+    }, []); // Mảng phụ thuộc rỗng đảm bảo chỉ chạy một lần khi component mount
+
+    // Phân loại khóa học
+    const categorizedCourses = dataCourse.reduce((acc, course) => {
+      const { type } = course; // Lấy loại khóa học từ từng course
+
+      // Kiểm tra xem loại khóa học đã tồn tại trong accumulator chưa, nếu chưa thì khởi tạo một mảng trống
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+
+      // Thêm khóa học vào danh sách tương ứng
+      acc[type].push(course);
+
+      return acc;
+    }, {});
+
+    const popularCourse = categorizedCourses['Popular'] || [];
+    const recommendCourse = categorizedCourses['Recommend'] || [];
+    const inspireCourse = categorizedCourses['Inspire'] || [];
+    
+    const navigateToCourses = (categoryType) => {
+      let courses = [];
+    
+      if (categoryType === 'Popular') {
+        courses = popularCourse;
+        categoryType = 'Popular Courses';
+      } else if (categoryType === 'Recommend') {
+        courses = recommendCourse;
+        categoryType = 'Recommended Courses';
+
+      } else if (categoryType === 'Inspire') {
+        courses = inspireCourse;
+        categoryType = 'Inspiring Courses';
+
+      }
+      
+      // Điều hướng tới màn hình CourseList với danh sách khóa học
+      navigation.navigate('CourseList', { courses,categoryType ,dataCourse: dataCourse });
+    };
 
 
   const renderCourseItem = ({ item }) => (
     <TouchableOpacity
       style={styles.courseItem}
-      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse })}
+      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user })}
     >
       <View style={styles.imageContainer}>
       <Image source={{ uri: item.image }} style={styles.courseImage} />
@@ -212,6 +213,7 @@ function LandingPage({route, navigation }) {
         <View style={styles.course_rating}>
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
+
           <Text style={{ color: "grey", marginLeft: 5, marginRight: 5 }}>.</Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
@@ -221,7 +223,7 @@ function LandingPage({route, navigation }) {
   
   const CourseRecommentItem = ({ item }) => (
    
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -262,7 +264,7 @@ function LandingPage({route, navigation }) {
   );
 
   const CourseInspireItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
+    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
       <Image source={{uri: item.image}} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 
