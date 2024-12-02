@@ -76,6 +76,7 @@ const firebaseConfig = {
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
+              userData.uid = user.uid;
               setUserData(userData);  // Set user data in UserContext
               navigation.navigate('Home', { user: userData });
             } else {

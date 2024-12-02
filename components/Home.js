@@ -27,10 +27,11 @@ function LandingPage({route, navigation }) {
   const[dataCourse,setDataCourse] = useState([]);
   const user = route.params?.user; // Nhận thông tin người dùng từ navigation
   const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
-  
+  console.log("User ID in Home:", user?.uid);  // Truyền user.uid
+  console.log("Full user data:", user);
 
   const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState([]);; // Khởi tạo danh sách khóa học là mảng rỗng
+  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
 
   const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
 
@@ -78,9 +79,8 @@ function LandingPage({route, navigation }) {
   
       setfollowCourses(updatedFollowCourses);
   
-
-      const userProfileRef = ref(db, "Users/users/${user.uid}/followCourses");
-
+      // Đồng bộ với Firebase
+      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
       await set(userProfileRef, updatedFollowCourses);
     } catch (error) {
       console.error("Error updating followCourses:", error);

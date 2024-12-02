@@ -42,13 +42,10 @@ function ProfileScreen ({route,navigation}) {
   const [followCourses, setfollowCourses] = useState(user.followCourses||[]); // Khởi tạo danh sách khóa học là mảng rỗng
   console.log("Dữ liệu UserID", user.uid);
 
-  // const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
-  // const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
-    const auth = getAuth(); // Firebase Authentication
-      // Tính toán số lượng khóa học đã lưu, ongoing, completed
-      const savedCount = followCourses.length;  // Số khóa học đã lưu
-      const ongoingCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'ongoing').length; // Số khóa học đang diễn ra
-      const completedCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'completed').length; // Số khóa học đã hoàn thành
+  
+  const savedCount = followCourses.length;  // Số khóa học đã lưu
+  const ongoingCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'ongoing').length; // Số khóa học đang diễn ra
+  const completedCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'completed').length; // Số khóa học đã hoàn thành
   //const user = route.params?.user;// Lấy user hiện tại sau khi đăng nhập
   useEffect(() => {
     const fetchFollowCourses = async () => {
@@ -66,7 +63,7 @@ function ProfileScreen ({route,navigation}) {
     };
   
     fetchFollowCourses();
-  }, [user.uid]); 
+  }, [user.uid]); // Chỉ khi user.uid thay đổi mới fetch lại
   // if (!userProfile || courses.length === 0) {
   //   return (
   //     <View style={styles.loadingContainer}>
@@ -102,9 +99,9 @@ function ProfileScreen ({route,navigation}) {
       // Cập nhật lại state followCourses
       setfollowCourses(updatedCourses);
   
-      // Cập nhật danh sách mới lên Firebase với ID của người dùng hiện tại
+      // Cập nhật lại followCourses lên Firebase
       const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
-      await set(userProfileRef, updatedCourses); // Cập nhật dữ liệu khóa học lên Firebase
+      await set(userProfileRef, updatedCourses);
   
       console.log("Updated followCourses:", updatedCourses);
     } catch (error) {
