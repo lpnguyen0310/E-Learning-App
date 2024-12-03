@@ -68,7 +68,7 @@ const LearningLesson = ({ route }) => {
   };
 
     //Thực hiện phát âm thanh
-    const [lessons, setLessons] = useState(course.lessons); // Lưu danh sách bài học
+    const [lessons, setLessons] = useState(course.sections); // Lưu danh sách bài học
     const [currentAudio, setCurrentAudio] = useState(null); // Lưu URL của âm thanh đang phát
     const [isPlaying, setIsPlaying] = useState(false); // Trạng thái đang phát
     const [sound, setSound] = useState(null); // Instance âm thanh

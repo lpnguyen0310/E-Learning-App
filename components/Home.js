@@ -25,68 +25,67 @@ const db = getDatabase(app);
   function LandingPage({route, navigation }) {
 
     const[dataCourse,setDataCourse] = useState([]);
-    const user = route.params?.user; // Nhận thông tin người dùng từ navigation
-    const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
-    console.log("User ID in Home:", user?.uid);  // Truyền user.uid
-    console.log("Full user data:", user);
+  const user = route.params?.user; // Nhận thông tin người dùng từ navigation
+  const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
+  console.log("User ID in Home:", user?.uid);  // Truyền user.uid
+  console.log("Full user data:", user);
 
-    const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
-    const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+  const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
+  const [followCourses, setfollowCourses] = useState(); // Khởi tạo danh sách khóa học là mảng rỗng
 
+  const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
 
-    const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
-
-    useEffect(() => {
-      const fetchUserProfile = async () => {
-        const userProfileRef = ref(db, `Users/users/${user.uid}`); // Sử dụng userId động
-        try {
-          const snapshot = await get(userProfileRef);
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            const getFollowCourses = data.followCourses || [];
-            setUserProfile(data);
-            setFollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
-            console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
-          } else {
-            console.error("Không tìm thấy dữ liệu userProfile.");
-            setFollowCourses([]);
-          }
-        } catch (error) {
-          console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
-        }
-      };
-
-      if (isFocused) {
-        fetchUserProfile(); // Gọi hàm khi màn hình được focus
-      }
-    }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
-
-    //Xử lí add dữ liệu vào followCourses
-    const handleBookmark = async (course) => {
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const userProfileRef = ref(db, `Users/users/${user.uid}`);
       try {
-        const isBookmarked = followCourses.some(
-          (followedCourse) => followedCourse.id === course.id
-        );
-    
-        let updatedFollowCourses;
-    
-        if (isBookmarked) {
-          updatedFollowCourses = followCourses.filter(
-            (followedCourse) => followedCourse.id !== course.id
-          );
+        const snapshot = await get(userProfileRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const getFollowCourses = data.followCourses || [];
+          setUserProfile(data);
+          setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
+          console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
         } else {
-          updatedFollowCourses = [...followCourses, course];
+          console.error("Không tìm thấy dữ liệu userProfile.");
+          setfollowCourses([]);
         }
-    
-        setfollowCourses(updatedFollowCourses);
-    
-        // Đồng bộ với Firebase
-        const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
-        await set(userProfileRef, updatedFollowCourses);
       } catch (error) {
-        console.error("Error updating followCourses:", error);
+        console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
       }
     };
+
+    if (isFocused) {
+      fetchUserProfile(); // Gọi hàm khi màn hình được focus
+    }
+  }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
+
+  //Xử lí add dữ liệu vào followCourses
+  const handleBookmark = async (course) => {
+    try {
+      const isBookmarked = followCourses.some(
+        (followedCourse) => followedCourse.id === course.id
+      );
+  
+      let updatedFollowCourses;
+  
+      if (isBookmarked) {
+        updatedFollowCourses = followCourses.filter(
+          (followedCourse) => followedCourse.id !== course.id
+        );
+      } else {
+        updatedFollowCourses = [...followCourses, course];
+      }
+  
+      setfollowCourses(updatedFollowCourses);
+  
+      // Đồng bộ với Firebase
+      const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
+      await set(userProfileRef, updatedFollowCourses);
+    } catch (error) {
+      console.error("Error updating followCourses:", error);
+    }
+  };
 
 
     const categories = [

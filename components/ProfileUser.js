@@ -11,8 +11,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation ,useRoute} from '@react-navigation/native';
-import { getAuth } from "firebase/auth"; // Để lấy auth của Firebase
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 import { getDatabase, ref, set,get } from "firebase/database";
 
@@ -20,6 +20,66 @@ import { getDatabase, ref, set,get } from "firebase/database";
 import { app } from "../components/firebaseConfig";
 const db = getDatabase(app);
 
+// const userProfile = {
+//   name: 'Martha Rosie',
+//   role: 'UX/UI Designer',
+//   stats: { saved: 25, ongoing: 24, completed: 98 },
+//   image: "User1.png", // Lưu tên tệp hoặc URL thay vì require()
+//   courses: [
+//     {
+//       id: '1',
+//       title: 'Product Design',
+//       instructor: 'Dennis Sweeney',
+//       price: '$190',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "productDesign.png", // Lưu tên tệp
+//     },
+//     {
+//       id: '2',
+//       title: 'Website Design',
+//       instructor: 'Ramono Wultschner',
+//       price: '$59',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "webdesign.png", // Lưu tên tệp
+//     },
+//     {
+//       id: '3',
+//       title: 'Mobile UI Design',
+//       instructor: 'Ramono Wultschner',
+//       price: '$320',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "mobieUiDesign.png", // Lưu tên tệp
+//     },
+//     {
+//       id: '4',
+//       title: 'Digital Portrait',
+//       instructor: 'Ramono Wultschner',
+//       price: '$67',
+//       rating: 4.5,
+//       lessons: 12,
+//       saved: true,
+//       image: "digitalportrait.png", // Lưu tên tệp
+//     },
+//   ],
+// };
+
+// Gửi dữ liệu đã tạo lên firebase
+// function guiDuLieu(userProfile) {
+//   const db = getDatabase(); // Lấy đối tượng database từ Firebase
+//   set(ref(db, "userProfile"), userProfile) // Lưu dữ liệu userProfile vào Firebase
+//     .then(() => {
+//       console.log("Dữ liệu đã được lưu thành công!");
+//     })
+//     .catch((error) => {
+//       console.error("Lỗi khi lưu dữ liệu:", error);
+//     });
+// }
 
 const imageMapper = {
   "productDesign.png": require("../assets/images/productDesign.png"),
@@ -41,12 +101,11 @@ function ProfileScreen ({route,navigation}) {
   const [userProfile, setUserProfile] = useState(user); // Khởi tạo là một đối tượng rỗng
   const [followCourses, setfollowCourses] = useState(user.followCourses||[]); // Khởi tạo danh sách khóa học là mảng rỗng
   console.log("Dữ liệu UserID", user.uid);
-
-  
+    // Tính toán số lượng khóa học đã lưu, ongoing, completed
   const savedCount = followCourses.length;  // Số khóa học đã lưu
   const ongoingCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'ongoing').length; // Số khóa học đang diễn ra
   const completedCount = Object.values(userProfile.courses || {}).filter(course => course.status === 'completed').length; // Số khóa học đã hoàn thành
-  //const user = route.params?.user;// Lấy user hiện tại sau khi đăng nhập
+
   useEffect(() => {
     const fetchFollowCourses = async () => {
       try {
@@ -64,6 +123,9 @@ function ProfileScreen ({route,navigation}) {
   
     fetchFollowCourses();
   }, [user.uid]); // Chỉ khi user.uid thay đổi mới fetch lại
+  
+  
+
   // if (!userProfile || courses.length === 0) {
   //   return (
   //     <View style={styles.loadingContainer}>
@@ -108,6 +170,9 @@ function ProfileScreen ({route,navigation}) {
       console.error("Error updating followCourses:", error);
     }
   };
+  
+  
+  
   
 
   const renderCourse = ({ item }) => {
@@ -195,10 +260,10 @@ function ProfileScreen ({route,navigation}) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user })} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse ,user})} />
+        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user})} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
         <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse ,user})} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
       </View>
       
     </View>

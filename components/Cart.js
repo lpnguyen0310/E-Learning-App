@@ -94,7 +94,7 @@ const Cart = ({route}) => {
             }));
     
             // Cập nhật vào Firebase Realtime Database
-            const userRef = ref(database, `User/users/${user.uid}`); // Chỉnh sửa đường dẫn ở đây
+            const userRef = ref(database, `Users/users/${user.uid}`); // Chỉnh sửa đường dẫn ở đây
             await update(userRef, {
                 courses: [...user.courses, ...newCourses] // Thêm khóa học mới vào trường courses
             });

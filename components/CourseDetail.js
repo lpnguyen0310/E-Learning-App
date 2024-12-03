@@ -475,7 +475,7 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
                     </View>
                     <View style = {styles.footer_button}>
                     {user.courses.some((userCourse) => userCourse.id === course.id) ? (
-                        <TouchableOpacity style={styles.button}>
+                        <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('LearningLesson', { course ,dataCourse,user})}>
                             <FontAwesomeIcon
                                 icon={faCartShopping}
                                 style={{ color: "#edeff3", marginTop: 2 }}

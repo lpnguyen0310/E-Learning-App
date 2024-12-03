@@ -71,7 +71,7 @@ const firebaseConfig = {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          const userRef = ref(db, 'User/users/' + user.uid);
+          const userRef = ref(db, 'Users/users/' + user.uid);
 
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
