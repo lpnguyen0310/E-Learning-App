@@ -19,6 +19,8 @@ import CourseList from '../components/CourseList';
 
 import ForgotPassword from '../components/ForgotPassword'; // Import ForgotPassword
 import { UserProvider } from '../contexts/UserContext'; // Đường dẫn tới UserContext.js
+import Cart from '../components/Cart';
+import { CartProvider } from '../contexts/CartContext';
 
 
 
@@ -27,6 +29,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   return (
     <UserProvider>
+      <CartProvider>
     <NavigationContainer independent={true}> 
       <Stack.Navigator initialRouteName="Login">
 
@@ -64,9 +67,14 @@ const App = () => {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} 
           options={{ headerShown: false }} // Ẩn tiêu đề cho ForgotPassword
         />
+        <Stack.Screen name="Cart" component={Cart} 
+        // Ẩn tiêu đề cho Cart
+        />
+
 
       </Stack.Navigator>
     </NavigationContainer>
+    </CartProvider>
     </UserProvider>
   );
   

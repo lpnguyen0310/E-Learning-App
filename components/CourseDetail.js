@@ -5,7 +5,7 @@ import { faBookmark,faStar } from '@fortawesome/free-regular-svg-icons';
 import { faHome,faSearch,faBook,faUser,faVideo,faGlobe,faPauseCircle,faFileLines,faClock,faCertificate,faCheckDouble,faPlayCircle, faCheckCircle, faLock,faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
-
+import { useCart } from '../contexts/CartContext'; // Đường dẫn tới CartContext.js
 
 
 function CourseDetail ({route,selectedCourse,navigation  }) {
@@ -16,6 +16,8 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     const [playingLessonId, setPlayingLessonId] = useState(null);
     const [lessonStatus, setLessonStatus] = useState({}); 
     const [playbackStatus, setPlaybackStatus] = useState({});
+
+    const { addToCart } = useCart();
     // Xử lý Tab
     const [selectedTab, setSelectedTab] = useState('Overview');
     // Xử lý mở rộng mô tả abc
@@ -36,7 +38,7 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     
     
       const renderSimilarCourse = ({ item }) => (
-        <TouchableOpacity style={styles.CourseSimilar} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
+        <TouchableOpacity style={styles.CourseSimilar} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse ,user })}>
           <Image source={item.image} style={styles.courseInpireImage} />
           <View style={styles.courseInspireInfo}>
             <View style ={styles.courseinspire_title_container}> 
@@ -209,6 +211,12 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
     };
   }, [currentSound]);
     // Render Tab Content
+    const [cart, setCart] = useState([]);
+    const handleAddToCart = (course) => {
+      addToCart(course); // Thêm khóa học vào giỏ hàng
+      navigation.navigate('Cart',{ user}); // Điều hướng tới màn hình giỏ hàng
+  };
+
 
     const renderTabContent = () => {
         switch (selectedTab) {
@@ -468,7 +476,7 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
                             <Text style={styles.buttonText}>Start Course</Text>
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity style={styles.button}>
+                        <TouchableOpacity style={styles.button} onPress={() => handleAddToCart(course)}>
                             <FontAwesomeIcon
                                 icon={faCartShopping}
                                 style={{ color: "#edeff3", marginTop: 2 }}
