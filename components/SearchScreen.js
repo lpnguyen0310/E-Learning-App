@@ -259,7 +259,44 @@
     }
   };
 
+  // Phân loại khóa học
+  const categorizedCourses = dataCourse.reduce((acc, course) => {
+    const { type } = course; // Lấy loại khóa học từ từng course
+
+    // Kiểm tra xem loại khóa học đã tồn tại trong accumulator chưa, nếu chưa thì khởi tạo một mảng trống
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+
+    // Thêm khóa học vào danh sách tương ứng
+    acc[type].push(course);
+
+    return acc;
+  }, {});
+
+  const popularCourse = categorizedCourses['Popular'] || [];
+  const recommendCourse = categorizedCourses['Recommend'] || [];
+  const inspireCourse = categorizedCourses['Inspire'] || [];
   
+  const navigateToCourses = (categoryType) => {
+    let courses = [];
+  
+    if (categoryType === 'Popular') {
+      courses = popularCourse;
+      categoryType = 'Popular Courses';
+    } else if (categoryType === 'Recommend') {
+      courses = recommendCourse;
+      categoryType = 'Recommended Courses';
+
+    } else if (categoryType === 'Inspire') {
+      courses = inspireCourse;
+      categoryType = 'Inspiring Courses';
+
+    }
+    
+    // Điều hướng tới màn hình CourseList với danh sách khóa học
+    navigation.navigate('CourseList', { user:userProfile,courses,categoryType ,dataCourse: dataCourse });
+  };
 
     // Render một chủ đề trong danh sách chủ đề
     const renderCategoryItem  = ({ item }) => (
@@ -278,7 +315,7 @@
   // Render một khóa học trong danh sách khóa học được recommend
   const CourseRecommentItem = ({ item  }) => (
     
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse ,user })}
 >
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
@@ -419,7 +456,7 @@ const renderItemSearch = ({ item }) => (
 
           <View style ={styles.titlesection}>
               <Text style ={{fontWeight: 600}}>Recommended For You</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigateToCourses('Recommend')}>
               <Text style ={{color:"aqua"}}>View more</Text>
               </TouchableOpacity>
           </View>

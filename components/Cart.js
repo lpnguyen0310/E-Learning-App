@@ -92,11 +92,11 @@ const Cart = ({route}) => {
             setUserData((prevUser) => ({
                 ...prevUser,
                 courses: updatedCourses,
-            }));
+            }));    
     
             /// Đồng bộ với Firebase
-        const userRef = ref(database, `Users/users/${user.uid}`);
-        await update(userRef, { courses: updatedCourses });
+            const userRef = ref(database, `Users/users/${user.uid}`);
+            await update(userRef, { courses: updatedCourses });
     
             // Xóa các khóa học đã checkout khỏi giỏ hàng
             setSelectedItems([]);

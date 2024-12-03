@@ -98,7 +98,7 @@ const db = getDatabase(app);
     ];
 
     const navigateToCategory = (category) => {
-      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user });
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user  :userProfile});
     };
 
     const handleViewAllPress = () => {
@@ -173,14 +173,14 @@ const db = getDatabase(app);
       }
       
       // Điều hướng tới màn hình CourseList với danh sách khóa học
-      navigation.navigate('CourseList', { user,courses,categoryType ,dataCourse: dataCourse });
+      navigation.navigate('CourseList', { user:userProfile,courses,categoryType ,dataCourse: dataCourse });
     };
 
 
   const renderCourseItem = ({ item }) => (
     <TouchableOpacity
       style={styles.courseItem}
-      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user })}
+      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user:userProfile })}
     >
       <View style={styles.imageContainer}>
       <Image source={{ uri: item.image }} style={styles.courseImage} />
@@ -222,7 +222,7 @@ const db = getDatabase(app);
   
   const CourseRecommentItem = ({ item }) => (
    
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user:userProfile  })}>
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -263,7 +263,7 @@ const db = getDatabase(app);
   );
 
   const CourseInspireItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
+    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user :userProfile })}>
       <Image source={{uri: item.image}} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 
@@ -403,7 +403,9 @@ const db = getDatabase(app);
     setCurrentPage(page); // Cập nhật trang hiện tại
     navigation.navigate(page); // Chuyển hướng
   };
-
+  const handleAddToCart = () => {
+    navigation.navigate('Cart',{ user}); // Điều hướng tới màn hình giỏ hàng
+};
 
   return (
     <View style={{ flex: 1 }}>
@@ -413,7 +415,9 @@ const db = getDatabase(app);
         <View style ={styles.header_title}>
           <Text style={styles.title}>Hello {userName}</Text>
           <View style = {styles.inner_icon_header}>
-                <FontAwesomeIcon icon={faCartShopping} />     
+                <TouchableOpacity onPress={handleAddToCart}>
+                   <FontAwesomeIcon icon={faCartShopping} />  
+                  </TouchableOpacity>   
                 <FontAwesomeIcon icon={faBell} />
           </View>
         </View>
@@ -520,7 +524,7 @@ const db = getDatabase(app);
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false,user})}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false,user :userProfile})}>
           <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>

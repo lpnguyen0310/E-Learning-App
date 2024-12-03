@@ -182,6 +182,7 @@ function ProfileScreen ({route,navigation}) {
     }
   
     return (
+      <TouchableOpacity onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user:userProfile })}>
       <View style={styles.courseContainer}>
         <Image source={item.image} style={styles.courseImage} />
         <View style={styles.courseInfo}>
@@ -200,6 +201,7 @@ function ProfileScreen ({route,navigation}) {
           />
         </TouchableOpacity>
       </View>
+      </TouchableOpacity>
     );
   };
   
@@ -261,9 +263,9 @@ function ProfileScreen ({route,navigation}) {
 
       <View style={styles.footer}>
         <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home',{user})} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user })} />
+        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse,user:userProfile })} />
+        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse,user:userProfile })} />
+        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse,user:userProfile })} />
       </View>
       
     </View>
