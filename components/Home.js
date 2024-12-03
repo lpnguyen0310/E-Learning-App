@@ -135,7 +135,7 @@ function LandingPage({route, navigation }) {
     // Fetch courses from Realtime Database on component mount
     const fetchCourses = async () => {
       try {
-        const coursesRef = ref(db, 'dataCourse'); // Tham chiếu đến đường dẫn 'dataCourse' trong Realtime Database
+        const coursesRef = ref(db, 'data'); // Tham chiếu đến đường dẫn 'dataCourse' trong Realtime Database
         const snapshot = await get(coursesRef); // Lấy dữ liệu từ đường dẫn này
 
         if (snapshot.exists()) {
