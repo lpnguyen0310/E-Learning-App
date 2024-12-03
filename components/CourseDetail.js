@@ -292,67 +292,74 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
                     </ScrollView>
                 );
             case 'Lesson':
-                return (
-                    <ScrollView>
-                      <View style={styles.lessonContainer}>
-                        <FlatList
-                          data={course.sections} // Danh sách các mục (sections)
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item, index }) => (
-                            <View>
-                              {/* Section Header */}
-                              <TouchableOpacity onPress={() => toggleSection(index)} style={styles.sectionHeader}>
-                                <Text style={styles.sectionTitle}>{item.module}</Text>
-                                <FontAwesomeIcon
-                                  icon={expandedSections[index] ? faChevronUp : faChevronDown}
-                                  style={styles.icon}
-                                />
-                              </TouchableOpacity>
-                              {/* Section Content */}
-                              {expandedSections[index] && (
-                                <FlatList
-                                  data={item.lessons} // Các bài học trong section
-                                  keyExtractor={(lesson) => lesson.id.toString()}
-                                  renderItem={({ item }) => (
-                                    <View style={styles.lessonItem}>
-                                      <View style={styles.lessonDetails}>
-                                        <Text style={styles.lessonName}>{item.title}</Text>
-                                        <Text style={styles.lessonDuration}>{item.duration}</Text>
-                                      </View>
-                                      <TouchableOpacity
-                                        onPress={() => item.status !== 'locked' && toggleAudio(item.audioUrl, item.id)}
-                                      >
-                                        <FontAwesomeIcon
-                                          icon={
-                                            item.status === 'completed'
-                                              ? faCheckCircle // Show check icon when completed
-                                              : item.status === 'current'
-                                              ? playingLessonId === item.id
-                                                ? faPauseCircle // Show pause icon if this lesson is playing
-                                                : faPlayCircle // Show play icon if not playing
-                                              : faLock // Lock icon if the lesson is locked
-                                          }
-                                          style={
-                                            item.status === 'completed'
-                                              ? styles.completedIcon
-                                              : item.status === 'current'
-                                              ? playingLessonId === item.id
-                                                ? styles.pauseIcon
-                                                : styles.currentIcon
-                                              : styles.lockedIcon
-                                          }
-                                        />
-                                      </TouchableOpacity>
-                                    </View>
-                                  )}
-                                />
+              return (
+                <ScrollView>
+                  <View style={styles.lessonContainer}>
+                    <FlatList
+                      data={course.sections} // Danh sách các mục (sections)
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({ item, index }) => (
+                        <View>
+                          {/* Section Header */}
+                          <TouchableOpacity onPress={() => toggleSection(index)} style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>{item.module}</Text>
+                            <FontAwesomeIcon
+                              icon={expandedSections[index] ? faChevronUp : faChevronDown}
+                              style={styles.icon}
+                            />
+                          </TouchableOpacity>
+            
+                          {/* Section Content */}
+                          {expandedSections[index] && (
+                            <FlatList
+                              data={item.lessons} // Các bài học trong section
+                              keyExtractor={(lesson) => lesson.id.toString()}
+                              renderItem={({ item }) => (
+                                <View style={styles.lessonItem}>
+                                  <View style={styles.lessonDetails}>
+                                    <Text style={styles.lessonName}>{item.title}</Text>
+                                    <Text style={styles.lessonDuration}>{item.duration}</Text>
+                                  </View>
+            
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      // Kiểm tra nếu bài học không bị khóa và có thể phát/tạm dừng
+                                      if (item.status !== 'locked' || user.courses.some((userCourse) => userCourse.id === course.id)) {
+                                        toggleAudio(item.audioUrl, item.id);
+                                      }
+                                    }}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={
+                                        item.status === 'completed'
+                                          ? faCheckCircle // Hiển thị icon check nếu bài học đã hoàn thành
+                                          : item.status === 'current' || user.courses.some((userCourse) => userCourse.id === course.id)
+                                          ? playingLessonId === item.id
+                                            ? faPauseCircle // Hiển thị icon pause nếu bài học đang phát
+                                            : faPlayCircle // Hiển thị icon play nếu bài học chưa phát
+                                          : faLock // Hiển thị icon khóa nếu bài học bị khóa
+                                      }
+                                      style={
+                                        item.status === 'completed'
+                                          ? styles.completedIcon
+                                          : item.status === 'current' || user.courses.some((userCourse) => userCourse.id === course.id)
+                                          ? playingLessonId === item.id
+                                            ? styles.pauseIcon
+                                            : styles.currentIcon
+                                          : styles.lockedIcon
+                                      }
+                                    />
+                                  </TouchableOpacity>
+                                </View>
                               )}
-                            </View>
+                            />
                           )}
-                        />
-                      </View>
-                    </ScrollView>
-                  );
+                        </View>
+                      )}
+                    />
+                  </View>
+                </ScrollView>
+              );
             case 'Review':
                 return (
                     <View>
