@@ -93,7 +93,7 @@
     // 
     const placeholderText = isFromCategory && category ? `Search in ${category}` : 'Search';
     const navigateToCategory = (category) => {
-      navigation.navigate('Search', { category , dataCourse,isFromCategory: true,selectedSubcategories, selectedRatings }); 
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true,selectedSubcategories, selectedRatings,user }); 
     };
 
      // Lọc theo từ khóa và các bộ lọc khác

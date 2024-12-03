@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, CheckBox } from 'react-native';
 import { useCart } from '../contexts/CartContext';
-
+import { useUser  } from '../contexts/UserContext';
+import { ref, update } from "firebase/database";
+import { database } from "../components/firebaseConfig"; // Import the initialized Firebase app
 const Cart = ({route}) => {
-    const { cart, removeFromCart } = useCart();
+    const { cart, removeFromCart,setCart } = useCart();
     const [selectedItems, setSelectedItems] = useState([]);
-    const { user } = route.params; 
+    const { user, setUserData } = useUser();
     // Tính tổng tiền các khóa học đã chọn
     const calculateTotal = () => {
         if (!Array.isArray(selectedItems) || !Array.isArray(cart)) {
@@ -67,7 +69,62 @@ const Cart = ({route}) => {
         );
     };
 
+    const handleCheckout = async () => {
+        try {
+            if (!user) {
+                console.error("User is not logged in.");
+                return;
+            }
+    
+            // Lọc các khóa học đã chọn
+            const selectedCourses = cart.filter((item) => selectedItems.includes(item.id));
+            const newCourses = selectedCourses.filter(
+                (course) => !user.courses.some((existingCourse) => existingCourse.id === course.id)
+            );
+    
+            if (newCourses.length === 0) {
+                alert("No new courses to add!");
+                return;
+            }
+    
+            // Cập nhật user trong state
+            setUserData((prevUser) => ({
+                ...prevUser,
+                courses: [...(prevUser.courses || []), ...newCourses],
+            }));
+    
+            // Cập nhật vào Firebase Realtime Database
+            const userRef = ref(database, `User/users/${user.uid}`); // Chỉnh sửa đường dẫn ở đây
+            await update(userRef, {
+                courses: [...user.courses, ...newCourses] // Thêm khóa học mới vào trường courses
+            });
+    
+            // Xóa các khóa học đã checkout khỏi giỏ hàng
+            setSelectedItems([]);
+            setCart((prevCart) => prevCart.filter((item) => !selectedItems.includes(item.id)));
+    
+            alert("Checkout successful!");
+        } catch (error) {
+            console.error("Error updating Firebase:", error);
+        }
+    };
 
+    // Hàm kiểm tra console nhận được uid không
+    // const handleCheckout = () => {
+    //     const selectedCourses = cart.filter((item) => selectedItems.includes(item.id));
+    //     const newCourses = selectedCourses.filter(
+    //         (course) => !user.courses.some((existingCourse) => existingCourse.id === course.id)
+    //     );
+    
+    //     setUserData((prevUser) => {
+    //         const updatedUser = {
+    //             ...prevUser,
+    //             courses: [...(prevUser.courses || []), ...newCourses],
+    //         };
+    //         console.log("Updated user:", updatedUser); // Debug giá trị user
+    //         return updatedUser;
+    //     });
+    // };
 
     return (
         <View style={styles.container}>
@@ -81,7 +138,7 @@ const Cart = ({route}) => {
                     />
                     <View style={styles.footer}>
                         <Text style={styles.totalText}>Total: ${calculateTotal()}</Text>
-                        <TouchableOpacity style={styles.checkoutButton}>
+                        <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
                             <Text style={styles.checkoutButtonText}>Checkout</Text>
                         </TouchableOpacity>
                     </View>

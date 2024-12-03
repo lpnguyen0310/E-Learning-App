@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 
 
 function Category({navigation,route}) {
-
+    const { user } = route.params;
     const { dataCourse } = route.params;
     
     const categories = [
@@ -26,7 +26,8 @@ function Category({navigation,route}) {
         navigation.navigate('Search', {
             category: category.title,  // Truyền category vào SearchScreen
             isFromCategory: true,
-            dataCourse: dataCourse,            
+            dataCourse: dataCourse,   
+            user,     
         });
     };
 

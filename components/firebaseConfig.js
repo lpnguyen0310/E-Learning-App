@@ -3,7 +3,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-
+import { getDatabase, ref, set, update } from "firebase/database";
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
@@ -20,5 +20,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+// Get Realtime Database instance
+const database = getDatabase(app);
+
 // Export the initialized Firebase app
-export { app, analytics };
+export { app, analytics ,database };
