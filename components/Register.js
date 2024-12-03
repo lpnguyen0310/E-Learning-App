@@ -131,11 +131,12 @@ const SignUpScreen = () => {
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
       set(ref(db, 'Users/users/' + user.uid), {
-        name: user.displayName,
+        id: user.uid, // ID tự động từ Firebase
+        name: fullName,
         email: user.email,
-        courses: {},
-        courseFollow: {},
-        age: 0,
+        image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
+        courses:  ["No courses yet"], // Lưu trữ các khóa học đã mua (dưới dạng đối tượng hoặc mảng)
+        followCourses: ["No follow courses yet"], // Lưu trữ danh sách khóa học theo dõi
       });
   
       // Điều hướng đến màn hình Home
@@ -156,11 +157,12 @@ const SignUpScreen = () => {
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
       set(ref(db, 'Users/users/' + user.uid), {
-        name: user.displayName,
+        id: user.uid, // ID tự động từ Firebase
+        name: fullName,
         email: user.email,
-        courses: {},
-        courseFollow: {},
-        age: 0,
+        image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
+        courses:  ["No courses yet"], // Lưu trữ các khóa học đã mua (dưới dạng đối tượng hoặc mảng)
+        followCourses: ["No follow courses yet"], // Lưu trữ danh sách khóa học theo dõi
       });
   
       // Điều hướng đến màn hình Home

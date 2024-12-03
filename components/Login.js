@@ -39,7 +39,7 @@ const firebaseConfig = {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-      const usersRef = ref(db, 'User/users'); // Path to users in Firebase
+      const usersRef = ref(db, 'Users/users'); // Path to users in Firebase
 
       get(usersRef).then((snapshot) => {
         if (snapshot.exists()) {
@@ -114,7 +114,7 @@ const firebaseConfig = {
           const result = await signInWithPopup(auth, provider);
           const user = result.user;
     
-          const userRef = ref(db, 'User/users/' + user.uid);
+          const userRef = ref(db, 'Users/users/' + user.uid);
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
@@ -139,7 +139,7 @@ const firebaseConfig = {
           const userCredential = await firebaseSignInWithCredential(auth, googleCredential);
           const user = userCredential.user;
     
-          const userRef = ref(db, 'User/users/' + user.uid);
+          const userRef = ref(db, 'Users/users/' + user.uid);
           get(userRef).then((snapshot) => {
             if (snapshot.exists()) {
               const userData = snapshot.val();
