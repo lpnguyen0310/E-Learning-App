@@ -99,7 +99,7 @@ function ProfileScreen ({route,navigation}) {
   //
   const { dataCourse,user } = route.params;
   const [userProfile, setUserProfile] = useState(user); // Khởi tạo là một đối tượng rỗng
-  const [followCourses, setfollowCourses] = useState(user.followCourses||[]); // Khởi tạo danh sách khóa học là mảng rỗng
+  const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
   console.log("Dữ liệu UserID", user.uid);
     // Tính toán số lượng khóa học đã lưu, ongoing, completed
   const savedCount = followCourses.length;  // Số khóa học đã lưu

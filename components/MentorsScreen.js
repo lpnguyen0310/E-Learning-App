@@ -14,7 +14,7 @@ import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons
 
 
 export default function MentorsScreen({route,navigation}) {
-  const { topTeachers,dataCourse } = route.params;
+  const { topTeachers,dataCourse ,user} = route.params;
   const [search, setSearch] = useState('');
   const [searchMode, setSearchMode] = useState('course'); // Chế độ tìm kiếm: 'course' hoặc 'name'
 
@@ -95,13 +95,7 @@ export default function MentorsScreen({route,navigation}) {
         contentContainerStyle={styles.listContainer}
       />
 
-      
-      <View style={styles.footer}>
-        <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-        <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search', { dataCourse })} />
-        <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse', { dataCourse })} />
-        <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile', { dataCourse })} />
-      </View>
+
     </View>
   );
 }

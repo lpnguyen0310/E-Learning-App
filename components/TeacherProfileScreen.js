@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
-
+import { faBookmark,faStar } from '@fortawesome/free-regular-svg-icons';
 const teacherProfile = {
   name: 'Sara Weise',
   role: 'UI/UX Designer',
@@ -78,18 +78,43 @@ const teacherProfile = {
     },
   ],
   reviews: [
-    { id: '1', reviewer: 'John Doe', review: 'Great instructor!', rating: 5 },
+    { id: '1', reviewer: 'John Doe', review: 'Great instructor, very engaging and clear.', rating: 5 },
     {
       id: '2',
       reviewer: 'Jane Smith',
-      review: 'Very detailed and insightful.',
+      review: 'Very detailed and insightful, helped me a lot with my project.',
       rating: 4.5,
     },
-  ],
+    { 
+      id: '3', 
+      reviewer: 'Alice Brown', 
+      review: 'The course was okay, but could use more examples.', 
+      rating: 4 
+    },
+    {
+      id: '4',
+      reviewer: 'Bob Johnson',
+      review: 'The explanations were too fast, could improve pacing.', 
+      rating: 3,
+    },
+    { 
+      id: '5', 
+      reviewer: 'Charlie White', 
+      review: 'Fantastic course! I learned so much and the instructor was great!', 
+      rating: 5 
+    },
+    {
+      id: '6',
+      reviewer: 'Diana Green',
+      review: 'Good course but I expected more depth in the topics.',
+      rating: 4,
+    },
+  ],  
 };
 
-const TeacherProfileScreen = () => {
+const TeacherProfileScreen = ({route}) => {
   const navigation = useNavigation();
+  const { teacher, dataCourse, user } = route.params; 
   const [activeTab, setActiveTab] = useState('Courses');
 
   const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
@@ -98,6 +123,15 @@ const TeacherProfileScreen = () => {
     setCurrentPage(page); // Cập nhật trang hiện tại
     navigation.navigate(page); // Chuyển hướng
   };
+
+  const [selectedRating, setSelectedRating] = useState('All');
+  // Hàm lọc review theo rating
+  const filteredReviews = teacherProfile.reviews.filter((review) => {
+    if (selectedRating === 'All') {
+      return true; // Hiển thị tất cả review nếu không có rating nào được chọn
+    }
+    return review.rating === selectedRating;  // Lọc review theo rating
+  });
 
   const renderContent = () => {
     if (activeTab === 'Overview') {
@@ -124,19 +158,17 @@ const TeacherProfileScreen = () => {
       );
     } else if (activeTab === 'Review') {
       return (
-        <FlatList
-          data={teacherProfile.reviews}
-          renderItem={({ item }) => (
-            <View style={styles.reviewItem}>
-              <Text style={styles.reviewer}>{item.reviewer}</Text>
-              <Text style={styles.reviewText}>{item.review}</Text>
-              <Text style={styles.rating}>Rating: {item.rating}</Text>
-            </View>
-          )}
-          keyExtractor={(item) => item.id}
-        />
+        <View>
+          
+          <FlatList
+            data={filteredReviews}  // Sử dụng filteredReviews đã lọc
+            renderItem={renderReview}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.reviewList}
+          />
+        </View>
       );
-    }
+    }    
   };
 
   const renderCourseCategory = ({ item }) => (
@@ -176,16 +208,42 @@ const TeacherProfileScreen = () => {
     </View>
   );
 
+  const renderReview = ({ item }) => (
+    <View style={styles.reviewContainer}>
+      <View style={styles.reviewHeader}>
+        <FontAwesomeIcon icon={faUser} size={20} color="gray" />
+        <View style={styles.reviewInfo}>
+          <Text style={styles.reviewerName}>{item.reviewer}</Text>
+          {/* Hiển thị ngày tháng */}
+          <Text style={styles.reviewDate}>Date: {item.date}</Text>
+        </View>
+        <View style={styles.starsContainer}>
+          {/* Hiển thị sao */}
+          {[...Array(5)].map((_, index) => (
+            <FontAwesomeIcon
+              key={index}
+              icon={faStar}
+              color={index < item.rating ? 'gold' : 'gray'}
+              size={16}
+            />
+          ))}
+        </View>
+      </View>
+      <Text style={styles.reviewText}>{item.review}</Text>
+    </View>
+  );
+  
+  
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.profileHeader}>
           <Image
-            source={teacherProfile.image}
+            source={teacher.image}
             style={styles.profileImage}
           />
-          <Text style={styles.profileName}>{teacherProfile.name}</Text>
-          <Text style={styles.profileRole}>{teacherProfile.role}</Text>
+          <Text style={styles.profileName}>{teacher.title}</Text>
+          <Text style={styles.profileRole}>{teacher.course}</Text>
           <Text style={styles.profileLocation}>
             <Icon name="location-outline" size={16} color="gray" />{' '}
             {teacherProfile.location} - {teacherProfile.time}
@@ -222,12 +280,7 @@ const TeacherProfileScreen = () => {
         </View>
         <View style={styles.contentContainer}>{renderContent()}</View>
 
-        <View style={styles.footer}>
-          <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-          <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
-          <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
-          <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
-        </View>
+      
       </ScrollView>
     </View>
   );
@@ -339,7 +392,80 @@ const styles = StyleSheet.create({
     right: 5,
   },
 
+  // Xử lý rating
+
+  review_rating:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    padding:10,
+  },
+  inner_review_rating_left:{
+    flexDirection:'row',
+    alignItems:'center',
+    gap: '0 5px',
+  },
+  rating_list:{
+    flexDirection:'row',
+    justifyContent:'space-around',
+    width:'100%', 
+
+  },
+  button_rating:{
+    flexDirection:'row',
+    border: '1px solid aqua',
+    gap: '0 8px',
+    padding:8,
+    borderRadius:15,
+    justifyContent:'space-around',
+    alignItems:'center',
+  },
+  // End Xử lý rating
+
+  // Xử lý review
+  review_list_container:{
+    width:'100%',
+    padding:10,
+
+    },
+    reviewContainer: {
+      backgroundColor: '#f9f9f9',
+      padding: 10,
+      borderRadius: 10,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+    },
+    reviewHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 5,
+    },
+    reviewInfo: {
+      marginLeft: 10,
+    },
+    reviewerName: {
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    reviewDate: {
+      color: 'gray',
+      fontSize: 12,
+    },
+    starsContainer: {
+      flexDirection: 'row',
+      marginLeft: 'auto',
+    },
+    reviewText: {
+      color: '#444',
+      marginTop: 10,
+      fontSize: 14,
+    },
   
+    // Có thể bạn muốn có thêm phần chỉnh sửa/ xóa review
+    reviewList: {
+      paddingBottom: 20,
+    },
+
   //footer
   footer: {
     position: 'absolute',  // Đặt footer ở cuối màn hình

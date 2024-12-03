@@ -173,7 +173,7 @@ const db = getDatabase(app);
       }
       
       // Điều hướng tới màn hình CourseList với danh sách khóa học
-      navigation.navigate('CourseList', { courses,categoryType ,dataCourse: dataCourse });
+      navigation.navigate('CourseList', { user,courses,categoryType ,dataCourse: dataCourse });
     };
 
 
@@ -379,7 +379,7 @@ const db = getDatabase(app);
 
 
   const topTeachersItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('TeacherProfile', { course: item,dataCourse: dataCourse,user  })}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('TeacherProfile', { teacher: item,dataCourse: dataCourse,user  })}>
       <Image source={item.image} style={styles.courseImage} />
       <View style={styles.courseInfo}>
         <View style ={styles.course_title_container}> 
@@ -406,6 +406,7 @@ const db = getDatabase(app);
 
 
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <View style={styles.header}>
@@ -498,12 +499,10 @@ const db = getDatabase(app);
 
       <View style={styles.titlesection}>
         <Text style={{ fontWeight: '600' }}>Top Teacher</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Mentors', { topTeachers ,dataCourse})}>
+        <TouchableOpacity onPress={() => navigation.navigate('Mentors', { topTeachers ,dataCourse,user})}>
           <Text style={{ color: "aqua" }}>View All</Text>
         </TouchableOpacity>
       </View>
-
-
           <View style={styles.flat_list_courses}>
             <FlatList
               data={topTeachers}
@@ -514,9 +513,9 @@ const db = getDatabase(app);
               contentContainerStyle={{ paddingHorizontal: 10 }}
             />
           </View>
-
-
-          <View style={styles.footer}>
+      </View>
+     </ScrollView>
+     <View style={styles.footer}>
         <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home')} >
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
@@ -534,8 +533,7 @@ const db = getDatabase(app);
           <Text style={[styles.footerText,currentPage === 'Profile' && styles.activeFooterText]}>Profile</Text>
         </TouchableOpacity>
       </View>
-      </View>
-     </ScrollView>
+     </View>
   );
 }
 const FooterItem = ({ icon, label, currentPage, onPress }) => (
@@ -779,6 +777,7 @@ footer: {
   borderTopWidth: 1,
   borderTopColor: 'gray',  // Màu đường viền trên
   paddingVertical: 10,
+  marginTop: 20,
 },
 footerItem: {
   alignItems: 'center',
