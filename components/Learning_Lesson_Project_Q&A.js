@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 
 const renderLessonItem = ({ item }) => (
@@ -42,7 +43,8 @@ const renderLessonItem = ({ item }) => (
 
 const LearningLesson = ({ route }) => {
   const navigation = useNavigation();
-  const { course,dataCourse,user } = route.params;
+  const { dataCourse,user } = route.params;
+  const [course, setCourse] = useState(route.params.course); // Lấy course từ route params
 
   // Hàm để mở rộng/collapse module
   const toggleModule = (moduleIndex) => {
@@ -53,6 +55,30 @@ const LearningLesson = ({ route }) => {
           : module
       )
     );
+  };
+  
+  const [newQuestion, setNewQuestion] = useState('');
+  const handleSubmitQuestion = () => {
+    if (newQuestion.trim()) {
+      const newQnaItem = {
+        id: (course.qna.length + 1).toString(), // Tạo ID ngẫu nhiên cho câu hỏi mới
+        user: user.name,  // Giả sử bạn có thông tin người dùng
+        avatar: user.image, // Cũng lấy avatar của người dùng
+        time: new Date().toLocaleTimeString(),
+        content: newQuestion,
+        likes: 0,
+        comments: 0,
+      };
+      
+      // Cập nhật danh sách câu hỏi với câu hỏi mới
+      setCourse((prevCourse) => ({
+        ...prevCourse,
+        qna: [...prevCourse.qna, newQnaItem], // Thêm câu hỏi mới vào mảng
+      }));
+  
+      // Xóa nội dung câu hỏi sau khi gửi
+      setNewQuestion('');
+    }
   };
   
 
@@ -112,7 +138,18 @@ const LearningLesson = ({ route }) => {
         }
       });
     };
-    
+    // Dừng âm thanh khi màn hình mất focus
+    useFocusEffect(
+      React.useCallback(() => {
+        return () => {
+          // Dừng âm thanh khi màn hình mất focus
+          if (sound) {
+            sound.stopAsync();
+            sound.unloadAsync();
+          }
+        };
+      }, [sound]) // Chạy lại khi `sound` thay đổi
+    );
   
   return (
     <View style={{flex:1,}}>
@@ -292,50 +329,57 @@ const LearningLesson = ({ route }) => {
       )}
 
       {activeTab === 'Q&A' && (
-         <View style={styles.qnaSection}>
-         {/* Danh sách các câu hỏi và trả lời */}
-         <FlatList
-           data={course.qna}
-           keyExtractor={(item) => item.id}
-           renderItem={({ item }) => (
-             <View style={styles.qnaItem}>
-               <Image source={item.avatar} style={styles.avatar} />
-               <View style={styles.qnaContent}>
-                 <Text style={styles.userName}>{item.user}</Text>
-                 <Text style={styles.time}>{item.time}</Text>
-                 <Text style={styles.questionText}>{item.content}</Text>
-                 <View style={styles.qnaActions}>
-                   <TouchableOpacity style={styles.qnaAction}>
-                     <Icon name="heart-outline" size={16} color="#888" />
-                     <Text style={styles.qnaActionText}>{item.likes}</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity style={styles.qnaAction}>
-                     <Icon name="chatbubble-outline" size={16} color="#888" />
-                     <Text style={styles.qnaActionText}>{item.comments} Comment</Text>
-                   </TouchableOpacity>
-                 </View>
-               </View>
-             </View>
-           )}
-           contentContainerStyle={styles.qnaListContainer}
-         />
-   
-         {/* Phần nhập câu hỏi mới */}
+        <View style={styles.qnaSection}>
+          {/* Danh sách các câu hỏi và trả lời */}
+          <FlatList
+            data={course.qna}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.qnaItem}>
+                <Image source={item.avatar} style={styles.avatar} />
+                <View style={styles.qnaContent}>
+                  <Text style={styles.userName}>{item.user}</Text>
+                  <Text style={styles.time}>{item.time}</Text>
+                  <Text style={styles.questionText}>{item.content}</Text>
+                  <View style={styles.qnaActions}>
+                    <TouchableOpacity style={styles.qnaAction}>
+                      <Icon name="heart-outline" size={16} color="#888" />
+                      <Text style={styles.qnaActionText}>{item.likes}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.qnaAction}>
+                      <Icon name="chatbubble-outline" size={16} color="#888" />
+                      <Text style={styles.qnaActionText}>{item.comments} Comment</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            )}
+            contentContainerStyle={styles.qnaListContainer}
+          />
+
+          {/* Phần nhập câu hỏi mới */}
           <View style={styles.qnaInputSection}>
             <Text style={styles.qnaEmoji}>✨ 😍 💖 👏 😂 🔥</Text>
             <View style={styles.qnaInputContainer}>
-              {/* Thay Icon bằng hình ảnh nhỏ */}
               <Image
-                source={require('../assets/images/User1.png')} // Đường dẫn đến ảnh của bạn
+                source={(user.image)} // Đường dẫn đến ảnh của bạn
                 style={styles.qnaUserImage} // Thêm style cho ảnh
               />
-              <Text style={styles.qnaInputText}>Write a Q&A...</Text>
+              <TextInput
+                style={styles.qnaInputText}
+                placeholder="Write a Q&A..."
+                placeholderTextColor="#888"
+                value={newQuestion}
+                onChangeText={setNewQuestion} // Cập nhật giá trị khi người dùng nhập
+              />
+              <TouchableOpacity onPress={handleSubmitQuestion}>
+                <Icon name="send" size={24} color="#00BFFF" /> {/* Biểu tượng gửi */}
+              </TouchableOpacity>
             </View>
           </View>
-       </View>
-
-        
+        </View>
       )}
+
 
      
     </View>
@@ -632,9 +676,11 @@ const styles = StyleSheet.create({
     marginRight: 10, // Khoảng cách giữa ảnh và text
   },
   qnaInputText: {
+    flex: 1,
     color: 'gray',
     fontSize: 14,
   },
+  
 
   
   //footer

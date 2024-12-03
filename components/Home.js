@@ -379,7 +379,7 @@ const db = getDatabase(app);
 
 
   const topTeachersItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItem}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('TeacherProfile', { course: item,dataCourse: dataCourse,user  })}>
       <Image source={item.image} style={styles.courseImage} />
       <View style={styles.courseInfo}>
         <View style ={styles.course_title_container}> 
