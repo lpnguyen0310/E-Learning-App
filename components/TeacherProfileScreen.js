@@ -222,12 +222,7 @@ const TeacherProfileScreen = () => {
         </View>
         <View style={styles.contentContainer}>{renderContent()}</View>
 
-        <View style={styles.footer}>
-          <FooterItem icon={faHome} label="Home" currentPage={currentPage} onPress={() => handleNavigation('Home')} />
-          <FooterItem icon={faSearch} label="Search" currentPage={currentPage} onPress={() => handleNavigation('Search')} />
-          <FooterItem icon={faBook} label="MyCourse" currentPage={currentPage} onPress={() => handleNavigation('MyCourse')} />
-          <FooterItem icon={faUser} label="Profile" currentPage={currentPage} onPress={() => handleNavigation('Profile')} />
-        </View>
+      
       </ScrollView>
     </View>
   );

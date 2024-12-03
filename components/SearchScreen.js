@@ -186,7 +186,7 @@
 
       // Xử lý khi nhấn vào nút View All
       const handleViewAllPress = () => {
-        navigation.navigate('Category', { dataCourse: dataCourse });
+        navigation.navigate('Category', { dataCourse: dataCourse,user });
       };
 
       // Xử lý khi click vào một chủ đề hot topic

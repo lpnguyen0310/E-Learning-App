@@ -8,7 +8,7 @@ import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons
 
 
 export default function CourseList({route, navigation}) {
-    const { courses,categoryType,dataCourse, selectedSubcategories = [], selectedRatings = []} = route.params; 
+    const { user,courses,categoryType,dataCourse, selectedSubcategories = [], selectedRatings = []} = route.params; 
     const [filteredCourses, setFilteredCourses] = useState(courses);
     // State để lưu trữ từ khóa tìm kiếm
     const [searchQuery, setSearchQuery] = useState('');
@@ -50,8 +50,10 @@ export default function CourseList({route, navigation}) {
           result = courses; // Hiển thị tất cả các khóa học
         }
       
-        // Cập nhật filteredCourses
-        setFilteredCourses(result);
+        // Chỉ cập nhật nếu dữ liệu thay đổi
+    if (JSON.stringify(result) !== JSON.stringify(filteredCourses)) {
+      setFilteredCourses(result);
+    }
       
       }, [searchQuery, selectedSubcategories, selectedRatings, courses]);
 
@@ -67,7 +69,7 @@ export default function CourseList({route, navigation}) {
 
 
       const renderItemSearch = ({ item }) => (
-        <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse  })}>
+        <TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
             {item.bestSeller && (
                 <View style={styles.bestSellerBadge}>
                     <Text style={styles.bestSellerText}>Best Seller</Text>
