@@ -11,6 +11,7 @@ import { useCart } from '../contexts/CartContext'; // Đường dẫn tới Cart
 function CourseDetail ({route,selectedCourse,navigation  }) {
     // Lấy dữ liệu từ route 
     const { course,dataCourse,user  } = route.params;
+    console.log("User id in coursesDetail:",user.uid)
     // Dữ liệu khóa học
     const [currentSound, setCurrentSound] = useState(null); // Store the current playing sound
     const [playingLessonId, setPlayingLessonId] = useState(null);

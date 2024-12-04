@@ -24,7 +24,7 @@ const db = getDatabase(app);
 
   function LandingPage({route, navigation }) {
 
-    const[dataCourse,setDataCourse] = useState([]);
+  const[dataCourse,setDataCourse] = useState([]);
   const user = route.params?.user; // Nhận thông tin người dùng từ navigation
   const userName = user?.name || 'User'; // Sử dụng tên hoặc 'User' nếu không có
   console.log("User ID in Home:", user?.uid);  // Truyền user.uid
@@ -32,6 +32,14 @@ const db = getDatabase(app);
 
   const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
   const [followCourses, setfollowCourses] = useState(); // Khởi tạo danh sách khóa học là mảng rỗng
+  // const [courses,setCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+ 
+  useEffect(() => {
+    if (route.params?.user) {
+      setUserProfile(route.params?.user);
+      console.log("userProfile ",userProfile)
+    }
+  }, [route.params?.user]);
 
   const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
 
@@ -46,6 +54,7 @@ const db = getDatabase(app);
           setUserProfile(data);
           setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
           console.log("Dữ liệu followCourses cập nhật:", getFollowCourses);
+          console.log("Dữ liệu userProfile cập nhật:", data);
         } else {
           console.error("Không tìm thấy dữ liệu userProfile.");
           setfollowCourses([]);
@@ -127,6 +136,7 @@ const db = getDatabase(app);
             // Nếu dữ liệu tồn tại, lưu vào state
             const coursesData = snapshot.val();
             setDataCourse(Object.values(coursesData)); // Convert object thành array nếu cần
+
           } else {
             console.log("No data available");
           }
@@ -180,7 +190,7 @@ const db = getDatabase(app);
   const renderCourseItem = ({ item }) => (
     <TouchableOpacity
       style={styles.courseItem}
-      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user })}
+      onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user: userProfile })}
     >
       <View style={styles.imageContainer}>
       <Image source={{ uri: item.image }} style={styles.courseImage} />
@@ -222,7 +232,7 @@ const db = getDatabase(app);
   
   const CourseRecommentItem = ({ item }) => (
    
-    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
+    <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user: userProfile })}>
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -263,7 +273,7 @@ const db = getDatabase(app);
   );
 
   const CourseInspireItem = ({ item }) => (
-    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user  })}>
+    <TouchableOpacity style={styles.courseItemInpire} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user: userProfile  })}>
       <Image source={{uri: item.image}} style={styles.courseInpireImage} />
       <View style={styles.courseInspireInfo}>
         <View style ={styles.courseinspire_title_container}> 
@@ -516,7 +526,7 @@ const db = getDatabase(app);
       </View>
      </ScrollView>
      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home')} >
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home',{user})} >
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>

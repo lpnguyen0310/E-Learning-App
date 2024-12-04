@@ -45,7 +45,7 @@ const LearningLesson = ({ route }) => {
   const navigation = useNavigation();
   const { dataCourse,user } = route.params;
   const [course, setCourse] = useState(route.params.course); // Lấy course từ route params
-
+  console.log("user id: ",user.uid)
   // Hàm để mở rộng/collapse module
   const toggleModule = (moduleIndex) => {
     setLessons((prevLessons) =>
@@ -101,9 +101,13 @@ const LearningLesson = ({ route }) => {
   
     const playAudio = async (audioUrl, lessonId) => {
       if (sound) {
-        await sound.stopAsync();
-        await sound.unloadAsync();
-        setSound(null);
+        try {
+          await sound.stopAsync();
+          await sound.unloadAsync();
+          setSound(null);
+        } catch (error) {
+          console.error('Error stopping/unloading sound:', error);
+        }
       }
     
       if (currentAudio === audioUrl && isPlaying) {
@@ -111,44 +115,47 @@ const LearningLesson = ({ route }) => {
         return;
       }
     
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { shouldPlay: true }
-      );
+      try {
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          { uri: audioUrl },
+          { shouldPlay: true }
+        );
     
-      setSound(newSound);
-      setCurrentAudio(audioUrl);
-      setIsPlaying(true);
+        setSound(newSound);
+        setCurrentAudio(audioUrl);
+        setIsPlaying(true);
     
-      newSound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          setIsPlaying(false);
-          setCurrentAudio(null);
-          newSound.unloadAsync();
+        newSound.setOnPlaybackStatusUpdate((status) => {
+          if (status.didJustFinish) {
+            setIsPlaying(false);
+            setCurrentAudio(null);
+            newSound.unloadAsync();
     
           // Đánh dấu bài học hoàn thành
-          setLessons((prevLessons) =>
-            prevLessons.map((module) => ({
-              ...module,
-              lessons: module.lessons.map((lesson) =>
-                lesson.id === lessonId ? { ...lesson, completed: true } : lesson
-              ),
-            }))
-          );
-        }
-      });
+            setLessons((prevLessons) =>
+              prevLessons.map((module) => ({
+                ...module,
+                lessons: module.lessons.map((lesson) =>
+                  lesson.id === lessonId ? { ...lesson, completed: true } : lesson
+                ),
+              }))
+            );
+          }
+        });
+      } catch (error) {
+        console.error('Failed to load/play audio:', error);
+      }
     };
-    // Dừng âm thanh khi màn hình mất focus
+    
     useFocusEffect(
       React.useCallback(() => {
         return () => {
-          // Dừng âm thanh khi màn hình mất focus
           if (sound) {
-            sound.stopAsync();
-            sound.unloadAsync();
+            sound.stopAsync().catch(() => {});
+            sound.unloadAsync().catch(() => {});
           }
         };
-      }, [sound]) // Chạy lại khi `sound` thay đổi
+      }, [sound])
     );
   
   return (

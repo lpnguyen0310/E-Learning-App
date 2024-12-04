@@ -77,7 +77,7 @@ const SignUpScreen = () => {
   
             // Lưu thông tin người dùng vào Firebase Realtime Database
       const userData = {
-        id: user.uid, // ID tự động từ Firebase
+        uid: user.uid, // ID tự động từ Firebase
         name: fullName,
         email: user.email,
         image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
