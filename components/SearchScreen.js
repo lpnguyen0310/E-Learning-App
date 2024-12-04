@@ -17,7 +17,9 @@ function SearchScreen ({route,navigation}) {
 
   //Lấy dữ liệu User
   const {category ,dataCourse,user,isFromCategory,courses,categoryType, selectedSubcategories = [], selectedRatings = []  } = route.params;
-const [userProfile, setUserProfile] = useState(); // Khởi tạo là một đối tượng rỗng
+
+const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
+
 const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
 
 const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
@@ -356,7 +358,7 @@ const CourseRecommentItem = ({ item  }) => (
       <View style ={styles.course_rating}>
         <FontAwesomeIcon icon={faStar} />
         <Text style={styles.courseRating}> {item.rating}</Text>
-        <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+        <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
         <Text style={styles.courseLessons}>{item.lessons}</Text>
       </View>
     </View>
@@ -365,7 +367,7 @@ const CourseRecommentItem = ({ item  }) => (
 
 // Render kết quả tìm kiếm 
 const renderItemSearch = ({ item }) => (
-<TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse ,user })}>
+<TouchableOpacity style={styles.courseItemSearch}  onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse ,user:userProfile })}>
     {item.bestSeller && (
         <View style={styles.bestSellerBadge}>
             <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -396,7 +398,7 @@ const renderItemSearch = ({ item }) => (
         <View style ={styles.course_rating}>
               <FontAwesomeIcon icon={faStar} />
               <Text style={styles.courseRating}> {item.rating}</Text>
-              <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+              <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
               <Text style={styles.courseLessons}>{item.lessons}</Text>
          </View>
     </View>

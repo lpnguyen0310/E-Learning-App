@@ -182,6 +182,7 @@ function ProfileScreen ({route,navigation}) {
     }
   
     return (
+      <TouchableOpacity onPress={() => navigation.navigate("CourseDetail", { course: item, dataCourse,user:userProfile })}>
       <View style={styles.courseContainer}>
         <Image source={item.image} style={styles.courseImage} />
         <View style={styles.courseInfo}>
@@ -200,6 +201,7 @@ function ProfileScreen ({route,navigation}) {
           />
         </TouchableOpacity>
       </View>
+      </TouchableOpacity>
     );
   };
   

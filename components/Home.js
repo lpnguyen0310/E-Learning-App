@@ -107,7 +107,7 @@ const db = getDatabase(app);
     ];
 
     const navigateToCategory = (category) => {
-      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user });
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user});
     };
 
     const handleViewAllPress = () => {
@@ -183,7 +183,7 @@ const db = getDatabase(app);
       }
       
       // Điều hướng tới màn hình CourseList với danh sách khóa học
-      navigation.navigate('CourseList', { user,courses,categoryType ,dataCourse: dataCourse });
+      navigation.navigate('CourseList', { user:userProfile,courses,categoryType ,dataCourse: dataCourse });
     };
 
 
@@ -223,7 +223,7 @@ const db = getDatabase(app);
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
 
-          <Text style={{ color: "grey", marginLeft: 5, marginRight: 5 }}>.</Text>
+          <Text style={{ color: "grey", marginLeft: 5, marginRight: 5 }}></Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
@@ -233,6 +233,7 @@ const db = getDatabase(app);
   const CourseRecommentItem = ({ item }) => (
    
     <TouchableOpacity style={styles.courseItem} onPress={() => navigation.navigate('CourseDetail', { course: item,dataCourse: dataCourse,user: userProfile })}>
+
       {item.bestSeller && (
             <View style={styles.bestSellerBadge}>
                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -265,7 +266,7 @@ const db = getDatabase(app);
         <View style ={styles.course_rating}>
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
-          <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+          <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
@@ -295,7 +296,7 @@ const db = getDatabase(app);
         <View style ={styles.course_rating}>
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
-          <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+          <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
@@ -413,7 +414,9 @@ const db = getDatabase(app);
     setCurrentPage(page); // Cập nhật trang hiện tại
     navigation.navigate(page); // Chuyển hướng
   };
-
+  const handleAddToCart = () => {
+    navigation.navigate('Cart',{ user}); // Điều hướng tới màn hình giỏ hàng
+};
 
   return (
     <View style={{ flex: 1 }}>
@@ -423,7 +426,9 @@ const db = getDatabase(app);
         <View style ={styles.header_title}>
           <Text style={styles.title}>Hello {userName}</Text>
           <View style = {styles.inner_icon_header}>
-                <FontAwesomeIcon icon={faCartShopping} />     
+                <TouchableOpacity onPress={handleAddToCart}>
+                   <FontAwesomeIcon icon={faCartShopping} />  
+                  </TouchableOpacity>   
                 <FontAwesomeIcon icon={faBell} />
           </View>
         </View>

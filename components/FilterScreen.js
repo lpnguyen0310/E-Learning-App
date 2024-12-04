@@ -60,6 +60,7 @@ const FilterScreen = ({ navigation, route }) => {
       // Trường hợp khác nếu có
       navigation.navigate('CourseList', {
         courses,
+        dataCourse,
         user, // Truyền lại thông tin người dùng nếu cần thiết
         selectedSubcategories,
         selectedRatings,
@@ -80,6 +81,8 @@ const FilterScreen = ({ navigation, route }) => {
       selectedSubcategories: [],
       selectedRatings: [],
       categoryType,  // Truyền lại loại khóa học nếu cần thiết
+      user,
+      dataCourse
     });
     }else if(fromScreen === 'SearchScreen'){
       navigation.navigate('Search', {
@@ -87,6 +90,8 @@ const FilterScreen = ({ navigation, route }) => {
         selectedSubcategories:[],
         selectedRatings:[],
         categoryType,
+        user,
+        dataCourse,
           // Truyền loại khóa học nếu cần thiết
       });
     }

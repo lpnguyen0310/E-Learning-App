@@ -85,7 +85,7 @@ const LearningLesson = ({ route }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const [activeTab, setActiveTab] = useState('LESSONS');
-
+  const [expanded, setExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
 
   const handleNavigation = (page, params = {}) => {
@@ -175,8 +175,20 @@ const LearningLesson = ({ route }) => {
       {/* Course Image */}
       <Image source={course.image} style={styles.courseImage} />
 
-      {/* Course Description */}
-      <Text style={styles.courseDescription}>{course.description}</Text>
+       {/* Mô tả khóa học */}
+       <Text
+        style={styles.courseDescription}
+        numberOfLines={expanded ? 0 : 2} // Hiển thị tất cả dòng nếu expanded = true
+      >
+       {course.description}
+      </Text>
+
+      {/* Nút "See more" */}
+      <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+        <Text style={styles.seeMoreText}>
+          {expanded ? "See less" : "See more"}
+        </Text>
+      </TouchableOpacity>
 
       {/* Social Info */}
       <View style={styles.socialInfo}>
@@ -697,12 +709,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 60,
+    height: 50,
     width: '100%',
     backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: 'gray',  // Màu đường viền trên
     paddingVertical: 10,
+    marginTop: 20,  // Thêm khoảng cách giữa footer và nội dung
   },
   footerItem: {
     alignItems: 'center',

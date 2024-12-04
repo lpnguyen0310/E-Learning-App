@@ -15,7 +15,9 @@ import { getDatabase, ref, set } from 'firebase/database'; // Firebase Realtime 
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential,signInWithPopup } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 
 const firebaseConfig = {
   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
@@ -131,11 +133,12 @@ const SignUpScreen = () => {
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
       set(ref(db, 'Users/users/' + user.uid), {
-        name: user.displayName,
+        id: user.uid, // ID tự động từ Firebase
+        name: fullName,
         email: user.email,
-        courses: {},
-        courseFollow: {},
-        age: 0,
+        image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
+        courses:  ["No courses yet"], // Lưu trữ các khóa học đã mua (dưới dạng đối tượng hoặc mảng)
+        followCourses: ["No follow courses yet"], // Lưu trữ danh sách khóa học theo dõi
       });
   
       // Điều hướng đến màn hình Home
@@ -155,12 +158,12 @@ const SignUpScreen = () => {
       const user = userCredential.user;
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
-      set(ref(db, 'Users/users/' + user.uid), {
-        name: user.displayName,
+      set(ref(db, 'Users/users/' + user.uid), { // ID tự động từ Firebase
+        name: fullName,
         email: user.email,
-        courses: {},
-        courseFollow: {},
-        age: 0,
+        image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
+        courses:  ["No courses yet"], // Lưu trữ các khóa học đã mua (dưới dạng đối tượng hoặc mảng)
+        followCourses: ["No follow courses yet"], // Lưu trữ danh sách khóa học theo dõi
       });
   
       // Điều hướng đến màn hình Home
@@ -266,16 +269,10 @@ const SignUpScreen = () => {
     {/* Social Login Buttons */}
     <View style={styles.socialContainer}>
       <TouchableOpacity style={styles.socialButton}  onPress={handleGoogleSignUp}>
-        <Image
-          source={require('../assets/snack-icon.png')}
-          style={styles.socialIcon}
-        />
+      <FontAwesomeIcon icon={faGoogle} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.socialButton}>
-        <Image
-          source={require('../assets/snack-icon.png')}
-          style={styles.socialIcon}
-        />
+      <FontAwesomeIcon icon={faFacebook} />
       </TouchableOpacity>
     </View>
 

@@ -111,6 +111,7 @@ export default function CourseList({route, navigation}) {
             <TouchableOpacity style={styles.filterButton} onPress={() => navigation.navigate('Filter', {  courses,
                             selectedSubcategories,
                             selectedRatings,
+                            user,
                             dataCourse: dataCourse,
                             onApplyFilters: (newFilters) => {
                                 setFilteredCourses(newFilters);

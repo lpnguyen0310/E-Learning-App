@@ -6,9 +6,12 @@ import { faHome,faSearch,faBook,faUser,faVideo,faGlobe,faPauseCircle,faFileLines
 import React, { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
 import { useCart } from '../contexts/CartContext'; // Đường dẫn tới CartContext.js
-
-
-function CourseDetail ({route,selectedCourse,navigation  }) {
+import { useIsFocused } from '@react-navigation/native';
+import { getDatabase, ref, set,get } from "firebase/database";
+ //Kết nối firebase
+ import { app } from "../components/firebaseConfig";
+ const db = getDatabase(app);
+function CourseDetail ({route,navigation  }) {
     // Lấy dữ liệu từ route 
     const { course,dataCourse,user  } = route.params;
     console.log("User id in coursesDetail:",user.uid)
@@ -24,9 +27,9 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     // Xử lý mở rộng mô tả abc
     const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
     // Kiểm tra xem khóa học đã được mua hay chưa
-  const hasPurchasedCourse = user.courses.some(
-    (userCourse) => userCourse.id === course.id
-  );
+  // const hasPurchasedCourse = user.courses.some(
+  //   (userCourse) => userCourse.id === course.id
+  // );
 
       // Lọc các khóa học cùng category với khóa học đang xem
       const similarCourses = dataCourse.filter((item) => item.categories === course.categories && item.id !== course.id).slice(0, 3);
@@ -44,7 +47,16 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
           <View style={styles.courseInspireInfo}>
             <View style ={styles.courseinspire_title_container}> 
               <Text style={styles.courseTitleInspire}> {item.title}</Text>
-              <FontAwesomeIcon icon={faBookmark} />
+              <TouchableOpacity onPress={() => handleBookmark(item)}>
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                color: followCourses.some((course) => course.id === item.id)
+                  ? "blue" // Nếu đã bookmark, đổi màu
+                  : "gray", // Nếu chưa bookmark, màu xám
+              }}
+            />
+          </TouchableOpacity>
             </View>
            
             <Text style={styles.courseTeacher}>{item.teacher}</Text>
@@ -69,6 +81,64 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     ? course.reviews 
     : course.reviews.filter(review => review.rating === selectedRating);
     
+
+    const [userProfile, setUserProfile] = useState({}); // Khởi tạo là một đối tượng rỗng
+    const [followCourses, setfollowCourses] = useState([]); // Khởi tạo danh sách khóa học là mảng rỗng
+  
+    const isFocused = useIsFocused(); // Kiểm tra trạng thái focus của màn hình
+  
+    useEffect(() => {
+      const fetchUserProfile = async () => {
+        const userProfileRef = ref(db, `Users/users/${user.uid}`);
+        try {
+          const snapshot = await get(userProfileRef);
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const getFollowCourses = data.followCourses || [];
+             set
+            setUserProfile(data);
+            setfollowCourses(getFollowCourses); // Cập nhật danh sách khóa học từ Firebase
+            console.log("Dữ liệu followCourses SearchScreen:", getFollowCourses);
+          } else {
+            console.error("Không tìm thấy dữ liệu userProfile.");
+            setfollowCourses([]);
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu từ Firebase:", error);
+        }
+      };
+  
+      if (isFocused) {
+        fetchUserProfile(); // Gọi hàm khi màn hình được focus
+      }
+    }, [isFocused]); // Gọi lại khi trạng thái focus thay đổi
+  
+    //Xử lí add dữ liệu vào followCourses
+    const handleBookmark = async (course) => {
+      try {
+        const isBookmarked = followCourses.some(
+          (followedCourse) => followedCourse.id === course.id
+        );
+    
+        let updatedFollowCourses;
+    
+        if (isBookmarked) {
+          updatedFollowCourses = followCourses.filter(
+            (followedCourse) => followedCourse.id !== course.id
+          );
+        } else {
+          updatedFollowCourses = [...followCourses, course];
+        }
+    
+        setfollowCourses(updatedFollowCourses);
+    
+        // Đồng bộ với Firebase
+        const userProfileRef = ref(db, `Users/users/${user.uid}/followCourses`);
+        await set(userProfileRef, updatedFollowCourses);
+      } catch (error) {
+        console.error("Error updating followCourses:", error);
+      }
+    };
 
     
 
