@@ -8,8 +8,10 @@
   import { GoogleSignin } from '@react-native-google-signin/google-signin';
   import { GoogleAuthProvider, signInWithCredential as firebaseSignInWithCredential } from 'firebase/auth'; 
   import { useUser } from '../contexts/UserContext'; // Import useUser hook để truy cập vào UserContext
-
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
   import { ActivityIndicator } from 'react-native';
+  import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 const firebaseConfig = {
   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
   authDomain: "elearning-43ab4.firebaseapp.com",
@@ -233,16 +235,10 @@ const firebaseConfig = {
         {/* Social Login Buttons */}
         <View style={styles.socialContainer}>
           <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn} disabled={loading}>
-            <Image
-              source={require('../assets/snack-icon.png')}
-              style={styles.socialIcon}
-            />
+          <FontAwesomeIcon icon={faGoogle} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
-            <Image
-              source={require('../assets/snack-icon.png')}
-              style={styles.socialIcon}
-            />
+          <FontAwesomeIcon icon={faFacebook} />
           </TouchableOpacity>
         </View>
 

@@ -98,7 +98,7 @@ const db = getDatabase(app);
     ];
 
     const navigateToCategory = (category) => {
-      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user  :userProfile});
+      navigation.navigate('Search', { category , dataCourse,isFromCategory: true ,user});
     };
 
     const handleViewAllPress = () => {
@@ -213,7 +213,7 @@ const db = getDatabase(app);
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
 
-          <Text style={{ color: "grey", marginLeft: 5, marginRight: 5 }}>.</Text>
+          <Text style={{ color: "grey", marginLeft: 5, marginRight: 5 }}></Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
@@ -255,7 +255,7 @@ const db = getDatabase(app);
         <View style ={styles.course_rating}>
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
-          <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+          <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
@@ -285,7 +285,7 @@ const db = getDatabase(app);
         <View style ={styles.course_rating}>
           <FontAwesomeIcon icon={faStar} />
           <Text style={styles.courseRating}> {item.rating}</Text>
-          <Text style={{color:"grey",marginLeft:5,marginRight:5}}>.</Text>
+          <Text style={{color:"grey",marginLeft:5,marginRight:5}}></Text>
           <Text style={styles.courseLessons}>{item.lessons}</Text>
         </View>
       </View>
@@ -520,11 +520,11 @@ const db = getDatabase(app);
       </View>
      </ScrollView>
      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home')} >
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Home',{user })} >
           <FontAwesomeIcon icon={faHome}/>
           <Text style={[styles.footerText , currentPage === 'Home' && styles.activeFooterText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false,user :userProfile})}>
+        <TouchableOpacity style={styles.footerItem} onPress={() => navigation.navigate('Search', { dataCourse, isFromCategory: false,user})}>
           <FontAwesomeIcon icon={faSearch}/>
           <Text style={[styles.footerText,currentPage === 'Search' && styles.activeFooterText]}>Search</Text>
         </TouchableOpacity>

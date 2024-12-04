@@ -15,7 +15,9 @@ import { getDatabase, ref, set } from 'firebase/database'; // Firebase Realtime 
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential,signInWithPopup } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 
 const firebaseConfig = {
   apiKey: "AIzaSyANN7T5O_qY-e7PuVdaBVtV2GctAgU3qOg",
@@ -156,8 +158,7 @@ const SignUpScreen = () => {
       const user = userCredential.user;
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
-      set(ref(db, 'Users/users/' + user.uid), {
-        id: user.uid, // ID tự động từ Firebase
+      set(ref(db, 'Users/users/' + user.uid), { // ID tự động từ Firebase
         name: fullName,
         email: user.email,
         image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
@@ -268,16 +269,10 @@ const SignUpScreen = () => {
     {/* Social Login Buttons */}
     <View style={styles.socialContainer}>
       <TouchableOpacity style={styles.socialButton}  onPress={handleGoogleSignUp}>
-        <Image
-          source={require('../assets/snack-icon.png')}
-          style={styles.socialIcon}
-        />
+      <FontAwesomeIcon icon={faGoogle} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.socialButton}>
-        <Image
-          source={require('../assets/snack-icon.png')}
-          style={styles.socialIcon}
-        />
+      <FontAwesomeIcon icon={faFacebook} />
       </TouchableOpacity>
     </View>
 

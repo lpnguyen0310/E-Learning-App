@@ -11,7 +11,7 @@ import { getDatabase, ref, set,get } from "firebase/database";
  //Kết nối firebase
  import { app } from "../components/firebaseConfig";
  const db = getDatabase(app);
-function CourseDetail ({route,selectedCourse,navigation  }) {
+function CourseDetail ({route,navigation  }) {
     // Lấy dữ liệu từ route 
     const { course,dataCourse,user  } = route.params;
     // Dữ liệu khóa học
@@ -26,9 +26,9 @@ function CourseDetail ({route,selectedCourse,navigation  }) {
     // Xử lý mở rộng mô tả abc
     const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
     // Kiểm tra xem khóa học đã được mua hay chưa
-  const hasPurchasedCourse = user.courses.some(
-    (userCourse) => userCourse.id === course.id
-  );
+  // const hasPurchasedCourse = user.courses.some(
+  //   (userCourse) => userCourse.id === course.id
+  // );
 
       // Lọc các khóa học cùng category với khóa học đang xem
       const similarCourses = dataCourse.filter((item) => item.categories === course.categories && item.id !== course.id).slice(0, 3);
