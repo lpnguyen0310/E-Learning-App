@@ -373,7 +373,16 @@ const renderItemSearch = ({ item }) => (
       <View style={styles.courseListSeach}>
           <View style ={styles.course_item_title_search}> 
               <Text style={styles.courseTitle} numberOfLines={1} ellipsizeMode="tail"> {item.title}</Text>
-              <FontAwesomeIcon icon={faBookmark} />
+             <TouchableOpacity onPress={() => handleBookmark(item)}>
+            <FontAwesomeIcon
+              icon={faBookmark}
+              style={{
+                color: followCourses.some((course) => course.id === item.id)
+                  ? "blue" // Nếu đã bookmark, đổi màu
+                  : "gray", // Nếu chưa bookmark, màu xám
+              }}
+            />
+          </TouchableOpacity>
           </View>
           <Text style={styles.courseTeacher}>{item.teacher}</Text>
           <Text style={styles.coursePrice}>{item.price}</Text>

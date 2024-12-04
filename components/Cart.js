@@ -87,16 +87,16 @@ const Cart = ({route}) => {
                 return;
             }
     
-            // Cập nhật user trong state và Firebase
-            const updatedCourses = [...(user.courses || []), ...newCourses];
-            setUserData((prevUser) => ({
+           setUserData((prevUser) => ({
                 ...prevUser,
-                courses: updatedCourses,
-            }));    
-    
-            /// Đồng bộ với Firebase
-            const userRef = ref(database, `Users/users/${user.uid}`);
-            await update(userRef, { courses: updatedCourses });
+                courses: [...(prevUser.courses || []), ...newCourses],
+            }));
+
+            // Cập nhật vào Firebase Realtime Database
+            const userRef = ref(database, `Users/users/${user.uid}`); // Chỉnh sửa đường dẫn ở đây
+            await update(userRef, {
+                courses: [...user.courses, ...newCourses] // Thêm khóa học mới vào trường courses
+            }); 
     
             // Xóa các khóa học đã checkout khỏi giỏ hàng
             setSelectedItems([]);

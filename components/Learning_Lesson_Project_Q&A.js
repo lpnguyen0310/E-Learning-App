@@ -85,7 +85,7 @@ const LearningLesson = ({ route }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const [activeTab, setActiveTab] = useState('LESSONS');
-
+  const [expanded, setExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState('MyCourse'); // State để theo dõi trang hiện tại
 
   const handleNavigation = (page, params = {}) => {
@@ -101,9 +101,13 @@ const LearningLesson = ({ route }) => {
   
     const playAudio = async (audioUrl, lessonId) => {
       if (sound) {
-        await sound.stopAsync();
-        await sound.unloadAsync();
-        setSound(null);
+        try {
+          await sound.stopAsync();
+          await sound.unloadAsync();
+          setSound(null);
+        } catch (error) {
+          console.error('Error stopping/unloading sound:', error);
+        }
       }
     
       if (currentAudio === audioUrl && isPlaying) {
@@ -111,44 +115,46 @@ const LearningLesson = ({ route }) => {
         return;
       }
     
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { shouldPlay: true }
-      );
+      try {
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          { uri: audioUrl },
+          { shouldPlay: true }
+        );
     
-      setSound(newSound);
-      setCurrentAudio(audioUrl);
-      setIsPlaying(true);
+        setSound(newSound);
+        setCurrentAudio(audioUrl);
+        setIsPlaying(true);
     
-      newSound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          setIsPlaying(false);
-          setCurrentAudio(null);
-          newSound.unloadAsync();
+        newSound.setOnPlaybackStatusUpdate((status) => {
+          if (status.didJustFinish) {
+            setIsPlaying(false);
+            setCurrentAudio(null);
+            newSound.unloadAsync();
     
-          // Đánh dấu bài học hoàn thành
-          setLessons((prevLessons) =>
-            prevLessons.map((module) => ({
-              ...module,
-              lessons: module.lessons.map((lesson) =>
-                lesson.id === lessonId ? { ...lesson, completed: true } : lesson
-              ),
-            }))
-          );
-        }
-      });
+            setLessons((prevLessons) =>
+              prevLessons.map((module) => ({
+                ...module,
+                lessons: module.lessons.map((lesson) =>
+                  lesson.id === lessonId ? { ...lesson, completed: true } : lesson
+                ),
+              }))
+            );
+          }
+        });
+      } catch (error) {
+        console.error('Failed to load/play audio:', error);
+      }
     };
-    // Dừng âm thanh khi màn hình mất focus
+    
     useFocusEffect(
       React.useCallback(() => {
         return () => {
-          // Dừng âm thanh khi màn hình mất focus
           if (sound) {
-            sound.stopAsync();
-            sound.unloadAsync();
+            sound.stopAsync().catch(() => {});
+            sound.unloadAsync().catch(() => {});
           }
         };
-      }, [sound]) // Chạy lại khi `sound` thay đổi
+      }, [sound])
     );
   
   return (
@@ -168,8 +174,20 @@ const LearningLesson = ({ route }) => {
       {/* Course Image */}
       <Image source={course.image} style={styles.courseImage} />
 
-      {/* Course Description */}
-      <Text style={styles.courseDescription}>{course.description}</Text>
+       {/* Mô tả khóa học */}
+       <Text
+        style={styles.courseDescription}
+        numberOfLines={expanded ? 0 : 2} // Hiển thị tất cả dòng nếu expanded = true
+      >
+       {course.description}
+      </Text>
+
+      {/* Nút "See more" */}
+      <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+        <Text style={styles.seeMoreText}>
+          {expanded ? "See less" : "See more"}
+        </Text>
+      </TouchableOpacity>
 
       {/* Social Info */}
       <View style={styles.socialInfo}>
@@ -690,12 +708,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 60,
+    height: 50,
     width: '100%',
     backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: 'gray',  // Màu đường viền trên
     paddingVertical: 10,
+    marginTop: 20,  // Thêm khoảng cách giữa footer và nội dung
   },
   footerItem: {
     alignItems: 'center',
