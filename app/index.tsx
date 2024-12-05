@@ -48,7 +48,7 @@ const App = () => {
         options={{ headerShown: false }}
         />
         <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="CourseDetail" component={CourseDetail} /> 
+        <Stack.Screen name="CourseDetail" component={CourseDetail} options={{ headerShown: false }}/> 
         <Stack.Screen name="Profile" component={ProfileUser} 
         options={{ headerShown: false }} // Ẩn tiêu đề cho LearningLesson
         />

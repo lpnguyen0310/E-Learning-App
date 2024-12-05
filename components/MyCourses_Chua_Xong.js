@@ -16,7 +16,7 @@ import { getDatabase, ref, set,get } from "firebase/database";
 //Kết nối firebase
 import { app } from "../components/firebaseConfig";
 const db = getDatabase(app);
-
+import Video from "react-native-video";
 
 const imageMapper = {
   "uxfoundation.png": require('../assets/images/uxfoundation.png'),

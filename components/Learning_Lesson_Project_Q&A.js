@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faSearch,faBook,faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { Audio } from 'expo-av';
-
+import Video from "react-native-video";
 const renderLessonItem = ({ item }) => (
   <TouchableOpacity
     style={[
@@ -172,8 +172,17 @@ const LearningLesson = ({ route }) => {
       </View>
 
 
-      {/* Course Image */}
-      <Image source={course.image} style={styles.courseImage} />
+      {/* Course Image
+      <Image source={course.image} style={styles.courseImage} /> */}
+      <View style={styles.courseImage}> 
+                            <Video
+                                    source={{ uri: course.video }} // URL từ Firebase Storage
+                                    style={styles.courseImage}
+                                    controls={true} // Hiển thị nút điều khiển
+                                    resizeMode="cover" // Điều chỉnh hiển thị
+                                    paused={true} // Không tự động phát video
+                                  />
+                           </View>
 
        {/* Mô tả khóa học */}
        <Text

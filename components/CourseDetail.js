@@ -8,6 +8,7 @@ import { Audio } from 'expo-av';
 import { useCart } from '../contexts/CartContext'; // Đường dẫn tới CartContext.js
 import { useIsFocused } from '@react-navigation/native';
 import { getDatabase, ref, set,get } from "firebase/database";
+import Video from "react-native-video";
  //Kết nối firebase
  import { app } from "../components/firebaseConfig";
  const db = getDatabase(app);
@@ -286,6 +287,11 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
     const handleAddToCart = (course) => {
       addToCart(course); // Thêm khóa học vào giỏ hàng
       navigation.navigate('Cart',{ user}); // Điều hướng tới màn hình giỏ hàng
+    alert(
+      'Thành công', 
+      'Khóa học đã được thêm vào giỏ hàng 🎉', 
+      [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+  );
   };
 
 
@@ -484,7 +490,7 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
             <View style ={styles.container}>
                 <View style ={styles.header}>
                     <View style ={styles.header_title}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
                             <FontAwesomeIcon icon={faChevronLeft} style={{color: "#97989b",}} />
                         </TouchableOpacity>
                         <Text style ={{fontWeight:700,fontSize:18}}>Course Details</Text>
@@ -497,7 +503,16 @@ const [expandedSections, setExpandedSections] = useState([]); // Trạng thái m
                 <ScrollView>
                     <View style ={styles.container_body}>
                         <View style = {styles.title_course}>
-                            <Image source={course.image} style={styles.courseImage} />
+                            {/* <Image source={course.image} style={styles.courseImage} /> */}
+                           <View style={styles.courseImage}> 
+                            <Video
+                                    source={{ uri: course.video }} // URL từ Firebase Storage
+                                    style={styles.courseImage}
+                                    controls={true} // Hiển thị nút điều khiển
+                                    resizeMode="cover" // Điều chỉnh hiển thị
+                                    paused={true} // Không tự động phát video
+                                  />
+                           </View>
                             <View style = {styles.content_course}>
                                 <Text style ={{fontWeight:700,fontSize:18,marginTop:10}}>{course.title}</Text>
                                 <View style ={styles.course_rating}>

@@ -133,7 +133,7 @@ const SignUpScreen = () => {
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
       set(ref(db, 'Users/users/' + user.uid), {
-        id: user.uid, // ID tự động từ Firebase
+        uid: user.uid, // ID tự động từ Firebase
         name: fullName,
         email: user.email,
         image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
@@ -159,6 +159,7 @@ const SignUpScreen = () => {
   
       // Lưu thông tin người dùng vào Firebase Realtime Database
       set(ref(db, 'Users/users/' + user.uid), { // ID tự động từ Firebase
+        uid: user.uid,
         name: fullName,
         email: user.email,
         image: user.photoURL || '', // Hình ảnh, mặc định là chuỗi rỗng nếu không có
@@ -191,7 +192,7 @@ const SignUpScreen = () => {
     {/* Logo */}
     <View style={styles.logoContainer}>
       <Image
-        source={require('../assets/snack-icon.png')}
+        source={require('../assets/banner.png')}
         style={styles.logo}
       />
       <Text style={styles.logoText}>Telead</Text>

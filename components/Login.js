@@ -165,7 +165,7 @@ const firebaseConfig = {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/snack-icon.png')}
+            source={require('../assets/banner.png')}
             style={styles.logo}
           />
           <Text style={styles.logoText}>Telead</Text>
